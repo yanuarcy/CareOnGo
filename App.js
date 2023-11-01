@@ -1,20 +1,22 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from "react";
 
-export default function App() {
+import { NavigationContainer } from "@react-navigation/native";
+import { NativeBaseProvider } from "native-base";
+import MenuBar from "./src/component/MenuBar";
+import { ThemeContext } from "./src/component/themeContext";
+
+const App = () => {
+  const [theme, setTheme] = useState({ mode: "light" });
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NativeBaseProvider>
+      <ThemeContext.Provider value={{ theme }}>
+        <NavigationContainer>
+          <MenuBar />
+        </NavigationContainer>
+      </ThemeContext.Provider>
+    </NativeBaseProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
