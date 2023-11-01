@@ -30,19 +30,6 @@ const StackScreen = () => {
         component={ProfileScreen}
       />
 
-      <Stack.Screen
-        options={{
-          headerStyle: {
-            backgroundColor: activeColors.primary,
-
-          },
-          headerTintColor: activeColors.tint,
-          headerTitleAlign: 'center',
-        }}
-        name="MyProfile"
-        component={MyProfileScreen}
-      />
-
     </Stack.Navigator>
   );
 };
