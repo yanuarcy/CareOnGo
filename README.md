@@ -1,13 +1,15 @@
 # CareOnGo
 Based on Mobile Apps with focus in Health and Consultant. Build with React Native and style from NativeBase
 
-## Instalasi & Setup NativeBase
 
 ## Preview
 
 Tampilan Halaman Admin
 
 ![preview](https://github.com/yanuarcy/CareOnGo/blob/7a6139a60c1d9e8cc28e4c47bb7e7b98c2fba1ab/Home-CareOnGo.png)
+
+## Instalasi & Setup NativeBase
+
 
 Step 1:
 Install `NativeBase` dan dependencies nya dengan mengeksekusi command berikut ini pada terminal
