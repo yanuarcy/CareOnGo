@@ -8,10 +8,12 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import colors from "./theme";
 import { ThemeContext } from "./themeContext";
-import ProfileScreen from "../Screen/Profile";
+// import ProfileScreen from "../Screen/Profile";
 import HomeScreen from "../Screen/Home";
 import AppointmentScreen from "../Screen/Appointment";
 import PesanScreen from "../Screen/Chat";
+import ProfileScreen from "../Screen/Profile/Profile";
+import MyProfileScreen from "../Screen/Profile/Account/MyProfile";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -19,7 +21,7 @@ const Stack = createStackNavigator();
 const StackScreen = () => {
   const { theme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
-  
+
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -27,6 +29,20 @@ const StackScreen = () => {
         name="Profile"
         component={ProfileScreen}
       />
+
+      <Stack.Screen
+        options={{
+          headerStyle: {
+            backgroundColor: activeColors.primary,
+
+          },
+          headerTintColor: activeColors.tint,
+          headerTitleAlign: 'center',
+        }}
+        name="MyProfile"
+        component={MyProfileScreen}
+      />
+
     </Stack.Navigator>
   );
 };

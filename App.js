@@ -8,9 +8,18 @@ import { ThemeContext } from "./src/component/themeContext";
 const App = () => {
   const [theme, setTheme] = useState({ mode: "light" });
 
+  const updateTheme = (newTheme) => {
+    let mode;
+    if (!newTheme) {
+      mode = theme.mode === "dark" ? "light" : "dark";
+      newTheme = { mode };
+    }
+    setTheme(newTheme);
+  };
+
   return (
     <NativeBaseProvider>
-      <ThemeContext.Provider value={{ theme }}>
+      <ThemeContext.Provider value={{ theme, updateTheme }}>
         <NavigationContainer>
           <MenuBar />
         </NavigationContainer>
