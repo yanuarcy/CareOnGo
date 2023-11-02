@@ -6,7 +6,7 @@ Based on Mobile Apps with focus in Health and Consultant. Build with React Nativ
 
 Tampilan Halaman Admin
 
-![preview](https://github.com/yanuarcy/CareOnGo/blob/7a6139a60c1d9e8cc28e4c47bb7e7b98c2fba1ab/Home-CareOnGo.png)
+![preview](https://github.com/yanuarcy/CareOnGo/blob/94eb219fc495efe363f1d9fdbd2e86a429c52566/Home-CareOnGo.png)
 
 ## Instalasi & Setup NativeBase
 
