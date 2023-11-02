@@ -53,13 +53,14 @@ const App = () => {
             />
 
             <Stack.Screen 
-              options={{
+              options={({route}) => ({
+                title: route.params.userName,
                 headerStyle: {
                   backgroundColor: activeColors.primary,
                 },
                 headerTintColor: activeColors.tint,
                 headerTitleAlign: "center",
-              }}
+              })}
               name="RoomChat"
               component={RoomChatScreen}
             />

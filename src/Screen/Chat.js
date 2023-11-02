@@ -79,7 +79,7 @@ const PesanScreen = () => {
             data={Messages}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <TouchableOpacity style={{ width: "100%" }}>
+              <TouchableOpacity style={{ width: "100%" }} onPress={() => navigation.navigate('RoomChat', {userName: item.userName})}>
                 <Box justifyContent={"space-between"}>
                   <Flex direction="row">
                     <Box pt={4} pb={4}>
