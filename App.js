@@ -8,6 +8,7 @@ import MenuBar from "./src/component/MenuBar";
 import { createStackNavigator } from "@react-navigation/stack";
 import colors from "./src/component/theme";
 import MyProfileScreen from "./src/Screen/Profile/Account/MyProfile";
+import RoomChatScreen from "./src/Screen/RoomChat";
 
 const Stack = createStackNavigator();
 
@@ -49,6 +50,18 @@ const App = () => {
               }}
               name="MyProfile"
               component={MyProfileScreen}
+            />
+
+            <Stack.Screen 
+              options={{
+                headerStyle: {
+                  backgroundColor: activeColors.primary,
+                },
+                headerTintColor: activeColors.tint,
+                headerTitleAlign: "center",
+              }}
+              name="RoomChat"
+              component={RoomChatScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>

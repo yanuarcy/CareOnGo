@@ -14,6 +14,7 @@ import AppointmentScreen from "../Screen/Appointment";
 import PesanScreen from "../Screen/Chat";
 import ProfileScreen from "../Screen/Profile/Profile";
 import MyProfileScreen from "../Screen/Profile/Account/MyProfile";
+import DoctorScreen from "../Screen/Doctor";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -44,17 +45,18 @@ const MenuBar = () => {
       <Tab.Navigator
         screenOptions={{
           headerStyle: {
-            backgroundColor: "black", // Ubah warna latar belakang header sesuai keinginan
+            // backgroundColor: "black", // Ubah warna latar belakang header sesuai keinginan
           },
           headerTitleAlign: "center",
-          headerTintColor: "white",
-          headerShown: false,
+          // headerTintColor: "white",
+          // headerShown: false,
         }}
       >
         <Tab.Screen
           name="Home"
           component={HomeScreen}
           options={({ navigation }) => ({
+            headerShown: false,
             tabBarLabel: "",
             tabBarVisible: false,
             tabBarIcon: ({ color, size, focused }) => (
@@ -91,9 +93,50 @@ const MenuBar = () => {
         />
 
         <Tab.Screen
+          name="Doctor"
+          component={DoctorScreen}
+          options={({ navigation }) => ({
+            headerShown: false,
+            tabBarLabel: "",
+            tabBarVisible: false,
+            tabBarIcon: ({ color, size, focused }) => (
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  marginTop: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => navigation.navigate("Doctor")}
+              >
+                <Icon
+                  name="person"
+                  size={size}
+                  color={
+                    focused ? activeColors.iconFocus : activeColors.barIcon
+                  }
+                />
+                <Text
+                  fontSize={12}
+                  color={
+                    focused ? activeColors.iconFocus : activeColors.barIcon
+                  }
+                >
+                  Doctor
+                </Text>
+              </TouchableOpacity>
+            ),
+            tabBarStyle: {
+              backgroundColor: activeColors.barStyle, // Ganti 'your_color_here' dengan warna latar belakang yang Anda inginkan
+            },
+          })}
+        />
+
+        <Tab.Screen
           name="Appointment"
           component={AppointmentScreen}
           options={({ navigation }) => ({
+            headerShown: false,
             tabBarLabel: "",
             tabBarVisible: false,
             tabBarIcon: ({ color, size, focused }) => (
@@ -116,7 +159,7 @@ const MenuBar = () => {
                 <Text
                   fontSize={12}
                   color={
-                    focused ? activeColors.iconFocus : activeColors.iconText
+                    focused ? activeColors.iconFocus : activeColors.barIcon
                   }
                 >
                   Appointment
@@ -172,6 +215,7 @@ const MenuBar = () => {
           name="Profilee"
           component={StackScreen}
           options={({ navigation }) => ({
+            headerShown: false,
             tabBarLabel: "",
             tabBarVisible: false,
             tabBarIcon: ({ color, size, focused }) => (
