@@ -26,10 +26,6 @@ npx expo install react-native-svg
 npx expo install react-native-safe-area-context
 ```
 
-```
-npx expo install expo-linear-gradient
-```
-
 Step 2:
 Patch `NativeBase` (Jika Muncul Warning SSRProvider) dengan membuka file `node_modules/native-base/src/core/NativeBaseProvider.tsx` Cari dan lihat pada baris ke 97 dan ubah <SSRProvider>{children}</SSRProvider> menjadi:
 
@@ -65,4 +61,17 @@ npm install @react-navigation/bottom-tabs
 ```
 npx expo install react-native-screens react-native-safe-area-context
 ```
+
+## Instalasi Depedencies
+
+Install gifted-chat
+```
+npm install react-native-gifted-chat --save
+```
+
+Install linear-gradient
+```
+npx expo install expo-linear-gradient
+```
+
 
