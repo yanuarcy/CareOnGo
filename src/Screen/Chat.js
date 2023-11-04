@@ -19,7 +19,7 @@ const Messages = [
   {
     id: "1",
     userName: "Jenny Doe",
-    userImg: require("../../assets/Chat/user-3.jpg"),
+    userImg: require("../../assets/Chat/Doctor-1.jpg"),
     messageTime: "4 mins ago",
     messageText:
       "Hey there, this is my test for a post of my social app in React Native.",
@@ -27,7 +27,7 @@ const Messages = [
   {
     id: "2",
     userName: "John Doe",
-    userImg: require("../../assets/Chat/user-1.jpg"),
+    userImg: require("../../assets/Chat/Doctor-3.png"),
     messageTime: "2 hours ago",
     messageText:
       "The doctor's reassuring words were a soothing balm, easing the patient's worries with each gentle explanation.",
@@ -35,7 +35,7 @@ const Messages = [
   {
     id: "3",
     userName: "Ken William",
-    userImg: require("../../assets/Chat/user-4.jpg"),
+    userImg: require("../../assets/Chat/Doctor-2.png"),
     messageTime: "1 hours ago",
     messageText:
       "As the doctor discussed treatment options, a sense of hope painted the patient's outlook with a newfound sense of possibilities.",
@@ -43,7 +43,7 @@ const Messages = [
   {
     id: "4",
     userName: "Selina Paul",
-    userImg: require("../../assets/Chat/user-6.jpg"),
+    userImg: require("../../assets/Chat/Doctor-5.jpg"),
     messageTime: "1 day ago",
     messageText:
       "Within the quiet confines of the clinic, the doctor's guidance flowed like a refreshing stream of knowledge, providing comfort to the patient..",
@@ -51,7 +51,7 @@ const Messages = [
   {
     id: "5",
     userName: "Christy Alex",
-    userImg: require("../../assets/Chat/user-7.jpg"),
+    userImg: require("../../assets/Chat/Doctor-4.jpg"),
     messageTime: "2 days ago",
     messageText:
       "Sitting in the doctor's office, the patient found solace in the expert's advice, as it lit a path toward better health and well-being.",
