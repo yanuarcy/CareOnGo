@@ -66,15 +66,9 @@ const PesanScreen = () => {
   const navigation = useNavigation();
 
   return (
-    <Box flex={1} backgroundColor={"#f4f4f4"}>
-      {/* <ScrollView flex={1} backgroundColor={activeColors.primary}> */}
-      <Box flex={1} pl={5} pr={5} backgroundColor={"#FFFFFF"}>
+    <Box flex={1}>
+      <Box flex={1} pl={5} pr={5} backgroundColor={activeColors.primary}>
         <Center>
-          {/* <Text color={activeColors.tint}>Ini adalah halaman Chat</Text>
-            <Button onPress={() => navigation.navigate('RoomChat')}>
-              <Text>Click Here</Text>
-            </Button> */}
-
           <FlatList
             data={Messages}
             keyExtractor={(item) => item.id}
@@ -110,19 +104,28 @@ const PesanScreen = () => {
                         <Box mb={"1"}>
                           <Flex direction="row">
                             <HStack space={32}>
-                              <Text fontSize={"14"} fontWeight={"bold"}>
+                              <Text
+                                fontSize={"14"}
+                                fontWeight={"bold"}
+                                color={activeColors.tint}
+                              >
                                 {item.userName}
                               </Text>
                               <Box ml={-5}>
-                                <Text fontSize={12} color={"#666"}>
+                                <Text fontSize={12} color={activeColors.tint}>
                                   {item.messageTime}
                                 </Text>
                               </Box>
                             </HStack>
                           </Flex>
                         </Box>
-                        <Text fontSize={"14"} color={"#333333"}>
+                        {/* <Text fontSize={"14"} mr={10} color={activeColors.tertiary}>
                           {item.messageText}
+                        </Text> */}
+                        <Text fontSize={"14"} color={activeColors.tertiary}>
+                          {item.messageText.length > 40
+                            ? item.messageText.slice(0, 40) + "..."
+                            : item.messageText}
                         </Text>
                       </Flex>
                     </Box>

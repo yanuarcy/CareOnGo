@@ -33,7 +33,7 @@ const WelcomeScreen = () => {
         alt="Welcome Image"
         // size={64}
         mt={12}
-        m={12}
+        m={10}
         resizeMode="contain"
 				style={{ width: windowDimensions.width * 0.8, height: windowDimensions.height * 0.4 }}
       />
@@ -62,7 +62,7 @@ const WelcomeScreen = () => {
         space={6}
         alignItems="center"
         justifyContent="center"
-        mt={12}
+        mt={4}
         m={10}
       >
         <TouchableOpacity

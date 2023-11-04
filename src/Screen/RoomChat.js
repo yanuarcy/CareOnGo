@@ -46,11 +46,9 @@ const RoomChatScreen = () => {
     );
   }, []);
 
-	const scrollToBottomComponent = () => {
-		return (
-			<FontAwesome name="angle-double-down" size={22} color={'#333'} />
-		)
-	}
+  const scrollToBottomComponent = () => {
+    return <FontAwesome name="angle-double-down" size={22} color={"#333"} />;
+  };
 
   const renderBubble = (props) => {
     return (
@@ -80,8 +78,13 @@ const RoomChatScreen = () => {
     return (
       <Send {...props}>
         <Box>
-					<MaterialCommunityIcons name="send-circle" size={32} color={"#0082F7"} style={{ marginBottom: 5, marginRight: 5 }} />
-				</Box>
+          <MaterialCommunityIcons
+            name="send-circle"
+            size={32}
+            color={"#0082F7"}
+            style={{ marginBottom: 5, marginRight: 5 }}
+          />
+        </Box>
       </Send>
     );
   };
@@ -96,8 +99,8 @@ const RoomChatScreen = () => {
       renderBubble={renderBubble}
       alwaysShowSend
       renderSend={renderSend}
-			scrollToBottom
-			scrollToBottomComponent={scrollToBottomComponent}
+      scrollToBottom
+      scrollToBottomComponent={scrollToBottomComponent}
     />
   );
 };

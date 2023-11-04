@@ -74,6 +74,8 @@ const App = () => {
             />
 
             <Stack.Screen 
+              name="RoomChat"
+              component={RoomChatScreen}
               options={({route}) => ({
                 title: route.params.userName,
                 headerStyle: {
@@ -82,8 +84,6 @@ const App = () => {
                 headerTintColor: activeColors.tint,
                 headerTitleAlign: "center",
               })}
-              name="RoomChat"
-              component={RoomChatScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>
