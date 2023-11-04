@@ -19,7 +19,8 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 
-const LoginScreen = () => {
+
+const RegisterScreen = () => {
   const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -233,4 +234,4 @@ const LoginScreen = () => {
     </TouchableWithoutFeedback>
   );
 };
-export default LoginScreen;
+export default RegisterScreen;

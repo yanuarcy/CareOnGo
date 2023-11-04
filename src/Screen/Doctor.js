@@ -60,12 +60,12 @@ const data = [
     specialty: "Gynecologist",
     image: "https://example.com/janesmith.jpg",
   },
+
   // Tambahkan data dokter lainnya jika diperlukan
 ];
 
 const DoctorScreen = () => {
-  // const theme = { mode: "dark" };
-  const { theme, updateTheme } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
   const renderDoctorItem = ({ item }) => (
@@ -89,6 +89,8 @@ const DoctorScreen = () => {
         <Text color={activeColors.tertiary} fontSize="sm">
           {item.specialty}
         </Text>
+        <Text color={activeColors.text}>{item.name}</Text>
+        <Text color={activeColors.textMuted} fontSize="sm">{item.specialty}</Text>
       </Box>
     </Box>
   );
@@ -102,8 +104,16 @@ const DoctorScreen = () => {
           keyExtractor={(item) => item.name}
         />
       </Box>
+      <ScrollView>
+        <Box mt={4} p={4}>
+          <FlatList
+            data={data}
+            renderItem={renderDoctorItem}
+            keyExtractor={(item) => item.name}
+          />
+        </Box>
+      </ScrollView>
     </Box>
   );
 };
-
 export default DoctorScreen;

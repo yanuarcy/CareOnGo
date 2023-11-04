@@ -31,6 +31,7 @@ const WelcomeScreen = () => {
       <Image
         source={require("../../assets/images/welcome-img.png")}
         alt="Welcome Image"
+        // size={64}
         mt={12}
         m={12}
         resizeMode="contain"
@@ -38,10 +39,11 @@ const WelcomeScreen = () => {
       />
       <Center>
         <Text
-          fontSize={"50"}
-          color="#0082f7"
 					fontWeight="500"
           textAlign="center"
+          fontSize={48}
+          color="#0082f7"
+          mx={4}
         >
           how's your health today?
         </Text>
