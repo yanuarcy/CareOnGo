@@ -14,6 +14,7 @@ import LoginScreen from "./src/Screen/Profile/Auth/Login";
 import RegisterScreen from "./src/Screen/Profile/Auth/Register";
 import { Text, TouchableOpacity } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import ForgotPasswordScreen from "./src/Screen/Profile/Auth/Forgot";
 
 
 const Stack = createStackNavigator();
@@ -55,6 +56,26 @@ const App = () => {
               name="Register"
               component={RegisterScreen}
               options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name="ForgotPass"
+              component={ForgotPasswordScreen}
+              options={({ navigation }) => ({
+                headerTitle: "",
+                headerTitleAlign: "center",
+                headerLeft: () => (
+                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Icon
+                      as={Ionicons}
+                      name="chevron-back-outline"
+                      size={7}
+                      ml={3}
+                      color="black"
+                    />
+                  </TouchableOpacity>
+                ),
+              })}
             />
 
             <Stack.Screen
