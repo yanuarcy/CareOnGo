@@ -132,7 +132,7 @@ const LoginScreen = () => {
               fontWeight={"bold"}
               color={"#0082f7"}
             >
-              Forget your password?
+              Forgot your password?
             </Text>
           </TouchableOpacity>
         </Box>
