@@ -79,7 +79,12 @@ const PesanScreen = () => {
             data={Messages}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <TouchableOpacity style={{ width: "100%" }} onPress={() => navigation.navigate('RoomChat', {userName: item.userName})}>
+              <TouchableOpacity
+                style={{ width: "100%" }}
+                onPress={() =>
+                  navigation.navigate("RoomChat", { userName: item.userName })
+                }
+              >
                 <Box justifyContent={"space-between"}>
                   <Flex direction="row">
                     <Box pt={4} pb={4}>
@@ -102,17 +107,17 @@ const PesanScreen = () => {
                       borderBottomColor={"#cccccc"}
                     >
                       <Flex direction="column">
-                        <Box
-                          mb={"1"}
-                        >
+                        <Box mb={"1"}>
                           <Flex direction="row">
-                            <HStack space={"40"}>
+                            <HStack space={32}>
                               <Text fontSize={"14"} fontWeight={"bold"}>
                                 {item.userName}
                               </Text>
-                              <Text fontSize={12} color={"#666"}>
-                                {item.messageTime}
-                              </Text>
+                              <Box ml={-5}>
+                                <Text fontSize={12} color={"#666"}>
+                                  {item.messageTime}
+                                </Text>
+                              </Box>
                             </HStack>
                           </Flex>
                         </Box>
