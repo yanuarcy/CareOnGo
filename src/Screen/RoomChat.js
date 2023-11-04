@@ -2,7 +2,12 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Box, ScrollView, Text, Center } from "native-base";
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
-import { Bubble, GiftedChat, InputToolbar, Send } from "react-native-gifted-chat";
+import {
+  Bubble,
+  GiftedChat,
+  InputToolbar,
+  Send,
+} from "react-native-gifted-chat";
 import Icon from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -118,18 +123,42 @@ const RoomChatScreen = () => {
 
   const sortedMessages = messages.sort((a, b) => b._id - a._id);
 
-	const renderInputToolbar = (props) => {
+  const renderInputToolbar = (props) => {
+    return (
+      <InputToolbar
+        {...props}
+        containerStyle={{
+          margin: 3,
+          marginHorizontal: 15,
+          backgroundColor: "#F8F0E5",
+          borderRadius: 30,
+          borderTopWidth: 0,
+          borderColor: "black",
+          // borderTopLeftRadius: 20, // Atur radius sesuai keinginan Anda
+          // borderTopRightRadius: 20, // Atur radius sesuai keinginan Anda
+        }}
+      />
+    );
+  };
+
+	const renderTime = (timeProps) => {
+		const createdAt = new Date(timeProps.currentMessage.createdAt);
+		const hours = createdAt.getHours();
+		const minutes = createdAt.getMinutes();
+		const amOrPm = hours >= 12 ? 'PM' : 'AM';
+		const formattedTime = `${hours % 12}:${minutes} ${amOrPm}`;
+	
 		return (
-			<InputToolbar
-				{...props}
-				containerStyle={{
-					margin: 3,
-					marginHorizontal: 15,
-					borderRadius: 30
-					// borderTopLeftRadius: 20, // Atur radius sesuai keinginan Anda
-					// borderTopRightRadius: 20, // Atur radius sesuai keinginan Anda
+			<Text
+				style={{
+					paddingLeft: 8,
+					paddingBottom: 4,
+					fontSize: 10,
+					color: '#fff', // Atur warna teks waktu menjadi putih
 				}}
-			/>
+			>
+				{formattedTime}
+			</Text>
 		);
 	};
 
@@ -145,8 +174,13 @@ const RoomChatScreen = () => {
       renderSend={renderSend}
       scrollToBottom
       scrollToBottomComponent={scrollToBottomComponent}
-      messagesContainerStyle={{ paddingBottom: 80, height: 720, backgroundColor: activeColors.secondary }}
+      messagesContainerStyle={{
+        paddingBottom: 80,
+        height: 720,
+        backgroundColor: activeColors.secondary,
+      }}
       renderInputToolbar={renderInputToolbar}
+			renderTime={renderTime}
     />
   );
 };
