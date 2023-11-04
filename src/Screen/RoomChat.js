@@ -2,11 +2,12 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Box, ScrollView, Text, Center } from "native-base";
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
-import { Bubble, GiftedChat, Send } from "react-native-gifted-chat";
+import { Bubble, GiftedChat, InputToolbar, Send } from "react-native-gifted-chat";
 import Icon from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useRoute } from "@react-navigation/native";
+import { View } from "react-native";
 // import { GiftedChat } from 'react-native-gifted-chat'
 
 const RoomChatScreen = () => {
@@ -39,39 +40,29 @@ const RoomChatScreen = () => {
   //   ]);
   // }, []);
 
-	const route = useRoute();
+  const route = useRoute();
   const initialMessageText = route.params ? route.params.messageText : "";
   const initialUserImg = route.params ? route.params.userImg : null;
 
-	const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState([
     {
-      _id: 1,
+      _id: 2,
       text: initialMessageText,
       createdAt: new Date(),
       user: {
         _id: 2,
         name: "React Native",
-				avatar: initialUserImg,
+        avatar: initialUserImg,
       },
     },
     {
-      _id: 2,
+      _id: 1,
       text: "Hello",
       createdAt: new Date(),
       user: {
         _id: 2,
         name: "React Native",
-				avatar: initialUserImg,
-      },
-    },
-    {
-      _id: 3,
-      text: "Hello You",
-      createdAt: new Date(),
-      user: {
-        _id: 2,
-        name: "React Native",
-				avatar: initialUserImg,
+        avatar: initialUserImg,
       },
     },
   ]);
@@ -125,7 +116,22 @@ const RoomChatScreen = () => {
     );
   };
 
-	const sortedMessages = messages.sort((a, b) => b._id - a._id);
+  const sortedMessages = messages.sort((a, b) => b._id - a._id);
+
+	const renderInputToolbar = (props) => {
+		return (
+			<InputToolbar
+				{...props}
+				containerStyle={{
+					margin: 3,
+					marginHorizontal: 15,
+					borderRadius: 30
+					// borderTopLeftRadius: 20, // Atur radius sesuai keinginan Anda
+					// borderTopRightRadius: 20, // Atur radius sesuai keinginan Anda
+				}}
+			/>
+		);
+	};
 
   return (
     <GiftedChat
@@ -139,7 +145,8 @@ const RoomChatScreen = () => {
       renderSend={renderSend}
       scrollToBottom
       scrollToBottomComponent={scrollToBottomComponent}
-			messagesContainerStyle={{ backgroundColor: activeColors.secondary }}
+      messagesContainerStyle={{ paddingBottom: 80, height: 720, backgroundColor: activeColors.secondary }}
+      renderInputToolbar={renderInputToolbar}
     />
   );
 };

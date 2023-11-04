@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
-import { NativeBaseProvider } from "native-base";
+import { Icon, NativeBaseProvider } from "native-base";
 // import MenuBar from "./src/component/MenuBar";
 import { ThemeContext } from "./src/component/themeContext";
 import MenuBar from "./src/component/MenuBar";
@@ -12,6 +12,9 @@ import RoomChatScreen from "./src/Screen/RoomChat";
 import WelcomeScreen from "./src/Screen/Welcome";
 import LoginScreen from "./src/Screen/Profile/Auth/Login";
 import RegisterScreen from "./src/Screen/Profile/Auth/Register";
+import { Text, TouchableOpacity } from "react-native";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+
 
 const Stack = createStackNavigator();
 
@@ -36,7 +39,6 @@ const App = () => {
         <NavigationContainer>
           {/* <MenuBar /> */}
           <Stack.Navigator initialRouteName="Welcome">
-
             <Stack.Screen
               name="Welcome"
               component={WelcomeScreen}
@@ -73,10 +75,10 @@ const App = () => {
               component={MyProfileScreen}
             />
 
-            <Stack.Screen 
+            <Stack.Screen
               name="RoomChat"
               component={RoomChatScreen}
-              options={({route}) => ({
+              options={({ route }) => ({
                 title: route.params.userName,
                 headerStyle: {
                   backgroundColor: activeColors.primary,

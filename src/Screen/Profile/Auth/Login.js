@@ -125,7 +125,7 @@ const LoginScreen = () => {
           </Spacer>
         </Center>
         <Box mt={3} mr={7} alignItems="flex-end">
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ForgotPass')}>
             <Text
               fontSize={14}
               variant={"link"}
