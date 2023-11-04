@@ -57,9 +57,9 @@ const ForgotPasswordScreen = ({ navigation }) => {
                     }}
                   />
                 </Box>
-                <Box paddingHorizontal={20} mt={-6}>
-                  <Box mb={14}>
-                    <Text color="#000" fontWeight={900} fontSize={40}>
+                <Box paddingHorizontal={20}>
+                  <Box mb={15}>
+                    <Text color="#000" fontWeight={900} fontSize={45}>
                       Forgot Password?
                     </Text>
                   </Box>
@@ -92,7 +92,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                       fontSize={16}
                     />
                   </Box>
-                  <Box marginTop={16} mb={16}>
+                  <Box paddingTop={20} mb={16} >
                     <TouchableOpacity
                       style={{
                         width: "95%",
