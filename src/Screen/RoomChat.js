@@ -51,11 +51,29 @@ const RoomChatScreen = () => {
       user: {
         _id: 2,
         name: "React Native",
-        // avatar: require("../../assets/Chat/user-2.jpg"),
 				avatar: initialUserImg,
       },
     },
-    // Other initial messages...
+    {
+      _id: 2,
+      text: "Hello",
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+        name: "React Native",
+				avatar: initialUserImg,
+      },
+    },
+    {
+      _id: 3,
+      text: "Hello You",
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+        name: "React Native",
+				avatar: initialUserImg,
+      },
+    },
   ]);
 
   const onSend = useCallback((messages = []) => {
@@ -107,9 +125,11 @@ const RoomChatScreen = () => {
     );
   };
 
+	const sortedMessages = messages.sort((a, b) => b._id - a._id);
+
   return (
     <GiftedChat
-      messages={messages}
+      messages={sortedMessages}
       onSend={(messages) => onSend(messages)}
       user={{
         _id: 1,

@@ -30,7 +30,7 @@ const Messages = [
     userImg: require("../../assets/Chat/user-1.jpg"),
     messageTime: "2 hours ago",
     messageText:
-      "Hey there, this is my test for a post of my social app in React Native.",
+      "The doctor's reassuring words were a soothing balm, easing the patient's worries with each gentle explanation.",
   },
   {
     id: "3",
@@ -38,7 +38,7 @@ const Messages = [
     userImg: require("../../assets/Chat/user-4.jpg"),
     messageTime: "1 hours ago",
     messageText:
-      "Hey there, this is my test for a post of my social app in React Native.",
+      "As the doctor discussed treatment options, a sense of hope painted the patient's outlook with a newfound sense of possibilities.",
   },
   {
     id: "4",
@@ -46,7 +46,7 @@ const Messages = [
     userImg: require("../../assets/Chat/user-6.jpg"),
     messageTime: "1 day ago",
     messageText:
-      "Hey there, this is my test for a post of my social app in React Native.",
+      "Within the quiet confines of the clinic, the doctor's guidance flowed like a refreshing stream of knowledge, providing comfort to the patient..",
   },
   {
     id: "5",
@@ -54,7 +54,7 @@ const Messages = [
     userImg: require("../../assets/Chat/user-7.jpg"),
     messageTime: "2 days ago",
     messageText:
-      "Hey there, this is my test for a post of my social app in React Native.",
+      "Sitting in the doctor's office, the patient found solace in the expert's advice, as it lit a path toward better health and well-being.",
   },
 ];
 
