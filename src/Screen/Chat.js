@@ -76,7 +76,11 @@ const PesanScreen = () => {
               <TouchableOpacity
                 style={{ width: "100%" }}
                 onPress={() =>
-                  navigation.navigate("RoomChat", { userName: item.userName })
+                  navigation.navigate("RoomChat", {
+                    userName: item.userName,
+                    messageText: item.messageText,
+                    userImg: item.userImg,
+                  })
                 }
               >
                 <Box justifyContent={"space-between"}>

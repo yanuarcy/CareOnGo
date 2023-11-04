@@ -6,6 +6,7 @@ import { Bubble, GiftedChat, Send } from "react-native-gifted-chat";
 import Icon from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useRoute } from "@react-navigation/native";
 // import { GiftedChat } from 'react-native-gifted-chat'
 
 const RoomChatScreen = () => {
@@ -13,32 +14,49 @@ const RoomChatScreen = () => {
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
-  const [messages, setMessages] = useState([]);
+  // useEffect(() => {
+  //   setMessages([
+  //     {
+  //       _id: 1,
+  //       text: "Hello developer",
+  //       createdAt: new Date(),
+  //       user: {
+  //         _id: 2,
+  //         name: "React Native",
+  //         avatar: require("../../assets/Chat/user-2.jpg"),
+  //       },
+  //     },
+  //     {
+  //       _id: 2,
+  //       text: "Hello It's Work",
+  //       createdAt: new Date(),
+  //       user: {
+  //         _id: 1,
+  //         name: "React Native",
+  //         avatar: require("../../assets/Chat/user-2.jpg"),
+  //       },
+  //     },
+  //   ]);
+  // }, []);
 
-  useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "React Native",
-          avatar: require("../../assets/Chat/user-2.jpg"),
-        },
-      },
-      {
+	const route = useRoute();
+  const initialMessageText = route.params ? route.params.messageText : "";
+  const initialUserImg = route.params ? route.params.userImg : null;
+
+	const [messages, setMessages] = useState([
+    {
+      _id: 1,
+      text: initialMessageText,
+      createdAt: new Date(),
+      user: {
         _id: 2,
-        text: "Hello It's Work",
-        createdAt: new Date(),
-        user: {
-          _id: 1,
-          name: "React Native",
-          avatar: require("../../assets/Chat/user-2.jpg"),
-        },
+        name: "React Native",
+        // avatar: require("../../assets/Chat/user-2.jpg"),
+				avatar: initialUserImg,
       },
-    ]);
-  }, []);
+    },
+    // Other initial messages...
+  ]);
 
   const onSend = useCallback((messages = []) => {
     setMessages((previousMessages) =>
@@ -101,6 +119,7 @@ const RoomChatScreen = () => {
       renderSend={renderSend}
       scrollToBottom
       scrollToBottomComponent={scrollToBottomComponent}
+			messagesContainerStyle={{ backgroundColor: activeColors.secondary }}
     />
   );
 };

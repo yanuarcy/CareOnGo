@@ -173,9 +173,13 @@ const MenuBar = () => {
         />
 
         <Tab.Screen
-          name="Pesan"
+          name="Message"
           component={PesanScreen}
           options={({ navigation }) => ({
+            headerStyle: {
+              backgroundColor: activeColors.primary
+            },
+            headerTintColor: activeColors.tint,
             tabBarLabel: "",
             tabBarVisible: false,
             tabBarIcon: ({ color, size, focused }) => (
@@ -186,7 +190,7 @@ const MenuBar = () => {
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-                onPress={() => navigation.navigate("Pesan")}
+                onPress={() => navigation.navigate("Message")}
               >
                 <Icon
                   name="chatbubble"
@@ -201,7 +205,7 @@ const MenuBar = () => {
                     focused ? activeColors.iconFocus : activeColors.barIcon
                   }
                 >
-                  Pesan
+                  Message
                 </Text>
               </TouchableOpacity>
             ),

@@ -84,6 +84,7 @@ const App = () => {
                 headerTintColor: activeColors.tint,
                 headerTitleAlign: "center",
               })}
+              initialParams={{ messageText: "", userImg: null }}
             />
           </Stack.Navigator>
         </NavigationContainer>
