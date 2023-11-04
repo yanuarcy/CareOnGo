@@ -89,8 +89,6 @@ const DoctorScreen = () => {
         <Text color={activeColors.tertiary} fontSize="sm">
           {item.specialty}
         </Text>
-        <Text color={activeColors.text}>{item.name}</Text>
-        <Text color={activeColors.textMuted} fontSize="sm">{item.specialty}</Text>
       </Box>
     </Box>
   );
@@ -104,15 +102,6 @@ const DoctorScreen = () => {
           keyExtractor={(item) => item.name}
         />
       </Box>
-      <ScrollView>
-        <Box mt={4} p={4}>
-          <FlatList
-            data={data}
-            renderItem={renderDoctorItem}
-            keyExtractor={(item) => item.name}
-          />
-        </Box>
-      </ScrollView>
     </Box>
   );
 };

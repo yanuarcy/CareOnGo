@@ -118,18 +118,10 @@ const SECTIONS = [
   },
 ];
 
-const sectionsHandler = (id, navigation) => {
-  if (id === "MyProfile") {
-    navigation.navigate("MyProfile");
-  } else if (id === "LogOut") {
-    navigation.replace("Login")
-  }
-}
-
 const ProfileScreen = () => {
   const Stack = createStackNavigator();
   const navigation = useNavigation();
-
+  
   // const theme = { mode: "light" };
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
@@ -146,6 +138,18 @@ const ProfileScreen = () => {
     updateTheme();
     setIsActive((previousState) => !previousState);
   };
+
+  const sectionsHandler = (id, navigation) => {
+  
+    if (id === "MyProfile") {
+      navigation.navigate("MyProfile");
+    } else if (id === "LogOut") {
+      updateTheme();
+      setIsActive(false);
+  
+      navigation.replace("Login")
+    }
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
