@@ -109,6 +109,7 @@ const SECTIONS = [
         type: "link",
       },
       {
+        id: "LogOut",
         icon: "log-out",
         color: "#fd2d54",
         label: "Log out",
@@ -120,8 +121,8 @@ const SECTIONS = [
 const sectionsHandler = (id, navigation) => {
   if (id === "MyProfile") {
     navigation.navigate("MyProfile");
-  } else {
-
+  } else if (id === "LogOut") {
+    navigation.replace("Login")
   }
 }
 
