@@ -33,6 +33,7 @@ const SECTIONS = [
     icon: "settings",
     items: [
       {
+        id: "Language",
         icon: "globe",
         color: "#fe9400",
         label: "Language",
@@ -53,6 +54,7 @@ const SECTIONS = [
         type: "toogle",
       },
       {
+        id: "Location",
         icon: "navigation",
         color: "#32c759",
         label: "Location",
@@ -79,25 +81,33 @@ const SECTIONS = [
     icon: "align-center",
     items: [
       {
+        id: "History",
         icon: "save",
         color: "#32c759",
         label: "History Pemeriksaan",
         type: "link",
       },
-      { icon: "download", color: "#fd2d54", label: "Downloads", type: "link" },
+      // { 
+      //   icon: "download", 
+      //   color: "#fd2d54", 
+      //   label: "Downloads", 
+      //   type: "link",
+      //  },
     ],
   },
   {
-    header: "Actions",
+    header: "Support",
     icon: "help-circle",
     items: [
       {
+        id: "ReportBug",
         icon: "flag",
         color: "#8e8d91",
         label: "Report Bug",
         type: "link",
       },
       {
+        id: "ContactUs",
         icon: "mail",
         color: "#007afe",
         label: "Contact Us",
@@ -147,24 +157,24 @@ const ProfileScreen = () => {
       navigation.navigate("MyProfile");
     }
     
-    else if (id === "AddAccount") {
-      navigation.navigate("Register")
+    else if (id === "Language") {
+      navigation.navigate("Language")
     }
 
-    else if (id === "AddAccount") {
-      navigation.navigate("Register")
+    else if (id === "Location") {
+      navigation.navigate("Location")
     }
 
-    else if (id === "AddAccount") {
-      navigation.navigate("Register")
+    else if (id === "History") {
+      navigation.navigate("History")
     }
 
-    else if (id === "AddAccount") {
-      navigation.navigate("Register")
+    else if (id === "ReportBug") {
+      navigation.navigate("ReportBug")
     }
     
-    else if (id === "AddAccount") {
-      navigation.navigate("Register")
+    else if (id === "ContactUs") {
+      navigation.navigate("ContactUs")
     }
 
     else if (id === "AddAccount") {
