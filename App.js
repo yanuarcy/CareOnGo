@@ -15,7 +15,7 @@ import RegisterScreen from "./src/Screen/Profile/Auth/Register";
 import { Text, TouchableOpacity } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ForgotPasswordScreen from "./src/Screen/Profile/Auth/Forgot";
-
+import ResetPasswordScreen from "./src/Screen/Profile/Account/ResetPassword";
 
 const Stack = createStackNavigator();
 
@@ -96,6 +96,19 @@ const App = () => {
               component={MyProfileScreen}
             />
 
+            <Stack.Screen
+              options={{
+                headerTitle: "Reset Password",
+                headerStyle: {
+                  backgroundColor: activeColors.primary,
+                },
+                headerTintColor: activeColors.tint,
+                headerTitleAlign: "center",
+              }}
+              name="ResetPassword"
+              component={ResetPasswordScreen}
+            />
+            
             <Stack.Screen
               name="RoomChat"
               component={RoomChatScreen}
