@@ -8,10 +8,10 @@ import {
   Icon,
   Button,
   VStack,
+  Pressable
 } from "native-base";
 import {
   TouchableOpacity,
-  Pressable,
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
@@ -32,7 +32,7 @@ const RegisterScreen = () => {
     <TouchableWithoutFeedback onPress={handleDismissKeyboard}>
       <Box flex={1}>
         <Center>
-          <Spacer mt="20">
+          <Spacer mt="8">
             <Text fontSize={32} color={"#0082f7"} fontWeight={"bold"}>
               Create Account
             </Text>
@@ -208,14 +208,14 @@ const RegisterScreen = () => {
               colorScheme={"light"}
               fontSize={16}
               mt={2}
-              mb={10}
+              mb={6}
             >
               Already have an account
             </Text>
           </TouchableOpacity>
         </Center>
         <Center>
-          <Spacer mt="36">
+          <Spacer>
             <Text fontSize={16} color={"blue.700"} fontWeight={"bold"}>
               Or continue with
             </Text>
