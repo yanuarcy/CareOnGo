@@ -187,7 +187,7 @@ const ResetPasswordScreen = ({ navigation }) => {
                         backgroundColor: "#0082f7",
                         borderRadius: 12,
                       }}
-                      onPress={() => navigation.navigate("Login")}
+                      onPress={() => navigation.goBack()}
                     >
                       <Text
                         textAlign="center"
