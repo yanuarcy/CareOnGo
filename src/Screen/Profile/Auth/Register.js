@@ -75,6 +75,46 @@ const RegisterScreen = () => {
                   base: "95%",
                   md: "25%",
                 }}
+                InputLeftElement={
+                  <Icon
+                    as={Ionicons}
+                    name="at-outline"
+                    size={5}
+                    ml="2"
+                    color="black"
+                  />
+                }
+                placeholder="Email"
+                placeholderTextColor={'black'}
+                backgroundColor={"#E4F1FF"}
+                borderWidth={0}
+                rounded={6}
+              />
+              <Input
+                w={{
+                  base: "95%",
+                  md: "25%",
+                }}
+                InputLeftElement={
+                  <Icon
+                    as={Ionicons}
+                    name="call-outline"
+                    size={5}
+                    ml="2"
+                    color="black"
+                  />
+                }
+                placeholder="Phone"
+                placeholderTextColor={'black'}
+                backgroundColor={"#E4F1FF"}
+                borderWidth={0}
+                rounded={6}
+              />
+              <Input
+                w={{
+                  base: "95%",
+                  md: "25%",
+                }}
                 type={showPassword ? "text" : "password"}
                 InputLeftElement={
                   <Icon 
