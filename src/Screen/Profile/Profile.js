@@ -150,12 +150,34 @@ const ProfileScreen = () => {
     else if (id === "AddAccount") {
       navigation.navigate("Register")
     }
+
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
+
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
+
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
+    
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
+
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
      
     else if (id === "ChangePassword") {
       navigation.navigate("ResetPassword")
     }
     else if (id === "LogOut") {
-      updateTheme();
+      if (theme.mode === "dark") {
+        updateTheme();
+      }
       setIsActive(false);
   
       navigation.replace("Login")

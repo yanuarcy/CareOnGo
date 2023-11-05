@@ -82,11 +82,11 @@ const MyProfileScreen = () => {
               <Box alignItems={"center"}>
                 <Flex direction="row">
                   <HStack space={"56"}>
-                    <Text mb={1.5} color={activeColors.tertiary} ml={4}>
+                    <Text mb={1.5} color={activeColors.tertiary} ml={16}>
                       No Telepone
                     </Text>
                     <TouchableOpacity onPress={() => handleEditAndSave("Telp")}>
-                      <Text color={"#0082F7"} mr={2} ml={-2}>
+                      <Text color={"#0082F7"} mr={16} ml={-16}>
                         {editingTelp ? "SIMPAN" : "UBAH"}
                       </Text>
                     </TouchableOpacity>
@@ -135,13 +135,13 @@ const MyProfileScreen = () => {
               <Box alignItems={"center"}>
                 <Flex direction="row">
                   <HStack space={"56"}>
-                    <Text mb={1.5} color={activeColors.tertiary}>
+                    <Text mb={1.5} ml={4} color={activeColors.tertiary}>
                       Email
                     </Text>
                     <TouchableOpacity
                       onPress={() => handleEditAndSave("Email")}
                     >
-                      <Text color={"#0082F7"} ml={8}>
+                      <Text color={"#0082F7"} ml={-4} mr={4}>
                         {editingEmail ? "SIMPAN" : "UBAH"}
                       </Text>
                     </TouchableOpacity>
@@ -242,13 +242,13 @@ const MyProfileScreen = () => {
               <Box alignItems={"center"}>
                 <Flex direction="row">
                   <HStack space={"56"}>
-                    <Text mb={1.5} color={activeColors.tertiary} ml={4}>
+                    <Text mb={1.5} color={activeColors.tertiary} ml={20}>
                       Nama Lengkap
                     </Text>
                     <TouchableOpacity
                       onPress={() => handleEditAndSave("Biodata")}
                     >
-                      <Text color={"#0082F7"} mr={4} ml={-6}>
+                      <Text color={"#0082F7"} mr={20} ml={-20}>
                         {editingNama ? "SIMPAN" : "UBAH"}
                       </Text>
                     </TouchableOpacity>
