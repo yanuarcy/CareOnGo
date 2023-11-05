@@ -104,6 +104,7 @@ const SECTIONS = [
         type: "link",
       },
       {
+        id: "AddAccount",
         icon: "users",
         color: "#32c759",
         label: "Add Account",
@@ -144,7 +145,12 @@ const ProfileScreen = () => {
     
     if (id === "MyProfile") {
       navigation.navigate("MyProfile");
-    } 
+    }
+    
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
+     
     else if (id === "ChangePassword") {
       navigation.navigate("ResetPassword", null);
     }
