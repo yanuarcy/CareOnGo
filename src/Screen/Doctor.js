@@ -27,7 +27,7 @@ const Data = [
     userImg: require("../../assets/Chat/Doctor-3.png"),
     rating: (
       <>
-        <FontAwesome name="star" color="orange" size={12} />
+        <FontAwesome id="1" name="star" color="orange" size={12} />
         <Text>4.5</Text>
       </>
     ),
@@ -40,7 +40,7 @@ const Data = [
     userImg: require("../../assets/Chat/Doctor-2.png"),
     rating: (
       <>
-        <FontAwesome name="star" color="orange" size={12} />
+        <FontAwesome id="2" name="star" color="orange" size={12} />
         <Text>4.6</Text>
       </>
     ),
@@ -53,7 +53,7 @@ const Data = [
     userImg: require("../../assets/Chat/Doctor-5.jpg"),
     rating: (
       <>
-        <FontAwesome name="star" color="orange" size={12} />
+        <FontAwesome id="3" name="star" color="orange" size={12} />
         <Text>4.9</Text>
       </>
     ),
@@ -66,7 +66,7 @@ const Data = [
     userImg: require("../../assets/Chat/Doctor-1.jpg"),
     rating: (
       <>
-        <FontAwesome name="star" color="orange" size={12} />
+        <FontAwesome id="4" name="star" color="orange" size={12} />
         <Text>5</Text>
       </>
     ),
@@ -79,7 +79,7 @@ const Data = [
     userImg: require("../../assets/Chat/Doctor-4.jpg"),
     rating: (
       <>
-        <FontAwesome name="star" color="orange" size={12} />
+        <FontAwesome id="5" name="star" color="orange" size={12} />
         <Text>4.8</Text>
       </>
     ),
