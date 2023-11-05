@@ -20,7 +20,7 @@ const SECTIONS = [
         type: "link",
       },
       { 
-        id:"ChangePassword",
+        id: "ChangePassword",
         icon: "lock",
         color: "#fd2d54",
         label: "Change Password",
@@ -152,7 +152,7 @@ const ProfileScreen = () => {
     }
      
     else if (id === "ChangePassword") {
-      navigation.navigate("ResetPassword", null);
+      navigation.navigate("ResetPassword")
     }
     else if (id === "LogOut") {
       updateTheme();
