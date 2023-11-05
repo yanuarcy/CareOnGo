@@ -155,7 +155,9 @@ const ProfileScreen = () => {
       navigation.navigate("ResetPassword", null);
     }
     else if (id === "LogOut") {
-      updateTheme();
+      if (theme.mode === "dark") {
+        updateTheme();
+      }
       setIsActive(false);
   
       navigation.replace("Login")

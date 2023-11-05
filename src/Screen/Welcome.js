@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dimensions, SafeAreaView, TouchableOpacity } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+// import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Box, Text, Center, HStack, Image } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 
