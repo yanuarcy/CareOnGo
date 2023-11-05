@@ -1,7 +1,9 @@
 import { useContext } from "react";
 import { Box, ScrollView, Text, Center } from "native-base";
-import colors from "../component/theme";
-import { ThemeContext } from "../component/themeContext";
+import { ThemeContext } from "../../../component/themeContext";
+import colors from "../../../component/theme";
+// import colors from "../component/theme";
+// import { ThemeContext } from "../component/themeContext";
 
 const HistoryScreen = () => {
   // const theme = { mode: "dark" };

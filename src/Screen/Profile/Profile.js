@@ -150,6 +150,26 @@ const ProfileScreen = () => {
     else if (id === "AddAccount") {
       navigation.navigate("Register")
     }
+
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
+
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
+
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
+    
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
+
+    else if (id === "AddAccount") {
+      navigation.navigate("Register")
+    }
      
     else if (id === "ChangePassword") {
       navigation.navigate("ResetPassword", null);

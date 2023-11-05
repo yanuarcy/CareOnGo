@@ -14,6 +14,11 @@ import ResetPasswordScreen from "../Screen/Profile/Account/ResetPassword";
 import RoomChatScreen from "../Screen/RoomChat";
 import colors from "./theme";
 import { ThemeContext } from "./themeContext";
+import LanguageScreen from "../Screen/Profile/Preferences/Language";
+import LocationScreen from "../Screen/Profile/Preferences/Location";
+import HistoryScreen from "../Screen/Profile/Content/History";
+import ReportScreen from "../Screen/Profile/Actions/ReportBug";
+import ContactScreen from "../Screen/Profile/Actions/ContactUs";
 
 const Stack = createStackNavigator();
 
@@ -26,6 +31,36 @@ const AppStack = () => {
     return (
         <>
             <Stack.Navigator initialRouteName="Welcome">
+                <Stack.Screen
+                    name="Language"
+                    component={LanguageScreen}
+                    options={{ headerShown: false }}
+                />
+
+                <Stack.Screen
+                    name="Location"
+                    component={LocationScreen}
+                    options={{ headerShown: false }}
+                />
+
+                <Stack.Screen
+                    name="History"
+                    component={HistoryScreen}
+                    options={{ headerShown: false }}
+                />
+
+                <Stack.Screen
+                    name="ReportBug"
+                    component={ReportScreen}
+                    options={{ headerShown: false }}
+                />
+
+                <Stack.Screen
+                    name="ContactUs"
+                    component={ContactScreen}
+                    options={{ headerShown: false }}
+                />
+
                 <Stack.Screen
                     name="Welcome"
                     component={WelcomeScreen}
