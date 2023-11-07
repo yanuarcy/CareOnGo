@@ -53,7 +53,7 @@ const ReportScreen = () => {
 
   return (
     <ScrollView>
-      <Box p={4}>
+      <Box p={4} backgroundColor={activeColors.primary}>
         <Box>
           <Image
             source={require("../../../../assets/images/FeedBack2.png")}
@@ -76,13 +76,13 @@ const ReportScreen = () => {
           </Text>
         </Box>
 
-        <Text color="gray.600" fontSize="md" p={2}>
+        <Text color={activeColors.tint} fontSize="md" p={2}>
           Please let us know your feedback or report a bug. Your input is
           valuable to us!
         </Text>
 
         <Box p={2}>
-          <Text fontWeight="bold" color="gray.600" pb={2}>
+          <Text fontWeight="bold" color={activeColors.tint} pb={2}>
             Email
           </Text>
           <InputGroup
@@ -112,7 +112,7 @@ const ReportScreen = () => {
         </Box>
 
         <Box p={2}>
-          <Text fontWeight="bold" color="gray.600" pb={2}>
+          <Text fontWeight="bold" color={activeColors.tint} pb={2}>
             Overall, how did you feel about this service?
           </Text>
           <Radio.Group
@@ -142,7 +142,7 @@ const ReportScreen = () => {
         </Box>
 
         <Box p={2}>
-          <Text fontWeight="bold" color="gray.600" pb={2}>
+          <Text fontWeight="bold" color={activeColors.tint} pb={2}>
             Message
           </Text>
           <Input
