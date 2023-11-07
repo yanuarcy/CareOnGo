@@ -12,11 +12,14 @@ import {
 } from "native-base";
 import { ThemeContext } from "../../../component/themeContext";
 import colors from "../../../component/theme";
+import { useNavigation } from "@react-navigation/core";
 
 const ReportScreen = () => {
 
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
+
+  const navigation = useNavigation();
 
   const [value, setValue] = React.useState("one");
   const [email, setEmail] = useState("");
@@ -27,9 +30,9 @@ const ReportScreen = () => {
     if (!email || !message) {
       Alert.alert("Please fill in all the fields");
     } else {
-      const feedbackTypeText =
-        feedbackType === "bug" ? "Bug Report" : "Feedback";
+      const feedbackTypeText = feedbackType === "bug" ? "Bug Report" : "Feedback";
       Alert.alert(`Thank you for your ${feedbackTypeText}!`);
+      navigation.goBack();
     }
   };
 

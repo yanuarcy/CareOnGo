@@ -52,13 +52,22 @@ const AppStack = () => {
                 <Stack.Screen
                     name="ReportBug"
                     component={ReportScreen}
-                    options={{ headerShown: false }}
+                    options={{ 
+                        headerTitle: "Report Bug",
+                        headerShown: true,
+                        headerStyle: {
+                            backgroundColor: activeColors.primary,
+                        },
+                        headerTintColor: activeColors.tint,
+                        headerTitleAlign: "center",
+                     }}
                 />
 
                 <Stack.Screen
                     name="ContactUs"
                     component={ContactScreen}
                     options={{ 
+                        headerTitle: 'Contact Us',
                         headerShown: true,
                         headerStyle: {
                             backgroundColor: activeColors.primary,
