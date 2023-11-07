@@ -16,7 +16,11 @@ import {
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
 import { useNavigation } from "@react-navigation/native";
-import { Keyboard, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
+import {
+  Keyboard,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import Header from "../component/Header";
 
@@ -25,12 +29,10 @@ const Data = [
     id: "1",
     userName: "John Doe",
     userImg: require("../../assets/Chat/Doctor-3.png"),
-    rating: (
-      <>
-        <FontAwesome id="1" name="star" color="orange" size={12} />
-        <Text>4.5</Text>
-      </>
-    ),
+    rating: {
+      star: <FontAwesome name="star" color="orange" size={12} />,
+      text: <Text>4.5</Text>,
+    },
     specialty: "Cardiologist",
     exp: "10 years",
   },
@@ -38,12 +40,10 @@ const Data = [
     id: "2",
     userName: "Ken William",
     userImg: require("../../assets/Chat/Doctor-2.png"),
-    rating: (
-      <>
-        <FontAwesome id="2" name="star" color="orange" size={12} />
-        <Text>4.6</Text>
-      </>
-    ),
+    rating: {
+      star: <FontAwesome name="star" color="orange" size={12} />,
+      text: <Text>4.6</Text>,
+    },
     specialty: "Pediatrician",
     exp: "12 years",
   },
@@ -51,12 +51,10 @@ const Data = [
     id: "3",
     userName: "Sellina Paul",
     userImg: require("../../assets/Chat/Doctor-5.jpg"),
-    rating: (
-      <>
-        <FontAwesome id="3" name="star" color="orange" size={12} />
-        <Text>4.9</Text>
-      </>
-    ),
+    rating: {
+      star: <FontAwesome name="star" color="orange" size={12} />,
+      text: <Text>4.9</Text>,
+    },
     specialty: "Neurologist",
     exp: "8 years",
   },
@@ -64,12 +62,10 @@ const Data = [
     id: "4",
     userName: "Jenny Doe",
     userImg: require("../../assets/Chat/Doctor-1.jpg"),
-    rating: (
-      <>
-        <FontAwesome id="4" name="star" color="orange" size={12} />
-        <Text>5</Text>
-      </>
-    ),
+    rating: {
+      star: <FontAwesome name="star" color="orange" size={12} />,
+      text: <Text>5</Text>,
+    },
     specialty: "Gastroenterologist",
     exp: "14 years",
   },
@@ -77,12 +73,10 @@ const Data = [
     id: "5",
     userName: "Christy Alex",
     userImg: require("../../assets/Chat/Doctor-4.jpg"),
-    rating: (
-      <>
-        <FontAwesome id="5" name="star" color="orange" size={12} />
-        <Text>4.8</Text>
-      </>
-    ),
+    rating: {
+      star: <FontAwesome name="star" color="orange" size={12} />,
+      text: <Text>4.8</Text>,
+    },
     specialty: "Gynecologist",
     exp: "12 years",
   },
@@ -98,7 +92,11 @@ const DoctorScreen = () => {
   const navigation = useNavigation();
 
   return (
-    <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss()}}>
+    <TouchableWithoutFeedback
+      onPress={() => {
+        Keyboard.dismiss();
+      }}
+    >
       <Box flex={1}>
         <Box flex={1} pl={5} pr={5} backgroundColor={activeColors.primary}>
           <Center>
@@ -148,21 +146,19 @@ const DoctorScreen = () => {
                             <Box mb={"1"}>
                               <Flex direction="row">
                                 <HStack space={32}>
-                                  <Text
-                                    fontSize={"14"}
-                                    fontWeight={"bold"}
-                                    color={activeColors.tint}
-                                  >
-                                    {item.userName}
-                                  </Text>
-                                  <Box>
+                                  <HStack>
                                     <Text
-                                      fontSize={12}
+                                      fontSize={"14"}
+                                      fontWeight={"bold"}
                                       color={activeColors.tint}
                                     >
-                                      {item.rating}
+                                      {item.userName}
                                     </Text>
-                                  </Box>
+                                  </HStack>
+                                  <HStack alignItems="center">
+                                    {item.rating.star}
+                                    {item.rating.text}
+                                  </HStack>
                                 </HStack>
                               </Flex>
                             </Box>
