@@ -168,7 +168,7 @@ const ContactScreen = () => {
             numberOfLines={5}
           />
         </Box>
-        <Box flexDirection="row" alignItems="center" mt={8} px={2}>
+        <Box flexDirection="row" alignItems="center" mt={7} px={2}>
           <Checkbox
             isChecked={agree}
             colorScheme="blue"
