@@ -58,7 +58,14 @@ const AppStack = () => {
                 <Stack.Screen
                     name="ContactUs"
                     component={ContactScreen}
-                    options={{ headerShown: false }}
+                    options={{ 
+                        headerShown: true,
+                        headerStyle: {
+                            backgroundColor: activeColors.primary,
+                        },
+                        headerTintColor: activeColors.tint,
+                        headerTitleAlign: "center",
+                        }}
                 />
 
                 <Stack.Screen

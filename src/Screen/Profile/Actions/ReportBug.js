@@ -22,4 +22,3 @@ const ReportScreen = () => {
 };
 
 export default ReportScreen;
-

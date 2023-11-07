@@ -23,7 +23,7 @@ const Messages = [
     id: "1",
     userName: "Jenny Doe",
     userImg: require("../../assets/Chat/Doctor-1.jpg"),
-    messageTime: "4 mins ago",
+    messageTime: "3:41",
     messageText:
       "Hey there, this is my test for a post of my social app in React Native.",
   },
@@ -31,7 +31,7 @@ const Messages = [
     id: "2",
     userName: "John Doe",
     userImg: require("../../assets/Chat/Doctor-3.png"),
-    messageTime: "2 hours ago",
+    messageTime: "0:48",
     messageText:
       "The doctor's reassuring words were a soothing balm, easing the patient's worries with each gentle explanation.",
   },
@@ -39,7 +39,7 @@ const Messages = [
     id: "3",
     userName: "Ken William",
     userImg: require("../../assets/Chat/Doctor-2.png"),
-    messageTime: "1 hours ago",
+    messageTime: "21:42",
     messageText:
       "As the doctor discussed treatment options, a sense of hope painted the patient's outlook with a newfound sense of possibilities.",
   },
@@ -47,7 +47,7 @@ const Messages = [
     id: "4",
     userName: "Selina Paul",
     userImg: require("../../assets/Chat/Doctor-5.jpg"),
-    messageTime: "1 day ago",
+    messageTime: "18:37",
     messageText:
       "Within the quiet confines of the clinic, the doctor's guidance flowed like a refreshing stream of knowledge, providing comfort to the patient..",
   },
@@ -55,7 +55,7 @@ const Messages = [
     id: "5",
     userName: "Christy Alex",
     userImg: require("../../assets/Chat/Doctor-4.jpg"),
-    messageTime: "2 days ago",
+    messageTime: "18:02",
     messageText:
       "Sitting in the doctor's office, the patient found solace in the expert's advice, as it lit a path toward better health and well-being.",
   },
@@ -111,7 +111,7 @@ const PesanScreen = () => {
                 >
                   <Box justifyContent={"space-between"}>
                     <Flex direction="row">
-                      <Box pt={4} pb={4}>
+                      <Box pt={4} pb={2}>
                         <Image
                           w={"60"}
                           h={"60"}
@@ -127,13 +127,13 @@ const PesanScreen = () => {
                         pl={0}
                         ml={"3"}
                         w={"300"}
-                        borderBottomWidth={"1"}
-                        borderBottomColor={"#cccccc"}
+                        // borderBottomWidth={"1"}
+                        // borderBottomColor={"#cccccc"}
                       >
                         <Flex direction="column">
                           <Box mb={"1"}>
                             <Flex direction="row">
-                              <HStack space={32}>
+                              <HStack space={40}>
                                 <Text
                                   fontSize={"14"}
                                   fontWeight={"bold"}
