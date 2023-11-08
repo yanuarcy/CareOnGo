@@ -19,7 +19,7 @@ import LocationScreen from "../Screen/Profile/Preferences/Location";
 import HistoryScreen from "../Screen/Profile/Content/History";
 import ReportScreen from "../Screen/Profile/Actions/ReportBug";
 import ContactScreen from "../Screen/Profile/Actions/ContactUs";
-
+import DoctorDetailsScreen from "../Screen/DoctorDetail";
 const Stack = createStackNavigator();
 
 
@@ -32,13 +32,24 @@ const AppStack = () => {
         <>
             <Stack.Navigator initialRouteName="Welcome">
             <Stack.Screen
-                    name="DoctorDetails"
-                    component={DoctorDetailsScreen}
-                    options={{ 
-                        headerShown: true,
-                        headerTitle: ""
-                    }}
-                />
+          name="DoctorDetails"
+          component={DoctorDetailsScreen}
+          options={({ route }) => ({
+            headerShown: true,
+            // headerTitle: "",
+            title: route.params.userName,
+          })}
+          initialParams={{
+            userName: "",
+            userImg: null,
+            // star: "",
+            text: "",
+            specialty: "",
+            patients: "",
+            exp: "",
+            reviews: "",
+          }}
+        />
 
                 <Stack.Screen
                     name="Location"

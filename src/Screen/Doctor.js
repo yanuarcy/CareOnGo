@@ -24,61 +24,82 @@ import {
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import Header from "../component/Header";
 
+
 const Data = [
   {
     id: "1",
     userName: "John Doe",
     userImg: require("../../assets/Chat/Doctor-3.png"),
-    rating: {
-      star: <FontAwesome name="star" color="orange" size={12} />,
-      text: <Text>4.5</Text>,
-    },
+    // rating: {
+    //   star: <FontAwesome name="star" color="orange" size={12} />,
+    //   text: <Text>4.5</Text>,
+    // },
+    star: <FontAwesome name="star" color="orange" size={12} />,
+    text: '4.5',
     specialty: "Cardiologist",
+    patients: "1.08K",
     exp: "10 years",
+    reviews: "200+",
   },
   {
     id: "2",
     userName: "Ken William",
     userImg: require("../../assets/Chat/Doctor-2.png"),
-    rating: {
-      star: <FontAwesome name="star" color="orange" size={12} />,
-      text: <Text>4.6</Text>,
-    },
+    // rating: {
+    //   star: <FontAwesome name="star" color="orange" size={12} />,
+    //   text: <Text>4.6</Text>,
+    // },
+    star: <FontAwesome name="star" color="orange" size={12} />,
+    text: '4.6',
     specialty: "Pediatrician",
+    patients: "1.08K",
     exp: "12 years",
+    reviews: "200+",
   },
   {
     id: "3",
     userName: "Sellina Paul",
     userImg: require("../../assets/Chat/Doctor-5.jpg"),
-    rating: {
-      star: <FontAwesome name="star" color="orange" size={12} />,
-      text: <Text>4.9</Text>,
-    },
+    // rating: {
+    //   star: <FontAwesome name="star" color="orange" size={12} />,
+    //   text: <Text>4.9</Text>,
+    // },
+    star: <FontAwesome name="star" color="orange" size={12} />,
+    text: '4.9',
     specialty: "Neurologist",
+    patients: "1.08K",
     exp: "8 years",
+    reviews: "200+",
   },
   {
     id: "4",
     userName: "Jenny Doe",
     userImg: require("../../assets/Chat/Doctor-1.jpg"),
-    rating: {
-      star: <FontAwesome name="star" color="orange" size={12} />,
-      text: <Text>5</Text>,
-    },
+    // rating: {
+    //   star: <FontAwesome name="star" color="orange" size={12} />,
+    //   text: <Text>5</Text>,
+    // },
+    star: <FontAwesome name="star" color="orange" size={12} />,
+    text: '5',
     specialty: "Gastroenterologist",
+    patients: "1.08K",
     exp: "14 years",
+    reviews: "200+",
   },
   {
     id: "5",
     userName: "Christy Alex",
     userImg: require("../../assets/Chat/Doctor-4.jpg"),
-    rating: {
-      star: <FontAwesome name="star" color="orange" size={12} />,
-      text: <Text>4.8</Text>,
-    },
+    // rating: {
+    //   star: <FontAwesome name="star" color="orange" size={12} />,
+    //   text: <Text>4.8</Text>,
+    // },
+    star: <FontAwesome name="star" color="orange" size={12} />,
+    text: '4.8',
     specialty: "Gynecologist",
+    patients: "1.08K",
     exp: "12 years",
+    reviews: "200+",
   },
 ];
 
@@ -156,8 +177,8 @@ const DoctorScreen = () => {
                                     </Text>
                                   </HStack>
                                   <HStack alignItems="center">
-                                    {item.rating.star}
-                                    {item.rating.text}
+                                    {item.star}
+                                    <Text>{item.text}</Text> 
                                   </HStack>
                                 </HStack>
                               </Flex>
@@ -171,13 +192,28 @@ const DoctorScreen = () => {
                             </Text>
                             <HStack space={16}>
                               <Text
-                                fontSize={"14"}   
+                                fontSize={"14"}
                                 mr={10}
                                 color={activeColors.tertiary}
                               >
                                 Exp: <Text fontWeight="bold">{item.exp}</Text>
                               </Text>
-                              <TouchableOpacity onPress={() => navigation.navigate('DoctorDetails')}>
+                              <TouchableOpacity
+                                onPress={() =>
+                                  navigation.navigate("DoctorDetails", {
+                                    doctorData: {
+                                      userName: item.userName,
+                                      userImg: item.userImg,
+                                      // star: item.star,
+                                      text: item.text,
+                                      specialty: item.specialty,
+                                      patients: item.patients,
+                                      exp: item.exp,
+                                      reviews: item.reviews,
+                                    },
+                                  })
+                                }
+                              >
                                 <Text color={"#FDB436"} fontWeight={600}>
                                   Detail
                                   <Icon
