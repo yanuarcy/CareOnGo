@@ -10,23 +10,51 @@ import {
 } from "native-base";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
+import { useRoute } from "@react-navigation/core";
 
 const DoctorDetailsScreen = () => {
   // Data dokter, gambar, nama, spesialisasi, dan rating
-  const doctorData = {
-    name: "Dr. John Doe",
-    userImg: require("../../assets/Chat/Doctor-3.png"),
-    speciality: "Cardiologist",
-    rating: {
-      star: <FontAwesome name="star" color="orange" size={12} />,
-      text: <Text>4.8</Text>,
+
+  const route = useRoute();
+  //   const initialName = route.params ? route.params.userName : "";
+  //   const initialUserImg = route.params ? route.params.userImg : null;
+  //   const initialStar = route.params ? route.params.star : "";
+  //   const initialText = route.params ? route.params.text : "";
+  //   const initialSpecialty = route.params ? route.params.speciality : "";
+  //   const initialPatients = route.params ? route.params.patients : "";
+  //   const initialExp = route.params ? route.params.exp : "";
+  //   const initialReviews = route.params ? route.params.reviews : "";
+
+  const initialData = route.params ? route.params.doctorData : null;
+
+  // Kemudian, Anda dapat mengakses data seperti ini:
+  const userName = initialData.userName;
+  const userImg = initialData.userImg;
+//   const star = initialData.star;
+  const text = initialData.text;
+  const specialty = initialData.specialty;
+  const patients = initialData.patients;
+  const exp = initialData.exp;
+  const reviews = initialData.reviews;
+
+  const doctorData = [
+    {
+      name: userName,
+      userImg: userImg,
+      speciality: specialty,
+      // rating: {
+      //   star: <FontAwesome name="star" color="orange" size={12} />,
+      //   text: <Text>4.8</Text>,
+      // },
+    //   star: star,
+      text: text,
+      patients: patients,
+      exp: exp,
+      reviews: reviews,
+      about:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam at est quis est porttitor aliquet auctor non quam. Aliquam erat volutpat. Proin fringilla tincidunt ligula. Sed sagittis luctus egestas.\n\n Donec ex magna, pharetra sed viverra quis, faucibus faucibus nulla. Nunc libero sem, posuere quis sem eu, placerat consequat lacus. Fusce eu neque eu ligula consequat bibendum a vitae felis. Donec facilisis accumsan nisi, ac pellentesque felis fermentum pellentesque.Vestibulum consectetur metus vitae dictum facilisis. Proin eleifend maximus diam at sollicitudin. Maecenas iaculis mollis efficitur. Proin tristique tortor nec purus vehicula ultrices.",
     },
-    patients: "1.08K",
-    exp: "10 years",
-    reviews: "200+",
-    about:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam at est quis est porttitor aliquet auctor non quam. Aliquam erat volutpat. Proin fringilla tincidunt ligula. Sed sagittis luctus egestas.\n\n Donec ex magna, pharetra sed viverra quis, faucibus faucibus nulla. Nunc libero sem, posuere quis sem eu, placerat consequat lacus. Fusce eu neque eu ligula consequat bibendum a vitae felis. Donec facilisis accumsan nisi, ac pellentesque felis fermentum pellentesque.Vestibulum consectetur metus vitae dictum facilisis. Proin eleifend maximus diam at sollicitudin. Maecenas iaculis mollis efficitur. Proin tristique tortor nec purus vehicula ultrices.",
-  };
+  ];
 
   return (
     <ScrollView>
@@ -34,24 +62,32 @@ const DoctorDetailsScreen = () => {
         <Box bg="white" p={2} mb={2}>
           <Box flexDirection="row" alignItems="center">
             <Image
-              source={doctorData.userImg} // Ganti dengan URL gambar profil dokter
+              source={doctorData[0].userImg} // Ganti dengan URL gambar profil dokter
               alt="Doctor Profile"
               size="100"
               borderRadius="50px"
             />
             <Box ml={4}>
-              <Text fontSize={20}>{doctorData.name}</Text>
+              <Text fontSize={20}>{doctorData[0].name}</Text>
               <Text fontSize={16} color={"gray.600"}>
-                {doctorData.speciality}
+                {doctorData[0].speciality}
               </Text>
               <Text fontSize={12} color={"gray.600"}>
-                Rating: {doctorData.rating.star}
-                {doctorData.rating.text}
+                Rating:
+                <FontAwesome name="star" color="orange" size={12} /> <Text>{doctorData[0].text}</Text> 
+                {/* {console.log(doctorData[0].text)}
+                {console.log(initialName)}
+                {console.log(initialSpecialty)} */}
               </Text>
             </Box>
             <Box ml={"auto"}>
-              <TouchableOpacity>
-                <Icon as={Ionicons} name="chatbox-ellipses-sharp" size={9} color={'green.500'} />
+              <TouchableOpacity onPress={() => {}}>
+                <Icon
+                  as={Ionicons}
+                  name="chatbox-ellipses-sharp"
+                  size={9}
+                  color={"green.500"}
+                />
               </TouchableOpacity>
             </Box>
           </Box>
@@ -59,18 +95,18 @@ const DoctorDetailsScreen = () => {
 
         <Box bg="white" p={2} mb={2}>
           <Text fontWeight={"bold"}>About Doctor</Text>
-          <Text>{doctorData.about}</Text>
+          <Text>{doctorData[0].about}</Text>
         </Box>
 
         <Box bg="white" p={2}>
           <Text>
-            Patients: <Text fontWeight={"bold"}>{doctorData.patients}</Text>
+            Patients: <Text fontWeight={"bold"}>{doctorData[0].patients}</Text>
           </Text>
           <Text>
-            Experience: <Text fontWeight={"bold"}>{doctorData.exp}</Text>
+            Experience: <Text fontWeight={"bold"}>{doctorData[0].exp}</Text>
           </Text>
           <Text>
-            Reviews: <Text fontWeight={"bold"}>{doctorData.reviews}</Text>
+            Reviews: <Text fontWeight={"bold"}>{doctorData[0].reviews}</Text>
           </Text>
         </Box>
 

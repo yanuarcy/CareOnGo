@@ -31,10 +31,13 @@ const AppStack = () => {
     return (
         <>
             <Stack.Navigator initialRouteName="Welcome">
-                <Stack.Screen
-                    name="Language"
-                    component={LanguageScreen}
-                    options={{ headerShown: false }}
+            <Stack.Screen
+                    name="DoctorDetails"
+                    component={DoctorDetailsScreen}
+                    options={{ 
+                        headerShown: true,
+                        headerTitle: ""
+                    }}
                 />
 
                 <Stack.Screen
