@@ -171,13 +171,13 @@ const DoctorScreen = () => {
                             </Text>
                             <HStack space={16}>
                               <Text
-                                fontSize={"14"}
+                                fontSize={"14"}   
                                 mr={10}
                                 color={activeColors.tertiary}
                               >
                                 Exp: <Text fontWeight="bold">{item.exp}</Text>
                               </Text>
-                              <TouchableOpacity>
+                              <TouchableOpacity onPress={() => navigation.navigate('DoctorDetails')}>
                                 <Text color={"#FDB436"} fontWeight={600}>
                                   Detail
                                   <Icon
