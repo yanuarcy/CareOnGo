@@ -21,7 +21,7 @@ const ReportScreen = () => {
 
   const navigation = useNavigation();
 
-  const [value, setValue] = React.useState("one");
+  const [value, setValue] = useState("one");
   const [email, setEmail] = useState("");
   const [feedbackType, setFeedbackType] = useState("bug");
   const [message, setMessage] = useState("");
