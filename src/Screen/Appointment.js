@@ -88,24 +88,10 @@ const AppointmentScreen = () => {
   const navigation = useNavigation();
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-    >
+    <ScrollView>
       <Box flex={1}>
         <Box flex={1} pl={5} pr={5} backgroundColor={activeColors.primary}>
           <Center>
-            <Box mt={40}>
-            <Text
-                  color={activeColors.tint}
-                  fontWeight={900}
-                  fontSize={20}
-                  alignSelf="flex-start"
-                >
-                  My Appointment
-                </Text>
-            </Box>
             <Box mt={4}>
               <FlatList
                 data={Data}
@@ -181,7 +167,7 @@ const AppointmentScreen = () => {
         </Box>
         {/* </ScrollView> */}
       </Box>
-    </TouchableWithoutFeedback>
+    </ScrollView>
   );
 };
 

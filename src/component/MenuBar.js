@@ -136,7 +136,8 @@ const MenuBar = () => {
           name="Appointment"
           component={AppointmentScreen}
           options={({ navigation }) => ({
-            headerShown: false,
+            headerShown: true,
+            headerTitle: "My Appointment",
             tabBarLabel: "",
             tabBarVisible: false,
             tabBarIcon: ({ color, size, focused }) => (
