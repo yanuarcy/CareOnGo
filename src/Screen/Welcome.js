@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dimensions, SafeAreaView, TouchableOpacity } from "react-native";
-// import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Box, Text, Center, HStack, Image } from "native-base";
 import { useNavigation } from "@react-navigation/native";
 
@@ -31,19 +31,17 @@ const WelcomeScreen = () => {
       <Image
         source={require("../../assets/images/welcome-img.png")}
         alt="Welcome Image"
-        // size={64}
         mt={12}
-        m={10}
+        m={12}
         resizeMode="contain"
 				style={{ width: windowDimensions.width * 0.8, height: windowDimensions.height * 0.4 }}
       />
       <Center>
         <Text
+          fontSize={"50"}
+          color="#0082f7"
 					fontWeight="500"
           textAlign="center"
-          fontSize={48}
-          color="#0082f7"
-          mx={4}
         >
           how's your health today?
         </Text>
@@ -62,7 +60,7 @@ const WelcomeScreen = () => {
         space={6}
         alignItems="center"
         justifyContent="center"
-        mt={4}
+        mt={12}
         m={10}
       >
         <TouchableOpacity
