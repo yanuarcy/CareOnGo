@@ -21,7 +21,7 @@ import ReportScreen from "../Screen/Profile/Actions/ReportBug";
 import ContactScreen from "../Screen/Profile/Actions/ContactUs";
 import DoctorDetailsScreen from "../Screen/DoctorDetail";
 import BookAppointmentScreen from "../Screen/BookAppointment";
-
+import AppointmentBookedScreen from "../Screen/AppointmentBooked";
 
 const Stack = createStackNavigator();
 
@@ -65,6 +65,16 @@ const AppStack = () => {
             userImg: null,
             text: "",
             specialty: "",
+          }}
+        />
+
+        <Stack.Screen
+          name="BookedAppointment"
+          component={AppointmentBookedScreen}
+          options={{
+            headerShown: true,
+            headerTitle: "Appointment Booked",
+            headerTitleAlign: "center",
           }}
         />
 

@@ -19,7 +19,8 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/core";
+import { useRoute } from "@react-navigation/core";
+import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
@@ -238,7 +239,7 @@ const BookAppointmentScreen = () => {
 						borderRadius: 8
 					 }}
           onPress={() => {
-            // Handle the appointment confirmation logic here
+            navigation.replace("BookedAppointment")
           }}
         >
 				<Text py={3} textAlign={'center'} color={'white'}>
