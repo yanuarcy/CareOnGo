@@ -10,11 +10,12 @@ import {
 } from "native-base";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
-import { useRoute } from "@react-navigation/core";
+import { useNavigation, useRoute } from "@react-navigation/core";
 
 const DoctorDetailsScreen = () => {
   // Data dokter, gambar, nama, spesialisasi, dan rating
 
+  const navigation = useNavigation();
   const route = useRoute();
   //   const initialName = route.params ? route.params.userName : "";
   //   const initialUserImg = route.params ? route.params.userImg : null;
@@ -30,7 +31,6 @@ const DoctorDetailsScreen = () => {
   // Kemudian, Anda dapat mengakses data seperti ini:
   const userName = initialData.userName;
   const userImg = initialData.userImg;
-//   const star = initialData.star;
   const text = initialData.text;
   const specialty = initialData.specialty;
   const patients = initialData.patients;
@@ -42,11 +42,6 @@ const DoctorDetailsScreen = () => {
       name: userName,
       userImg: userImg,
       speciality: specialty,
-      // rating: {
-      //   star: <FontAwesome name="star" color="orange" size={12} />,
-      //   text: <Text>4.8</Text>,
-      // },
-    //   star: star,
       text: text,
       patients: patients,
       exp: exp,
@@ -74,10 +69,8 @@ const DoctorDetailsScreen = () => {
               </Text>
               <Text fontSize={12} color={"gray.600"}>
                 Rating:
-                <FontAwesome name="star" color="orange" size={12} /> <Text>{doctorData[0].text}</Text> 
-                {/* {console.log(doctorData[0].text)}
-                {console.log(initialName)}
-                {console.log(initialSpecialty)} */}
+                <FontAwesome name="star" color="orange" size={12} />{" "}
+                <Text>{doctorData[0].text}</Text>
               </Text>
             </Box>
             <Box ml={"auto"}>
@@ -124,6 +117,14 @@ const DoctorDetailsScreen = () => {
           </Text>
           <Center>
             <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("BookAppointment", {
+                  userName: userName,
+                  userImg: userImg,
+                  specialty: specialty,
+                  text: text,
+                })
+              }
               style={{
                 width: "85%",
                 backgroundColor: "#0082f7",
