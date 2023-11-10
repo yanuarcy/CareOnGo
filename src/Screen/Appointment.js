@@ -10,20 +10,19 @@ import {
   Image,
   HStack,
   Icon,
-  InputGroup,
-  Input,
 } from "native-base";
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
 import { useNavigation } from "@react-navigation/native";
-import {
-  Keyboard,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import Header from "../component/Header";
-
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuProvider,
+  MenuTrigger,
+} from "react-native-popup-menu";
 
 const Data = [
   {
@@ -56,26 +55,6 @@ const Data = [
     reviews: "200+",
     date: "13 Jan 2020 - 15:00 pm",
   },
-  {
-    id: "4",
-    userName: "Jenny Doe",
-    userImg: require("../../assets/Chat/Doctor-1.jpg"),
-    specialty: "Gastroenterologist",
-    patients: "1.08K",
-    exp: "14 years",
-    reviews: "200+",
-    date: "14 Jan 2020 - 17:00 pm",
-  },
-  {
-    id: "5",
-    userName: "Christy Alex",
-    userImg: require("../../assets/Chat/Doctor-4.jpg"),
-    specialty: "Gynecologist",
-    patients: "1.08K",
-    exp: "12 years",
-    reviews: "200+",
-    date: "15 Jan 2020 - 14:00 pm",
-  },
 ];
 
 const AppointmentScreen = () => {
@@ -83,14 +62,19 @@ const AppointmentScreen = () => {
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
-  const [pencarian, setPencarian] = useState("");
-
   const navigation = useNavigation();
 
   return (
-    <ScrollView>
+    <MenuProvider
+      style={{
+        flex: 1,
+        backgroundColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Box flex={1}>
-        <Box flex={1} pl={5} pr={5} backgroundColor={activeColors.primary}>
+        <Box flex={1} backgroundColor={activeColors.primary}>
           <Center>
             <Box mt={4}>
               <FlatList
@@ -98,66 +82,82 @@ const AppointmentScreen = () => {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                   <TouchableOpacity style={{ width: "100%" }}>
-                    <Box justifyContent={"space-between"}>
-                      <Flex direction="row">
-                        <Box pt={4} pb={4}>
-                          <Image
-                            w={"60"}
-                            h={"60"}
-                            rounded={"35"}
-                            source={item.userImg}
-                            alt="ProfileUserChat"
-                          />
-                        </Box>
+                    <Box
+                      justifyContent="space-between"
+                      backgroundColor="white"
+                      p={3}
+                      mb={3}
+                      flexDirection="row" // Mengatur tata letak elemen secara horizontal
+                      alignItems="center" // Menyamakan ketinggian elemen
+                    >
+                      <Box pt={4} pb={4}>
+                        <Image
+                          w={"70"}
+                          h={"70"}
+                          rounded={"35"}
+                          source={item.userImg}
+                          alt="ProfileUserChat"
+                        />
+                      </Box>
 
-                        <Box
-                          justifyContent={"center"}
-                          p={"15"}
-                          pl={0}
-                          ml={"3"}
-                          w={"300"}
-                          borderBottomWidth={"1"}
-                          borderBottomColor={"#cccccc"}
-                        >
-                          <Flex direction="column">
-                            <Box mb={"1"}>
-                              <Flex direction="row">
-                                <HStack space={32}>
-                                  <HStack>
-                                    <Text
-                                      fontSize={"14"}
-                                      fontWeight={"bold"}
-                                      color={activeColors.tint}
-                                    >
-                                      {item.userName}
-                                    </Text>
-                                  </HStack>
-                                  <HStack alignItems="center">
-                                    {item.star}
-                                    <Text>{item.text}</Text> 
-                                  </HStack>
-                                </HStack>
-                              </Flex>
-                            </Box>
+                      <Box
+                        justifyContent={"center"}
+                        p={"15"}
+                        pl={0}
+                        ml={"3"}
+                        w={"300"}
+                      >
+                        <Flex direction="column">
+                          <Box mb={"1"}>
+                            <Flex
+                              direction="row"
+                              justifyContent="space-between"
+                            >
+                              <Box>
+                                <Text
+                                  fontSize={"14"}
+                                  fontWeight={"bold"}
+                                  color={activeColors.tint}
+                                >
+                                  {item.userName}
+                                </Text>
+                              </Box>
+                              <Box mr={8}>
+                                <Menu>
+                                  <MenuTrigger>
+                                    <Icon
+                                      as={Ionicons}
+                                      name="ellipsis-vertical-outline"
+                                      size={6}
+                                      color={activeColors.tertiary}
+                                    />
+                                  </MenuTrigger>
+                                  <MenuOptions>
+                                    <MenuOption text="Cancel" />
+                                    <MenuOption text="Reschedule" />
+                                  </MenuOptions>
+                                </Menu>
+                              </Box>
+                            </Flex>
+                          </Box>
+                          <Text
+                            fontSize={"14"}
+                            mr={10}
+                            color={activeColors.tertiary}
+                          >
+                            {item.specialty}
+                          </Text>
+                          <HStack space={16}>
                             <Text
                               fontSize={"14"}
                               mr={10}
                               color={activeColors.tertiary}
                             >
-                              {item.specialty}
+                              <Text fontWeight="bold">{item.date}</Text>
                             </Text>
-                            <HStack space={16}>
-                              <Text
-                                fontSize={"14"}
-                                mr={10}
-                                color={activeColors.tertiary}
-                              >
-                               <Text fontWeight="bold">{item.date}</Text>
-                              </Text>
-                            </HStack>
-                          </Flex>
-                        </Box>
-                      </Flex>
+                          </HStack>
+                        </Flex>
+                      </Box>
                     </Box>
                   </TouchableOpacity>
                 )}
@@ -165,9 +165,8 @@ const AppointmentScreen = () => {
             </Box>
           </Center>
         </Box>
-        {/* </ScrollView> */}
       </Box>
-    </ScrollView>
+    </MenuProvider>
   );
 };
 
