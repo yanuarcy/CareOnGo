@@ -74,4 +74,19 @@ Install linear-gradient
 npx expo install expo-linear-gradient
 ```
 
+Install moment
+```
+npx expo install moment
+```
+
+Install Swiper
+```
+npx expo install react-native-swiper
+```
+
+Install Menu Popup
+```
+npx expo install react-native-popup-menu
+```
+
 
