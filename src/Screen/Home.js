@@ -20,6 +20,9 @@ import JadwaL from "../component/JadwalPemeriksaan";
 import Header from "../component/Header";
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
+import { useNavigation } from "@react-navigation/native";
+import DataArticles from "../../DataArticle";
+import DataObats from "../../DataObat";
 // import { ThemeContext } from "../component/themeContext";
 
 const Home = () => {
@@ -27,6 +30,11 @@ const Home = () => {
   const { theme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
+  const navigation = useNavigation();
+  const DataArticle = DataArticles;
+  const DataObat = DataObats;
+
+  const [dataView, setDataView] = useState(DataArticle);
   const [pencarian, setPencarian] = useState("");
   const [kategori, setKategori] = useState([
     { namaKategori: "Artikel" },
@@ -37,23 +45,20 @@ const Home = () => {
     { namaKategori: "Rumah Sakit" },
   ]);
 
-  const [artikel, setArtikel] = useState([
-    {
-      judul: "Resep Rahasia Agar Tetap Sehat",
-      deskripsi: "inilah resep rahasia agar anda tetap sehat di umur 60an",
-      image: require("../image/2.jpg"),
-    },
-    {
-      judul: "Resep Rahasia Agar Tetap Sehat",
-      deskripsi: "inilah resep rahasia agar anda tetap sehat di umur 60an",
-      image: require("../image/2.jpg"),
-    },
-    {
-      judul: "Resep Rahasia Agar Tetap Sehat",
-      deskripsi: "inilah resep rahasia agar anda tetap sehat di umur 60an",
-      image: require("../image/2.jpg"),
-    },
-  ]);
+  const kategoriHandler = (props) => {
+    if (props === "Cari Dokter") {
+      navigation.navigate("Doctor");
+    } 
+    else if (props === "Konsultasi") {
+      navigation.navigate("Message");
+    } 
+    else if (props === "Artikel") {
+      setDataView(DataArticle);
+    } 
+    else if (props === "Obat") {
+      setDataView(DataObat);
+    }
+  };
 
   return (
     <SafeAreaView flex={1}>
@@ -82,10 +87,7 @@ const Home = () => {
                 flex: 1,
               }}
             >
-              <Text
-              color={"#FDB436"}
-              fontWeight={"bold"}
-              >
+              <Text color={"#FDB436"} fontWeight={"bold"}>
                 Lihat Semua
               </Text>
             </TouchableOpacity>
@@ -109,6 +111,7 @@ const Home = () => {
                   marginBottom: 10,
                   marginTop: 10,
                 }}
+                onPress={() => kategoriHandler(item.namaKategori)}
               >
                 <Text>{item.namaKategori}</Text>
               </TouchableOpacity>
@@ -118,7 +121,7 @@ const Home = () => {
 
         <Box>
           <FlatList
-            data={artikel}
+            data={dataView}
             mb={5}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -133,13 +136,15 @@ const Home = () => {
                   marginTop: 10,
                   paddingBottom: 20,
                 }}
+                onPress={() =>
+                  navigation.navigate("ArticleDetails", {
+                    image: item.image,
+                    title: item.judul,
+                    content: item.content,
+                  })
+                }
               >
-                <Box
-                  h={200}
-                  mb={3}
-                  roundedTopRight={10}
-                  roundedTopLeft={10}
-                >
+                <Box h={200} mb={3} roundedTopRight={10} roundedTopLeft={10}>
                   <ImageBackground
                     source={item.image}
                     style={{
@@ -154,32 +159,48 @@ const Home = () => {
                   />
                 </Box>
 
-                <Box>
-                  <Image
-                    source={item.image}
-                    w={10}
-                    h={10}
-                    rounded={20}
-                    borderColor={"white"}
-                    borderWidth={2}
-                    ml={2.5}
-                    mt={1.5}
-                    alt="Dokter"
-                  />
-                  <Text
-                    fontWeight={"bold"}
-                    fontSize={18}
-                    mx={2.5}
-                    mt={1.5}
-                  >
-                    {item.judul}
-                  </Text>
-                  <Text
-                  mx={2.5}
-                  >
-                    {item.deskripsi}
-                  </Text>
+                <Box flexDirection={"row"}>
+                  <Box>
+                    <Image
+                      source={item.image}
+                      w={10}
+                      h={10}
+                      rounded={20}
+                      borderColor={"white"}
+                      borderWidth={2}
+                      ml={2.5}
+                      mt={1.5}
+                      alt="Dokter"
+                    />
+                  </Box>
+                  <Box>
+                    <Text mt={4} ml={2}>
+                      {item.rilis}
+                    </Text>
+                  </Box>
                 </Box>
+                <Text
+                  fontWeight={"bold"}
+                  fontSize={18}
+                  mx={2.5}
+                  numberOfLines={2}
+                  mt={1.5}
+                >
+                  {item.judul.split(" ").map((word, index, array) => (
+                    <React.Fragment key={index}>
+                      {word} {index === array.length - 1 ? null : " "}
+                      {index !== 0 && (index + 1) % 5 === 0 ? "\n" : null}
+                    </React.Fragment>
+                  ))}
+                </Text>
+                <Text mx={2.5} numberOfLines={2}>
+                  {item.deskripsi.split(" ").map((word, index, array) => (
+                    <React.Fragment key={index}>
+                      {word} {index === array.length - 1 ? null : " "}
+                      {index !== 0 && (index + 1) % 5 === 0 ? "\n" : null}
+                    </React.Fragment>
+                  ))}
+                </Text>
               </TouchableOpacity>
             )}
           />

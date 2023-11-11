@@ -4,14 +4,18 @@ import { Box, Text, Image, Flex } from "native-base";
 import Icon from "react-native-vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "./theme";
+import { useNavigation } from "@react-navigation/native";
 
 const JadwaL = () => {
+
+  const navigation = useNavigation();
+
   return (
     <Box>
       <Box mt={5}>
         <Flex direction="row">
           <Text color={"#0082F7"} fontWeight={"bold"}>
-            Jadwal Pemeriksaan
+            Appointment
           </Text>
           <TouchableOpacity
             style={{
@@ -34,7 +38,7 @@ const JadwaL = () => {
             style={{ borderRadius: 10 }}
             colors={["#018BF7", "#00BAF7"]}
           >
-            <TouchableOpacity style={{ padding: 20, borderRadius: 10 }}>
+            <TouchableOpacity style={{ padding: 20, borderRadius: 10 }} onPress={() => navigation.navigate('Appointment') }>
               <Box style={{ flexDirection: "row" }}>
                 <Image
                   source={require("../image/2.jpg")}
@@ -46,7 +50,7 @@ const JadwaL = () => {
                 />
                 <Box flex={1} ml={3} justifyContent={"center"}>
                   <Text color={"#FFFFFF"} fontWeight={"bold"}>
-                    Dr. Yanuar Cahyo
+                    Dr. Yanu Renandra
                   </Text>
                   <Text color={"#f4f4f4"}>Dokter Umum</Text>
                 </Box>
@@ -58,7 +62,7 @@ const JadwaL = () => {
                     <Icon name="time" size={25} color="#FFFFFF" />
                     <Box justifyContent={"center"} alignItems={"center"}>
                       <Text color={"#FFFFFF"} ml={2.5}>
-                        6 April 2022
+                        16 Nov 2023
                       </Text>
                     </Box>
                   </Flex>
@@ -73,7 +77,7 @@ const JadwaL = () => {
                       <Text
                       color={"#FFFFFF"}
                       ml={2.5}>
-                        Klinik Medika
+                        Maya Clinic Scottsdale AZ
                       </Text>
                     </Box>
                   </Flex>

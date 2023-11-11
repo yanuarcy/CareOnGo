@@ -23,6 +23,7 @@ import DoctorDetailsScreen from "../Screen/DoctorDetail";
 import BookAppointmentScreen from "../Screen/BookAppointment";
 import AppointmentBookedScreen from "../Screen/AppointmentBooked";
 import AppointmentDetailsScreen from "../Screen/AppointmentDetails";
+import ArticleDetails from "../Screen/ArtikelDetails";
 
 const Stack = createStackNavigator();
 
@@ -90,8 +91,30 @@ const AppStack = () => {
         />
 
         <Stack.Screen
+          name="ArticleDetails"
+          component={ArticleDetails}
+          options={({ route }) => ({
+            title: route.params.title,
+            headerShown: true,
+            headerTitle: "Article Details", // Menggunakan judul dari parameter rute
+            headerTitleAlign: "center",
+          })}
+					initialParams={{
+            image: null,
+            title: "",
+            content: "",
+          }}
+        />
+
+        <Stack.Screen
           name="Location"
           component={LocationScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="Language"
+          component={LanguageScreen}
           options={{ headerShown: false }}
         />
 
