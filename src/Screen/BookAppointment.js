@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   Text,
   Box,
@@ -21,12 +21,17 @@ import {
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/core";
 import { useNavigation } from "@react-navigation/native";
+import { ThemeContext } from "../component/themeContext";
+import colors from "../component/theme";
 
 const { width } = Dimensions.get("window");
 
 const BookAppointmentScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
+
+	const { theme, updateTheme } = useContext(ThemeContext);
+  let activeColors = colors[theme.mode];
 
   const initialName = route.params ? route.params.userName : "";
   const initialUserImg = route.params ? route.params.userImg : null;
@@ -62,8 +67,8 @@ const BookAppointmentScreen = () => {
   }, [week]);
 
   return (
-    <ScrollView>
-      <Box bg="white" p={4} mb={2} mt={3}>
+    <ScrollView backgroundColor={activeColors.primary}>
+      <Box bg={activeColors.secondary} p={4} mb={2} mt={3}>
         <Box flexDirection="row" alignItems="center">
           <Image
             source={initialUserImg} // Ganti dengan URL gambar profil dokter
@@ -72,11 +77,11 @@ const BookAppointmentScreen = () => {
             borderRadius="50px"
           />
           <Box ml={4}>
-            <Text fontSize={20}>{initialName}</Text>
-            <Text fontSize={16} color={"gray.600"}>
+            <Text fontSize={20} color={activeColors.tint}>{initialName}</Text>
+            <Text fontSize={16} color={activeColors.tertiary}>
               {initialSpecialty}
             </Text>
-            <Text fontSize={12} color={"gray.600"}>
+            <Text fontSize={12} color={activeColors.tertiary}>
               Rating:
               <FontAwesome name="star" color="orange" size={12} />{" "}
               <Text>{initialText}</Text>
@@ -85,11 +90,11 @@ const BookAppointmentScreen = () => {
         </Box>
       </Box>
 
-      <Box bg="white" p="2" my="4" borderRadius="md" shadow={2}>
-        <Text fontSize="16" p={2} color="black" fontWeight={800}>
+      <Box bg={activeColors.secondary} p="2" my="4" borderRadius="md" shadow={2}>
+        <Text fontSize="16" p={2} color={activeColors.tint} fontWeight={800}>
           Select Date
         </Text>
-        <Text fontSize="16" textAlign={"center"}>
+        <Text fontSize="16" color={activeColors.tint} textAlign={"center"}>
           {value.toDateString()}
         </Text>
 
@@ -151,7 +156,7 @@ const BookAppointmentScreen = () => {
                           <Text
                             fontSize={13}
                             fontWeight={500}
-                            color={isActive ? "#fff" : "#737373"}
+                            color={isActive ? "#fff" : activeColors.tertiary}
                             mb={1}
                           >
                             {item.weekday}
@@ -159,7 +164,7 @@ const BookAppointmentScreen = () => {
                           <Text
                             fontSize={15}
                             fontWeight={600}
-                            color={isActive ? "#fff" : "#111"}
+                            color={isActive ? "#fff" : activeColors.tint}
                           >
                             {item.date.getDate()}
                           </Text>
@@ -174,8 +179,8 @@ const BookAppointmentScreen = () => {
         </Box>
       </Box>
 
-      <Box bg="white" p="2" my="2" borderRadius="md" shadow={2}>
-        <Text fontSize="16" p={2} color="black" fontWeight={800}>
+      <Box bg={activeColors.secondary} p="2" my="2" borderRadius="md" shadow={2}>
+        <Text fontSize="16" p={2} color={activeColors.tint} fontWeight={800}>
           Select Appointment Time
         </Text>
         <Center>
@@ -204,7 +209,7 @@ const BookAppointmentScreen = () => {
                     my={4}
                     mx={1}
                     rounded={12}
-                    bg={isActive ? "#0082f7" : "gray.200"}
+                    bg={isActive ? "#0082f7" : activeColors.tertiary}
                   >
                     <Text fontWeight={500} color={isActive ? "white" : "black"}>
                       {formattedTime}
@@ -217,8 +222,8 @@ const BookAppointmentScreen = () => {
         </Center>
       </Box>
 
-      <Box bg="white" p="4" my="4" borderRadius="md" shadow={2}>
-        <Text fontSize="16" fontWeight={800} color="black">
+      <Box bg={activeColors.secondary} p="4" my="4" borderRadius="md" shadow={2}>
+        <Text fontSize="16" fontWeight={800} color={activeColors.tint}>
           Appointment for
         </Text>
         <Input

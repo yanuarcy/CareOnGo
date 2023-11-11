@@ -39,6 +39,10 @@ const AppStack = () => {
           component={DoctorDetailsScreen}
           options={({ route }) => ({
             headerShown: true,
+						headerTintColor: activeColors.tint,
+						headerStyle: {
+							backgroundColor: activeColors.primary
+						},
             title: route.params.userName,
           })}
           initialParams={{
@@ -61,6 +65,10 @@ const AppStack = () => {
             headerShown: true,
             headerTitle: "Select Date & Time",
             headerTitleAlign: "center",
+						headerTintColor: activeColors.tint,
+						headerStyle: {
+							backgroundColor: activeColors.primary
+						}
           })}
           initialParams={{
             userName: "",
@@ -77,6 +85,10 @@ const AppStack = () => {
             headerShown: true,
             headerTitle: "Appointment Booked",
             headerTitleAlign: "center",
+						headerTintColor: activeColors.tint,
+						headerStyle: {
+							backgroundColor: activeColors.primary
+						}
           }}
         />
 
@@ -87,6 +99,10 @@ const AppStack = () => {
             headerShown: true,
             headerTitle: "Appointment Details",
             headerTitleAlign: "center",
+						headerTintColor: activeColors.tint,
+						headerStyle: {
+							backgroundColor: activeColors.primary
+						}
           }}
         />
 
@@ -98,6 +114,10 @@ const AppStack = () => {
             headerShown: true,
             headerTitle: "Article Details", // Menggunakan judul dari parameter rute
             headerTitleAlign: "center",
+						headerTintColor: activeColors.tint,
+						headerStyle: {
+							backgroundColor: activeColors.primary
+						}
           })}
 					initialParams={{
             image: null,

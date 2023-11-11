@@ -15,7 +15,6 @@ import colors from "../../../component/theme";
 import { useNavigation } from "@react-navigation/core";
 
 const ReportScreen = () => {
-
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
@@ -30,7 +29,8 @@ const ReportScreen = () => {
     if (!email || !message) {
       Alert.alert("Please fill in all the fields");
     } else {
-      const feedbackTypeText = feedbackType === "bug" ? "Bug Report" : "Feedback";
+      const feedbackTypeText =
+        feedbackType === "bug" ? "Bug Report" : "Feedback";
       Alert.alert(`Thank you for your ${feedbackTypeText}!`);
       navigation.goBack();
     }
@@ -127,19 +127,27 @@ const ReportScreen = () => {
             }}
           >
             <Radio value="one" my={1}>
-              Very Comfortable
+              <Text color={activeColors.tint}>Very Comfortable</Text>
             </Radio>
             <Radio value="two" my={1}>
-              Comfortable
+              <Text color={activeColors.tint}>
+                Comfortable
+              </Text>
             </Radio>
             <Radio value="three" my={1}>
-              Neutral
+              <Text color={activeColors.tint}>
+                Neutral
+              </Text>
             </Radio>
             <Radio value="four" my={1}>
-              Uncomfortable
+              <Text color={activeColors.tint}>
+                Uncomfortable
+              </Text>
             </Radio>
             <Radio value="five" my={1}>
-              Very Uncomfortable
+              <Text color={activeColors.tint}>
+                Very Uncomfortable
+              </Text>
             </Radio>
           </Radio.Group>
         </Box>
@@ -170,7 +178,9 @@ const ReportScreen = () => {
           onPress={submitFeedback}
           disabled={!email || !message}
         >
-          <Text py={2} px={24} color={"white"}>Submit</Text>
+          <Text py={2} px={24} color={"white"}>
+            Submit
+          </Text>
         </TouchableOpacity>
       </Box>
     </ScrollView>

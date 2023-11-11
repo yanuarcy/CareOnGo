@@ -178,7 +178,7 @@ const DoctorScreen = () => {
                                   </HStack>
                                   <HStack alignItems="center" space={1}>
                                     {item.star}
-                                    <Text>{item.text}</Text> 
+                                    <Text color={activeColors.tint}>{item.text}</Text> 
                                   </HStack>
                                 </HStack>
                               </Flex>

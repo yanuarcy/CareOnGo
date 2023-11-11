@@ -138,6 +138,10 @@ const MenuBar = () => {
           options={({ navigation }) => ({
             headerShown: true,
             headerTitle: "My Appointment",
+            headerTintColor: activeColors.tint,
+            headerStyle: {
+              backgroundColor: activeColors.primary
+            },
             tabBarLabel: "",
             tabBarVisible: false,
             tabBarIcon: ({ color, size, focused }) => (

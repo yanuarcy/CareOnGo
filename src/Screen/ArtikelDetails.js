@@ -1,20 +1,24 @@
-import React from "react";
-import { ScrollView } from "react-native";
-import { Box, Text, Image } from "native-base";
+import React, { useContext } from "react";
+// import { ScrollView } from "react-native";
+import { Box, Text, Image, ScrollView } from "native-base";
 import { useRoute } from "@react-navigation/core";
+import { ThemeContext } from "../component/themeContext";
+import colors from "../component/theme";
 
 const ArticleDetails = () => {
   //   const { title, content, image } = route.params;
 
 	const route = useRoute();
 
+	const { theme } = useContext(ThemeContext);
+  let activeColors = colors[theme.mode];
+
   const initialImage = route.params ? route.params.image : null;
   const initialTitle = route.params ? route.params.title : "";
   const initialContent = route.params ? route.params.content : "";
 
   return (
-    <ScrollView>
-      {/* Gambar Full */}
+    <ScrollView backgroundColor={activeColors.primary}>
       <Box>
         <Image
           source={initialImage}
@@ -24,17 +28,15 @@ const ArticleDetails = () => {
           width="100%"
         />
       </Box>
-
-      {/* Judul */}
+      
       <Box p={4} mb={-10}>
-        <Text fontSize="xl" fontWeight="bold">
+        <Text fontSize="xl" color={activeColors.tint} fontWeight="bold">
           {initialTitle}
         </Text>
       </Box>
-
-      {/* Konten */}
+      
       <Box p={4}>
-        <Text>{initialContent}</Text>
+        <Text color={activeColors.tint}>{initialContent}</Text>
       </Box>
     </ScrollView>
   );

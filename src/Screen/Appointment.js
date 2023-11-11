@@ -87,7 +87,7 @@ const AppointmentScreen = () => {
                   >
                     <Box
                       justifyContent="space-between"
-                      backgroundColor="white"
+                      backgroundColor= {activeColors.secondary}
                       p={3}
                       mb={3}
                       flexDirection="row" // Mengatur tata letak elemen secara horizontal

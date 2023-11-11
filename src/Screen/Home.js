@@ -129,7 +129,7 @@ const Home = () => {
               <TouchableOpacity
                 style={{
                   marginRight: 10,
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: activeColors.secondary,
                   borderRadius: 10,
                   elevation: 3,
                   marginBottom: 10,
@@ -174,7 +174,7 @@ const Home = () => {
                     />
                   </Box>
                   <Box>
-                    <Text mt={4} ml={2}>
+                    <Text mt={4} ml={2} color={activeColors.tertiary}>
                       {item.rilis}
                     </Text>
                   </Box>
@@ -182,6 +182,7 @@ const Home = () => {
                 <Text
                   fontWeight={"bold"}
                   fontSize={18}
+                  color={activeColors.tint}
                   mx={2.5}
                   numberOfLines={2}
                   mt={1.5}
@@ -193,7 +194,7 @@ const Home = () => {
                     </React.Fragment>
                   ))}
                 </Text>
-                <Text mx={2.5} numberOfLines={2}>
+                <Text mx={2.5} color={activeColors.tint} numberOfLines={2}>
                   {item.deskripsi.split(" ").map((word, index, array) => (
                     <React.Fragment key={index}>
                       {word} {index === array.length - 1 ? null : " "}
