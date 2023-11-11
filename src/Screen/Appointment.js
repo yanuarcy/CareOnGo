@@ -33,7 +33,7 @@ const Data = [
     patients: "1.08K",
     exp: "10 years",
     reviews: "200+",
-    date: "11 Jan 2020 - 13:00 pm",
+    date: "10 Nov 2023 - 01:00 pm",
   },
   {
     id: "2",
@@ -43,7 +43,7 @@ const Data = [
     patients: "1.08K",
     exp: "12 years",
     reviews: "200+",
-    date: "11 Jan 2020 - 15:00 pm",
+    date: "11 Nov 2023 - 03:00 pm",
   },
   {
     id: "3",
@@ -53,7 +53,7 @@ const Data = [
     patients: "1.08K",
     exp: "8 years",
     reviews: "200+",
-    date: "13 Jan 2020 - 15:00 pm",
+    date: "13 Nov 2023 - 03:00 pm",
   },
 ];
 
@@ -81,7 +81,10 @@ const AppointmentScreen = () => {
                 data={Data}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                  <TouchableOpacity style={{ width: "100%" }}>
+                  <TouchableOpacity
+                    style={{ width: "100%" }}
+                    onPress={() => navigation.navigate("AppointmentDetails")}
+                  >
                     <Box
                       justifyContent="space-between"
                       backgroundColor="white"

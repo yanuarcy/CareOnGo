@@ -74,7 +74,7 @@ const DoctorDetailsScreen = () => {
               </Text>
             </Box>
             <Box ml={"auto"}>
-              <TouchableOpacity onPress={() => {}}>
+              <TouchableOpacity onPress={() => navigation.navigate("Message")}>
                 <Icon
                   as={Ionicons}
                   name="chatbox-ellipses-sharp"

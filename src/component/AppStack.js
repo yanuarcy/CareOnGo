@@ -22,6 +22,7 @@ import ContactScreen from "../Screen/Profile/Actions/ContactUs";
 import DoctorDetailsScreen from "../Screen/DoctorDetail";
 import BookAppointmentScreen from "../Screen/BookAppointment";
 import AppointmentBookedScreen from "../Screen/AppointmentBooked";
+import AppointmentDetailsScreen from "../Screen/AppointmentDetails";
 
 const Stack = createStackNavigator();
 
@@ -74,6 +75,16 @@ const AppStack = () => {
           options={{
             headerShown: true,
             headerTitle: "Appointment Booked",
+            headerTitleAlign: "center",
+          }}
+        />
+
+        <Stack.Screen
+          name="AppointmentDetails"
+          component={AppointmentDetailsScreen}
+          options={{
+            headerShown: true,
+            headerTitle: "Appointment Details",
             headerTitleAlign: "center",
           }}
         />

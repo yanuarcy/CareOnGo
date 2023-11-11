@@ -167,7 +167,7 @@ const DoctorScreen = () => {
                             <Box mb={"1"}>
                               <Flex direction="row">
                                 <HStack space={32}>
-                                  <HStack>
+                                  <HStack space={2}>
                                     <Text
                                       fontSize={"14"}
                                       fontWeight={"bold"}
@@ -176,7 +176,7 @@ const DoctorScreen = () => {
                                       {item.userName}
                                     </Text>
                                   </HStack>
-                                  <HStack alignItems="center">
+                                  <HStack alignItems="center" space={1}>
                                     {item.star}
                                     <Text>{item.text}</Text> 
                                   </HStack>
