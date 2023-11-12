@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
   ScrollView,
@@ -68,6 +68,14 @@ const PesanScreen = () => {
 
   const navigation = useNavigation();
 
+  const [pencarian, setPencarian] = useState("");
+
+	const filterChatByName = (userName) => {
+    return Messages.filter((chat) =>
+      chat.userName.toLowerCase().includes(userName.toLowerCase())
+    );
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <Box flex={1}>
@@ -76,6 +84,8 @@ const PesanScreen = () => {
             <Box>
               <HStack alignItems="center" space={2} p={2} rounded="md">
                 <Input
+                  value={pencarian}
+                  onChangeText={(pencarian) => setPencarian(pencarian)}
                   placeholder="Search.."
                   color={activeColors.tint}
                   placeholderTextColor={activeColors.tint}
@@ -96,7 +106,7 @@ const PesanScreen = () => {
               </HStack>
             </Box>
             <FlatList
-              data={Messages}
+              data={filterChatByName(pencarian)}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <TouchableOpacity
