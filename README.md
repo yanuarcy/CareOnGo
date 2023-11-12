@@ -89,4 +89,9 @@ Install Menu Popup
 npx expo install react-native-popup-menu
 ```
 
+Install Async Storage
+```
+npx expo install react-native-async-storage/async-storage
+```
+
 
