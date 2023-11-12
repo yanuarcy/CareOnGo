@@ -24,7 +24,6 @@ import {
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import Header from "../component/Header";
 
-
 const Data = [
   {
     id: "1",
@@ -35,7 +34,7 @@ const Data = [
     //   text: <Text>4.5</Text>,
     // },
     star: <FontAwesome name="star" color="orange" size={12} />,
-    text: '4.5',
+    text: "4.5",
     specialty: "Cardiologist",
     patients: "1.08K",
     exp: "10 years",
@@ -50,7 +49,7 @@ const Data = [
     //   text: <Text>4.6</Text>,
     // },
     star: <FontAwesome name="star" color="orange" size={12} />,
-    text: '4.6',
+    text: "4.6",
     specialty: "Pediatrician",
     patients: "1.08K",
     exp: "12 years",
@@ -65,7 +64,7 @@ const Data = [
     //   text: <Text>4.9</Text>,
     // },
     star: <FontAwesome name="star" color="orange" size={12} />,
-    text: '4.9',
+    text: "4.9",
     specialty: "Neurologist",
     patients: "1.08K",
     exp: "8 years",
@@ -80,7 +79,7 @@ const Data = [
     //   text: <Text>5</Text>,
     // },
     star: <FontAwesome name="star" color="orange" size={12} />,
-    text: '5',
+    text: "5",
     specialty: "Gastroenterologist",
     patients: "1.08K",
     exp: "14 years",
@@ -95,7 +94,7 @@ const Data = [
     //   text: <Text>4.8</Text>,
     // },
     star: <FontAwesome name="star" color="orange" size={12} />,
-    text: '4.8',
+    text: "4.8",
     specialty: "Gynecologist",
     patients: "1.08K",
     exp: "12 years",
@@ -109,6 +108,12 @@ const DoctorScreen = () => {
   let activeColors = colors[theme.mode];
 
   const [pencarian, setPencarian] = useState("");
+
+	const filterDoctorsBySpecialty = (specialty) => {
+    return Data.filter((doctor) =>
+      doctor.specialty.toLowerCase().includes(specialty.toLowerCase())
+    );
+  };
 
   const navigation = useNavigation();
 
@@ -124,6 +129,8 @@ const DoctorScreen = () => {
             <Box mt={40}>
               <HStack alignItems="center" space={2} p={2} rounded="md">
                 <Input
+                  value={pencarian}
+									onChangeText={(pencarian) => setPencarian(pencarian)}
                   placeholder="Search Specialist"
                   color={activeColors.tint}
                   placeholderTextColor={activeColors.tint}
@@ -138,7 +145,7 @@ const DoctorScreen = () => {
             </Box>
             <Box mt={4}>
               <FlatList
-                data={Data}
+                data={filterDoctorsBySpecialty(pencarian)}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                   <TouchableOpacity style={{ width: "100%" }}>
@@ -178,7 +185,9 @@ const DoctorScreen = () => {
                                   </HStack>
                                   <HStack alignItems="center" space={1}>
                                     {item.star}
-                                    <Text color={activeColors.tint}>{item.text}</Text> 
+                                    <Text color={activeColors.tint}>
+                                      {item.text}
+                                    </Text>
                                   </HStack>
                                 </HStack>
                               </Flex>
