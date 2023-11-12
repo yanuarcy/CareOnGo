@@ -12,8 +12,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useRoute } from "@react-navigation/native";
-import { View } from "react-native";
-// import { GiftedChat } from 'react-native-gifted-chat'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const RoomChatScreen = () => {
   // const theme = { mode: "dark" };
@@ -49,6 +48,8 @@ const RoomChatScreen = () => {
   const initialMessageText = route.params ? route.params.messageText : "";
   const initialUserImg = route.params ? route.params.userImg : null;
 
+	const STORAGE_KEY = `chatHistory_${route.params.userName}`;
+
   const [messages, setMessages] = useState([
     {
       _id: 2,
@@ -77,6 +78,39 @@ const RoomChatScreen = () => {
       GiftedChat.append(previousMessages, messages)
     );
   }, []);
+
+
+	// Menggunakan useEffect untuk mendapatkan riwayat pesan saat komponen dimuat
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      try {
+        const storedChatHistory = await AsyncStorage.getItem(STORAGE_KEY);
+
+        if (storedChatHistory) {
+          setMessages(JSON.parse(storedChatHistory));
+        }
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+      }
+    };
+
+    fetchChatHistory();
+  }, []); // Eksekusi hanya saat komponen pertama kali dimuat
+
+  // Menggunakan useEffect untuk menyimpan riwayat pesan setiap kali pesan berubah
+  useEffect(() => {
+    const saveChatHistory = async () => {
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+      } catch (error) {
+        console.error('Error saving chat history:', error);
+      }
+    };
+
+    saveChatHistory();
+  }, [messages]);
+
+
 
   const scrollToBottomComponent = () => {
     return <FontAwesome name="angle-double-down" size={22} color={"#333"} />;
