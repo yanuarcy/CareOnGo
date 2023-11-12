@@ -15,6 +15,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Keyboard,
+  Alert,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
@@ -24,6 +25,18 @@ const ForgotPasswordScreen = ({ navigation }) => {
   const [windowDimensions, setWindowDimensions] = useState(
     Dimensions.get("window")
   );
+
+  const [email, setEmail] = useState("");
+
+  const handleForgotButton = (email) => {
+    if (email.trim() === "") {
+      Alert.alert("Error", "Mohon isi Email terlebih dahulu")
+    }
+    else {
+      Alert.alert("Success", "Silahkan mengecek Email untuk melihat password anda")
+      navigation.navigate("Login")
+    }
+  }
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -84,6 +97,8 @@ const ForgotPasswordScreen = ({ navigation }) => {
                           color="black"
                         />
                       }
+                      value={email}
+                      onChangeText={(email) => setEmail(email)}
                       placeholder="Email"
                       placeholderTextColor={"black"}
                       backgroundColor={"#E4F1FF"}
@@ -99,7 +114,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                         backgroundColor: "#0082f7",
                         borderRadius: 12,
                       }}
-                      onPress={() => navigation.navigate("Login")}
+                      onPress={() => handleForgotButton(email)}
                     >
                       <Text
                         textAlign="center"
