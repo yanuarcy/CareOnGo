@@ -15,6 +15,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   Keyboard,
+  Alert,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { ThemeContext } from "../../../component/themeContext";
@@ -28,10 +29,34 @@ const ResetPasswordScreen = ({ navigation }) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newPassword2, setNewPassword2] = useState("");
 
   const [windowDimensions, setWindowDimensions] = useState(
     Dimensions.get("window")
   );
+
+  const handleResetButton = (currentPassword, newPassword, newPassword2) => {
+    if (
+      currentPassword.trim() === "" ||
+      newPassword.trim() === "" ||
+      newPassword2.trim() === ""
+    ) {
+      Alert.alert(
+        "Error",
+        "Mohon isi semua kolom password."
+      );
+    } else if (newPassword !== newPassword2) {
+      Alert.alert(
+        "Error",
+        "Password baru dan konfirmasi password tidak cocok."
+      );
+    } else {
+      Alert.alert("Success", "Password anda telah berhasil di reset")
+      navigation.goBack();
+    }
+  }
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -94,8 +119,12 @@ const ResetPasswordScreen = ({ navigation }) => {
                           color="black"
                         />
                       }
+                      value={currentPassword}
+                      onChangeText={(currentPassword) =>
+                        setCurrentPassword(currentPassword)
+                      }
                       placeholder="Current Password"
-                      placeholderTextColor={"black"}
+                      placeholderTextColor={"gray.600"}
                       backgroundColor={"#E4F1FF"}
                       borderWidth={0}
                       rounded={6}
@@ -132,8 +161,12 @@ const ResetPasswordScreen = ({ navigation }) => {
                           />
                         </Pressable>
                       }
+                      value={newPassword}
+                      onChangeText={(newPassword) =>
+                        setNewPassword(newPassword)
+                      }
                       placeholder="New Password"
-                      placeholderTextColor={"black"}
+                      placeholderTextColor={"gray.600"}
                       backgroundColor={"#E4F1FF"}
                       borderWidth={0}
                       rounded={6}
@@ -155,14 +188,18 @@ const ResetPasswordScreen = ({ navigation }) => {
                           color="black"
                         />
                       }
-											InputRightElement={
+                      InputRightElement={
                         <Pressable
-                          onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                          onPress={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
                         >
                           <Icon
                             as={MaterialIcons}
                             name={
-                              showConfirmPassword ? "visibility" : "visibility-off"
+                              showConfirmPassword
+                                ? "visibility"
+                                : "visibility-off"
                             }
                             size={5}
                             mr="2"
@@ -170,8 +207,12 @@ const ResetPasswordScreen = ({ navigation }) => {
                           />
                         </Pressable>
                       }
+                      value={newPassword2}
+                      onChangeText={(newPassword2) =>
+                        setNewPassword2(newPassword2)
+                      }
                       placeholder="Confirm Password"
-                      placeholderTextColor={"black"}
+                      placeholderTextColor={"gray.600"}
                       backgroundColor={"#E4F1FF"}
                       borderWidth={0}
                       rounded={6}
@@ -187,7 +228,7 @@ const ResetPasswordScreen = ({ navigation }) => {
                         backgroundColor: "#0082f7",
                         borderRadius: 12,
                       }}
-                      onPress={() => navigation.goBack()}
+                      onPress={() => handleResetButton(currentPassword, newPassword, newPassword2)}
                     >
                       <Text
                         textAlign="center"
