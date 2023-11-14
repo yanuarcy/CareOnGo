@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -23,10 +24,71 @@ import { useState } from "react";
 const RegisterScreen = () => {
   const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(false);
+  const [Name, setName] = useState("");
+  const [Email, setEmail] = useState("");
+  const [Phone, setPhone] = useState("");
+  const [Password, setPassword] = useState("");
+  const [ConfirmPassword, setConfirmPassword] = useState("");
+
+  const nama = "Usertest";
+  const email = "Usertest@gmail.com";
+  const phone = "123456789";
+  const password = "Usertest";
+  const confirmpassword = "Usertest";
 
   const handleDismissKeyboard = () => {
     Keyboard.dismiss();
   };
+
+
+  const handleRegister = (Name, Email, Phone,Password,ConfirmPassword) => {
+    if (Name.trim() === "" || Email.trim() === ""|| Phone.trim() === "" || Password.trim() === "" || ConfirmPassword.trim() === "" ) {
+      Alert.alert(
+        "Error",
+        "Mohon isi semua kolom password."
+      )
+    } 
+    else if(Name !== "Usertest") {
+      Alert.alert(
+        "Error",
+        "Nama tidak cocok."
+      );
+    }
+    
+    else if(Email !== "Usertest@gmail.com") {
+      Alert.alert(
+        "Error",
+        "Email tidak cocok."
+      );
+    }
+    else if(Phone !== "123456789") {
+      Alert.alert(
+        "Error",
+        "Phone tidak cocok."
+      );
+    }
+    else if(Password !== "Usertest") {
+      Alert.alert(
+        "Error",
+        "Password tidak cocok."
+      );
+    }
+    else if(ConfirmPassword !== "Usertest") {
+      Alert.alert(
+        "Error",
+        "confirmPassword tidak cocok."
+      );
+    }
+
+    else if(Name === "Usertest" && Email === "Usertest@gmail.com" && Phone === "123456789" && Password === "Usertest" && ConfirmPassword === "Usertest") {
+      Alert.alert("Success", "Akun anda berhasil dibuat")
+      navigation.replace("Tabs");
+    }
+    
+    else {
+      
+    }
+  }
 
   return (
     <TouchableWithoutFeedback onPress={handleDismissKeyboard}>
@@ -64,11 +126,16 @@ const RegisterScreen = () => {
                     color="black"
                   />
                 }
+                value={Name}
+                onChangeText={(Name) => setName(Name)}
                 placeholder="Name"
                 placeholderTextColor={'black'}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}
                 rounded={6}
+                onPress={() =>
+                  setName(!Name)
+                }
               />
               <Input
                 w={{
@@ -84,11 +151,16 @@ const RegisterScreen = () => {
                     color="black"
                   />
                 }
+                value={Email}
+                onChangeText={(Email) => setEmail(Email)}
                 placeholder="Email"
                 placeholderTextColor={'black'}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}
                 rounded={6}
+                onPress={() =>
+                  setEmail(!Email)
+                }
               />
               <Input
                 w={{
@@ -104,11 +176,16 @@ const RegisterScreen = () => {
                     color="black"
                   />
                 }
+                value={Phone}
+                onChangeText={(Phone) => setPhone(Phone)}
                 placeholder="Phone"
                 placeholderTextColor={'black'}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}
                 rounded={6}
+                onPress={() =>
+                  setPhone(!Phone)
+                }
               />
               <Input
                 w={{
@@ -136,11 +213,16 @@ const RegisterScreen = () => {
                     />
                   </Pressable>
                 }
+                value={Password}
+                onChangeText={(Password) => setPassword(Password)}
                 placeholder="Password"
                 placeholderTextColor={'black'}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}
                 rounded={6}
+                onPress={() =>
+                  setPassword(!Password)
+                }
               />
               <Input
                 w={{
@@ -168,11 +250,16 @@ const RegisterScreen = () => {
                     />
                   </Pressable>
                 }
+                value={ConfirmPassword}
+                onChangeText={(ConfirmPassword) => setConfirmPassword(ConfirmPassword)}
                 placeholder="Confirm Password"
                 placeholderTextColor={'black'}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}
                 rounded={6}
+                onPress={() =>
+                  setConfirmPassword(!ConfirmPassword)
+                }
               />
             </Stack>
           </Spacer>
@@ -188,6 +275,7 @@ const RegisterScreen = () => {
             alignItems: "center",
             justifyContent: "center",
           }}
+          onPress={() => handleRegister(Name, Email, Phone,Password,ConfirmPassword)}
         >
           <Text
             color={"white"}
