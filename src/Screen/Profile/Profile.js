@@ -32,13 +32,13 @@ const SECTIONS = [
     header: "Preferences",
     icon: "settings",
     items: [
-      {
-        id: "Language",
-        icon: "globe",
-        color: "#fe9400",
-        label: "Language",
-        type: "link",
-      },
+      // {
+      //   id: "Language",
+      //   icon: "globe",
+      //   color: "#fe9400",
+      //   label: "Language",
+      //   type: "link",
+      // },
       {
         id: "darkMode",
         icon: "moon",
@@ -46,13 +46,13 @@ const SECTIONS = [
         label: "Dark Mode",
         type: "toogle",
       },
-      {
-        id: "wifi",
-        icon: "wifi",
-        color: "#007afe",
-        label: "Use Wi-Fi",
-        type: "toogle",
-      },
+      // {
+      //   id: "wifi",
+      //   icon: "wifi",
+      //   color: "#007afe",
+      //   label: "Use Wi-Fi",
+      //   type: "toogle",
+      // },
       {
         id: "Location",
         icon: "navigation",
@@ -155,10 +155,6 @@ const ProfileScreen = () => {
     
     if (id === "MyProfile") {
       navigation.navigate("MyProfile");
-    }
-    
-    else if (id === "Language") {
-      navigation.navigate("Language")
     }
 
     else if (id === "Location") {
