@@ -57,9 +57,6 @@ const LoginScreen = () => {
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const User = "User";
-  const Pass = "User123";
-
   // const handleSignIn = () => {
   //   signInWithEmailAndPassword(auth, emailOrUsername, password)
   //   .then((userCredential) => {
@@ -161,20 +158,7 @@ const LoginScreen = () => {
     Keyboard.dismiss();
   };
 
-  const handleLogin = (emailOrUsername, password) => {
-    // Periksa apakah email/username dan password sesuai
-    if (emailOrUsername.trim() === "" || password.trim() === "") {
-      Alert.alert("Error", "Mohon isi semua kolom password.");
-    } else if (emailOrUsername !== "User") {
-      Alert.alert("Error", "Email tidak cocok.");
-    } else if (password !== "User123") {
-      Alert.alert("Error", "Password tidak cocok.");
-    } else if (emailOrUsername === "User" && password === "User123") {
-      Alert.alert("Success", "Akun anda berhasil login");
-      navigation.replace("Tabs");
-    } else {
-    }
-  };
+  
   return (
     <TouchableWithoutFeedback onPress={handleDismissKeyboard}>
       <Box flex={1}>

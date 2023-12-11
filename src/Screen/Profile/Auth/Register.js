@@ -34,7 +34,6 @@ import {
   setDoc,
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import bcryptjs from 'bcryptjs';
 import bcrypt from 'bcryptjs';
 
 const DB = initializeApp(firebaseConfig);
@@ -79,11 +78,6 @@ const RegisterScreen = () => {
   const handleCreateAccount = async () => {
     try {
       // Simpan data pengguna ke AsyncStorage
-
-      // await AsyncStorage.setItem("credentials", JSON.stringify(userData));
-
-      // const bcryptjs = require("bcryptjs");
-
       bcrypt.setRandomFallback((len) => {
         // Menghasilkan nilai acak (bisa menggunakan metode lain yang tersedia)
         const randomBytes = new Array(len);
@@ -104,8 +98,6 @@ const RegisterScreen = () => {
 
       // Simpan informasi tambahan ke Firestore
       const userCollection = collection(firestore, "users");
-      const newDocRef = doc(userCollection);
-      // const uid = newDocRef.id;
       const newUser = {
         id: customID.toString(),
         name: Name,
@@ -117,7 +109,6 @@ const RegisterScreen = () => {
         tglLahir: "",
         alamat: "",
         cities: "",
-        //Tambahkan data tambahan di sini jika ada
       };
 
       const newDoc = await addDoc(userCollection, newUser);
@@ -126,8 +117,6 @@ const RegisterScreen = () => {
 
       const userDocRef = doc(userCollection, uid);
       await setDoc(userDocRef, { ...newUser, uid: uid });
-      // Alert.alert("Success", "Akun anda berhasil dibuat");
-      // navigation.replace("Tabs");
 
       const userData = {
         id: customID.toString(),
@@ -161,46 +150,8 @@ const RegisterScreen = () => {
     }
   };
 
-  // const nama = "Usertest";
-  // const email = "Usertest@gmail.com";
-  // const phone = "123456789";
-  // const password = "Usertest";
-  // const confirmpassword = "Usertest";
-
   const handleDismissKeyboard = () => {
     Keyboard.dismiss();
-  };
-
-  const handleRegister = (Name, Email, Phone, Password, ConfirmPassword) => {
-    if (
-      Name.trim() === "" ||
-      Email.trim() === "" ||
-      Phone.trim() === "" ||
-      Password.trim() === "" ||
-      ConfirmPassword.trim() === ""
-    ) {
-      Alert.alert("Error", "Mohon isi semua kolom password.");
-    } else if (Name !== "Usertest") {
-      Alert.alert("Error", "Nama tidak cocok.");
-    } else if (Email !== "Usertest@gmail.com") {
-      Alert.alert("Error", "Email tidak cocok.");
-    } else if (Phone !== "123456789") {
-      Alert.alert("Error", "Phone tidak cocok.");
-    } else if (Password !== "Usertest") {
-      Alert.alert("Error", "Password tidak cocok.");
-    } else if (ConfirmPassword !== "Usertest") {
-      Alert.alert("Error", "confirmPassword tidak cocok.");
-    } else if (
-      Name === "Usertest" &&
-      Email === "Usertest@gmail.com" &&
-      Phone === "123456789" &&
-      Password === "Usertest" &&
-      ConfirmPassword === "Usertest"
-    ) {
-      Alert.alert("Success", "Akun anda berhasil dibuat");
-      navigation.replace("Tabs");
-    } else {
-    }
   };
 
   return (
