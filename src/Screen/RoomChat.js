@@ -17,7 +17,7 @@ import { Alert } from "react-native";
 
 const RoomChatScreen = () => {
   // const theme = { mode: "dark" };
-  const { theme, updateTheme } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
   const route = useRoute();

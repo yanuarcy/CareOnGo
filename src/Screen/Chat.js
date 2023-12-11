@@ -63,7 +63,7 @@ const Messages = [
 
 const PesanScreen = () => {
   // const theme = { mode: "dark" };
-  const { theme, updateTheme } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
   const navigation = useNavigation();

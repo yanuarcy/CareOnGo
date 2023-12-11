@@ -8,7 +8,7 @@ import {
   Icon,
   Button,
   VStack,
-  Pressable
+  Pressable,
 } from "native-base";
 import {
   TouchableOpacity,
@@ -19,7 +19,27 @@ import {
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "../../../../firebase-config";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import {
+  collection,
+  doc,
+  addDoc,
+  getFirestore,
+  setDoc,
+} from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+// import bcryptjs from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 
+const DB = initializeApp(firebaseConfig);
+const auth = getAuth(DB);
+const firestore = getFirestore(DB);
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
@@ -30,65 +50,158 @@ const RegisterScreen = () => {
   const [Password, setPassword] = useState("");
   const [ConfirmPassword, setConfirmPassword] = useState("");
 
-  const nama = "Usertest";
-  const email = "Usertest@gmail.com";
-  const phone = "123456789";
-  const password = "Usertest";
-  const confirmpassword = "Usertest";
+  // const handleCreateAccount = () => {
+  //   createUserWithEmailAndPassword( auth, Email, Password)
+  //   .then((userCredential) => {
+  //     console.log("Account created!")
+  //     const user = userCredential.user;
+  //     console.log(user)
+  //   })
+  //   .catch(error => {
+  //     console.log(error)
+  //   })
+  // }
+
+  const generateRandomID = () => {
+    const min = 10000; // Minimal angka acak (4 digit)
+    const max = 99999; // Maksimal angka acak (5 digit)
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const createCustomID = () => {
+    const prefix = "120"; // Angka yang akan disisipkan di depan ID
+    const randomNumber = generateRandomID();
+    const customID = `${prefix}${randomNumber}`;
+    return customID;
+  };
+  const customID = createCustomID();
+
+  const handleCreateAccount = async () => {
+    try {
+      // Simpan data pengguna ke AsyncStorage
+
+      // await AsyncStorage.setItem("credentials", JSON.stringify(userData));
+
+      // const bcryptjs = require("bcryptjs");
+
+      bcrypt.setRandomFallback((len) => {
+        // Menghasilkan nilai acak (bisa menggunakan metode lain yang tersedia)
+        const randomBytes = new Array(len);
+        for (let i = 0; i < len; i++) {
+          randomBytes[i] = Math.floor(Math.random() * 256);
+        }
+        return randomBytes;
+      });
+
+      // const saltRounds = 10; // Jumlah putaran enkripsi
+      const salt = bcrypt.genSaltSync(10);
+
+      // Enkripsi password sebelum menyimpannya
+      const hashedPassword = bcrypt.hashSync(Password, salt);
+
+      // Simpan data pengguna ke Firebase Authentication
+      await createUserWithEmailAndPassword(auth, Email, hashedPassword);
+
+      // Simpan informasi tambahan ke Firestore
+      const userCollection = collection(firestore, "users");
+      const newDocRef = doc(userCollection);
+      // const uid = newDocRef.id;
+      const newUser = {
+        id: customID.toString(),
+        name: Name,
+        email: Email,
+        phone: Phone,
+        password: hashedPassword,
+        namaLengkap: Name,
+        jenisKelamin: "",
+        tglLahir: "",
+        alamat: "",
+        cities: "",
+        //Tambahkan data tambahan di sini jika ada
+      };
+
+      const newDoc = await addDoc(userCollection, newUser);
+      const uid = newDoc.id;
+      console.log(uid);
+
+      const userDocRef = doc(userCollection, uid);
+      await setDoc(userDocRef, { ...newUser, uid: uid });
+      // Alert.alert("Success", "Akun anda berhasil dibuat");
+      // navigation.replace("Tabs");
+
+      const userData = {
+        id: customID.toString(),
+        name: Name,
+        email: Email,
+        phone: Phone,
+        password: Password,
+        namaLengkap: Name,
+        jenisKelamin: "",
+        tglLahir: "",
+        alamat: "",
+        cities: "",
+        uid: uid,
+      };
+
+      AsyncStorage.setItem("credentials", JSON.stringify(userData))
+        .then(() => {
+          Alert.alert("Success", "Akun anda berhasil login");
+          navigation.replace("Tabs");
+        })
+        .catch((error) => {
+          console.log(error);
+          Alert.alert("Error", "Gagal menyimpan kredensial");
+        });
+
+      return;
+      // return user;
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Gagal membuat akun");
+    }
+  };
+
+  // const nama = "Usertest";
+  // const email = "Usertest@gmail.com";
+  // const phone = "123456789";
+  // const password = "Usertest";
+  // const confirmpassword = "Usertest";
 
   const handleDismissKeyboard = () => {
     Keyboard.dismiss();
   };
 
-
-  const handleRegister = (Name, Email, Phone,Password,ConfirmPassword) => {
-    if (Name.trim() === "" || Email.trim() === ""|| Phone.trim() === "" || Password.trim() === "" || ConfirmPassword.trim() === "" ) {
-      Alert.alert(
-        "Error",
-        "Mohon isi semua kolom password."
-      )
-    } 
-    else if(Name !== "Usertest") {
-      Alert.alert(
-        "Error",
-        "Nama tidak cocok."
-      );
-    }
-    
-    else if(Email !== "Usertest@gmail.com") {
-      Alert.alert(
-        "Error",
-        "Email tidak cocok."
-      );
-    }
-    else if(Phone !== "123456789") {
-      Alert.alert(
-        "Error",
-        "Phone tidak cocok."
-      );
-    }
-    else if(Password !== "Usertest") {
-      Alert.alert(
-        "Error",
-        "Password tidak cocok."
-      );
-    }
-    else if(ConfirmPassword !== "Usertest") {
-      Alert.alert(
-        "Error",
-        "confirmPassword tidak cocok."
-      );
-    }
-
-    else if(Name === "Usertest" && Email === "Usertest@gmail.com" && Phone === "123456789" && Password === "Usertest" && ConfirmPassword === "Usertest") {
-      Alert.alert("Success", "Akun anda berhasil dibuat")
+  const handleRegister = (Name, Email, Phone, Password, ConfirmPassword) => {
+    if (
+      Name.trim() === "" ||
+      Email.trim() === "" ||
+      Phone.trim() === "" ||
+      Password.trim() === "" ||
+      ConfirmPassword.trim() === ""
+    ) {
+      Alert.alert("Error", "Mohon isi semua kolom password.");
+    } else if (Name !== "Usertest") {
+      Alert.alert("Error", "Nama tidak cocok.");
+    } else if (Email !== "Usertest@gmail.com") {
+      Alert.alert("Error", "Email tidak cocok.");
+    } else if (Phone !== "123456789") {
+      Alert.alert("Error", "Phone tidak cocok.");
+    } else if (Password !== "Usertest") {
+      Alert.alert("Error", "Password tidak cocok.");
+    } else if (ConfirmPassword !== "Usertest") {
+      Alert.alert("Error", "confirmPassword tidak cocok.");
+    } else if (
+      Name === "Usertest" &&
+      Email === "Usertest@gmail.com" &&
+      Phone === "123456789" &&
+      Password === "Usertest" &&
+      ConfirmPassword === "Usertest"
+    ) {
+      Alert.alert("Success", "Akun anda berhasil dibuat");
       navigation.replace("Tabs");
+    } else {
     }
-    
-    else {
-      
-    }
-  }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={handleDismissKeyboard}>
@@ -129,13 +242,11 @@ const RegisterScreen = () => {
                 value={Name}
                 onChangeText={(Name) => setName(Name)}
                 placeholder="Name"
-                placeholderTextColor={'black'}
+                placeholderTextColor={"black"}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}
                 rounded={6}
-                onPress={() =>
-                  setName(!Name)
-                }
+                onPress={() => setName(!Name)}
               />
               <Input
                 w={{
@@ -154,13 +265,11 @@ const RegisterScreen = () => {
                 value={Email}
                 onChangeText={(Email) => setEmail(Email)}
                 placeholder="Email"
-                placeholderTextColor={'black'}
+                placeholderTextColor={"black"}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}
                 rounded={6}
-                onPress={() =>
-                  setEmail(!Email)
-                }
+                onPress={() => setEmail(!Email)}
               />
               <Input
                 w={{
@@ -179,13 +288,11 @@ const RegisterScreen = () => {
                 value={Phone}
                 onChangeText={(Phone) => setPhone(Phone)}
                 placeholder="Phone"
-                placeholderTextColor={'black'}
+                placeholderTextColor={"black"}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}
                 rounded={6}
-                onPress={() =>
-                  setPhone(!Phone)
-                }
+                onPress={() => setPhone(!Phone)}
               />
               <Input
                 w={{
@@ -194,7 +301,7 @@ const RegisterScreen = () => {
                 }}
                 type={showPassword ? "text" : "password"}
                 InputLeftElement={
-                  <Icon 
+                  <Icon
                     as={MaterialIcons}
                     name="lock"
                     size={5}
@@ -216,13 +323,11 @@ const RegisterScreen = () => {
                 value={Password}
                 onChangeText={(Password) => setPassword(Password)}
                 placeholder="Password"
-                placeholderTextColor={'black'}
+                placeholderTextColor={"black"}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}
                 rounded={6}
-                onPress={() =>
-                  setPassword(!Password)
-                }
+                onPress={() => setPassword(!Password)}
               />
               <Input
                 w={{
@@ -231,7 +336,7 @@ const RegisterScreen = () => {
                 }}
                 type={showPassword ? "text" : "password"}
                 InputLeftElement={
-                  <Icon 
+                  <Icon
                     as={MaterialIcons}
                     name="lock"
                     size={5}
@@ -251,15 +356,15 @@ const RegisterScreen = () => {
                   </Pressable>
                 }
                 value={ConfirmPassword}
-                onChangeText={(ConfirmPassword) => setConfirmPassword(ConfirmPassword)}
+                onChangeText={(ConfirmPassword) =>
+                  setConfirmPassword(ConfirmPassword)
+                }
                 placeholder="Confirm Password"
-                placeholderTextColor={'black'}
+                placeholderTextColor={"black"}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}
                 rounded={6}
-                onPress={() =>
-                  setConfirmPassword(!ConfirmPassword)
-                }
+                onPress={() => setConfirmPassword(!ConfirmPassword)}
               />
             </Stack>
           </Spacer>
@@ -275,7 +380,8 @@ const RegisterScreen = () => {
             alignItems: "center",
             justifyContent: "center",
           }}
-          onPress={() => handleRegister(Name, Email, Phone,Password,ConfirmPassword)}
+          // onPress={() => handleRegister(Name, Email, Phone,Password,ConfirmPassword)}
+          onPress={() => handleCreateAccount()}
         >
           <Text
             color={"white"}
@@ -288,9 +394,7 @@ const RegisterScreen = () => {
         </TouchableOpacity>
 
         <Center>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Login')}
-          >
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Text
               fontWeight={"bold"}
               colorScheme={"light"}

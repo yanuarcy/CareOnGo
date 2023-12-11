@@ -6,6 +6,8 @@ import { Box, Text, ScrollView, Image, Flex } from "native-base";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import colors from "../../component/theme";
 import { ThemeContext } from "../../component/themeContext";
+import { getAuth, signOut } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SECTIONS = [
   {
@@ -19,7 +21,7 @@ const SECTIONS = [
         label: "My Profile",
         type: "link",
       },
-      { 
+      {
         id: "ChangePassword",
         icon: "lock",
         color: "#fd2d54",
@@ -87,10 +89,10 @@ const SECTIONS = [
         label: "History Pemeriksaan",
         type: "link",
       },
-      // { 
-      //   icon: "download", 
-      //   color: "#fd2d54", 
-      //   label: "Downloads", 
+      // {
+      //   icon: "download",
+      //   color: "#fd2d54",
+      //   label: "Downloads",
       //   type: "link",
       //  },
     ],
@@ -133,7 +135,8 @@ const SECTIONS = [
 const ProfileScreen = () => {
   const Stack = createStackNavigator();
   const navigation = useNavigation();
-  
+  const auth = getAuth();
+
   // const theme = { mode: "light" };
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
@@ -151,44 +154,61 @@ const ProfileScreen = () => {
     setIsActive((previousState) => !previousState);
   };
 
+  const [userData, setUserData] = useState(null);
+  useEffect(() => {
+    // Ambil data dari AsyncStorage saat komponen dipasang (mounted)
+    AsyncStorage.getItem("credentials")
+      .then((data) => {
+        if (data) {
+          const credentials = JSON.parse(data);
+          setUserData(credentials);
+        }
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
+  console.log(userData);
+  const handleLogout = async () => {
+    try {
+      // Lakukan logout dari Firebase Authentication
+      await signOut(auth);
+
+      // Hapus informasi pengguna yang disimpan di AsyncStorage jika ada
+      // await AsyncStorage.removeItem("userData");
+      await AsyncStorage.removeItem("credentials");
+
+      // Navigasikan pengguna kembali ke halaman login
+      navigation.replace("Login");
+    } catch (error) {
+      console.log(error);
+      // Tampilkan pesan error jika diperlukan
+    }
+  };
+
   const sectionsHandler = (id, navigation) => {
-    
     if (id === "MyProfile") {
       navigation.navigate("MyProfile");
-    }
-
-    else if (id === "Location") {
-      navigation.navigate("Location")
-    }
-
-    else if (id === "History") {
-      navigation.navigate("History")
-    }
-
-    else if (id === "ReportBug") {
-      navigation.navigate("ReportBug")
-    }
-    
-    else if (id === "ContactUs") {
-      navigation.navigate("ContactUs")
-    }
-
-    else if (id === "AddAccount") {
-      navigation.navigate("Register")
-    }
-     
-    else if (id === "ChangePassword") {
-      navigation.navigate("ResetPassword")
-    }
-    else if (id === "LogOut") {
+    } else if (id === "Location") {
+      navigation.navigate("Location");
+    } else if (id === "History") {
+      navigation.navigate("History");
+    } else if (id === "ReportBug") {
+      navigation.navigate("ReportBug");
+    } else if (id === "ContactUs") {
+      navigation.navigate("ContactUs");
+    } else if (id === "AddAccount") {
+      navigation.navigate("Register");
+    } else if (id === "ChangePassword") {
+      navigation.navigate("ResetPassword");
+    } else if (id === "LogOut") {
       if (theme.mode === "dark") {
         updateTheme();
       }
       setIsActive(false);
-  
-      navigation.replace("Login")
+
+      handleLogout();
     }
-  }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -221,24 +241,28 @@ const ProfileScreen = () => {
               </Box>
             </TouchableOpacity>
 
-            <Text
-              mt={5}
-              fontSize={19}
-              fontWeight={600}
-              color={activeColors.tint}
-              textAlign={"center"}
-            >
-              Mathew Renandra
-            </Text>
-            <Text
-              mt={3}
-              fontSize={15}
-              fontWeight={600}
-              color={activeColors.tertiary}
-              textAlign={"center"}
-            >
-              mathew@gmail.com
-            </Text>
+            {userData && (
+              <>
+                <Text
+                  mt={5}
+                  fontSize={19}
+                  fontWeight={600}
+                  color={activeColors.tint}
+                  textAlign={"center"}
+                >
+                  {userData.name}
+                </Text>
+                <Text
+                  mt={3}
+                  fontSize={15}
+                  fontWeight={600}
+                  color={activeColors.tertiary}
+                  textAlign={"center"}
+                >
+                  {userData.email}
+                </Text>
+              </>
+            )}
           </Box>
 
           {SECTIONS.map(({ header, items }) => (
