@@ -1,24 +1,19 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TouchableOpacity } from "react-native";
 import { Box, Text, Input, ScrollView, Flex, HStack } from "native-base";
 import { ThemeContext } from "../../../component/themeContext";
 import colors from "../../../component/theme";
-// import { ThemeContext } from "../../../components/themeContext";
-// import colors from "../../../components/theme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { doc, getFirestore, updateDoc } from "firebase/firestore";
+import { firebaseConfig } from "../../../../firebase-config";
+import { initializeApp } from "firebase/app";
 
 const MyProfileScreen = () => {
   const { theme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
-  const [telp, setTelp] = useState("+628123456789");
-  const [email, setEmail] = useState("mathew@gmail.com");
-  const [nama, setNama] = useState("Mathew Renandra");
-  const [Gender, setGender] = useState("Laki-Laki");
-  const [Tgl, setTgl] = useState("17 April 2008");
-  const [Alamat, setAlamat] = useState(
-    "Jl. Gayungan, Surabaya, Jawa Timur, Indonesia"
-  );
-  const [City, setCity] = useState("Kabupaten Surabaya");
+  const DB = initializeApp(firebaseConfig);
+  const firestore = getFirestore(DB);
 
   const [editingTelp, setEditingTelp] = useState(false);
   const [editingEmail, setEditingEmail] = useState(false);
@@ -28,38 +23,84 @@ const MyProfileScreen = () => {
   const [editingAlamat, setEditingAlamat] = useState(false);
   const [editingCity, setEditingCity] = useState(false);
 
-  const [newTelp, setNewTelp] = useState(telp);
-  const [newEmail, setNewEmail] = useState(email);
-  const [newNama, setNewNama] = useState(nama);
-  const [newGender, setNewGender] = useState(Gender);
-  const [newTgl, setNewTgl] = useState(Tgl);
-  const [newAlamat, setNewAlamat] = useState(Alamat);
-  const [newCity, setNewCity] = useState(City);
+  const [userData, setUserData] = useState(null);
+  useEffect(() => {
+    // Ambil data dari AsyncStorage saat komponen dipasang (mounted)
+    AsyncStorage.getItem("credentials")
+      .then((data) => {
+        if (data) {
+          const credentials = JSON.parse(data);
+          setUserData(credentials);
+        }
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
-  const handleEditAndSave = (field) => {
+  const handleFieldChange = async (field, newValue) => {
+    if (!userData || !userData.uid) {
+      console.error("UserData is not defined or does not have a UID");
+      return;
+    }
+
+    let updatedUserData = { ...userData };
+
+    switch (field) {
+      case "Telp":
+        updatedUserData = { ...updatedUserData, phone: newValue };
+        break;
+      case "Email":
+        updatedUserData = { ...updatedUserData, email: newValue };
+        break;
+      case "Biodata":
+        if (newValue.nama) {
+          updatedUserData = { ...updatedUserData, namaLengkap: newValue.nama };
+        }
+        if (newValue.gender) {
+          updatedUserData = { ...updatedUserData, jenisKelamin: newValue.gender };
+        }
+        if (newValue.tgl) {
+          updatedUserData = { ...updatedUserData, tglLahir: newValue.tgl };
+        }
+        if (newValue.alamat) {
+          updatedUserData = { ...updatedUserData, alamat: newValue.alamat };
+        }
+        if (newValue.city) {
+          updatedUserData = { ...updatedUserData, cities: newValue.city };
+        }
+        break;
+      default:
+        break;
+    }
+
+    setUserData(updatedUserData);
+
+    try {
+      await AsyncStorage.setItem(
+        "credentials",
+        JSON.stringify(updatedUserData)
+      );
+      const userDoc = doc(firestore, "users", userData.uid);
+      await updateDoc(userDoc, updatedUserData);
+    } catch (error) {
+      console.error("Error saving or updating data:", error);
+    }
+  };
+
+  console.log(userData);
+  const handleEditAndSave = async (field) => {
     if (field === "Telp") {
-      if (editingTelp) {
-        setTelp(newTelp);
-      }
       setEditingTelp(!editingTelp);
+
     } else if (field === "Email") {
-      if (editingEmail) {
-        setEmail(newEmail);
-      }
       setEditingEmail(!editingEmail);
+      
     } else if (field === "Biodata") {
-      if (editingNama) {
-        setNama(newNama);
-        setGender(newGender);
-        setTgl(newTgl);
-        setAlamat(Alamat);
-        setCity(City);
-      }
       setEditingNama(!editingNama);
       setEditingGender(!editingGender);
       setEditingTgl(!editingTgl);
       setEditingAlamat(!editingAlamat);
       setEditingCity(!editingCity);
+      
     }
   };
 
@@ -103,8 +144,8 @@ const MyProfileScreen = () => {
                       mt={1}
                       mb={1}
                       fontSize={18}
-                      value={newTelp}
-                      onChangeText={setNewTelp}
+                      value={userData?.phone}
+                      onChangeText={(value) => handleFieldChange("Telp", value)}
                       color={activeColors.tint}
                     />
                   ) : (
@@ -115,7 +156,7 @@ const MyProfileScreen = () => {
                       fontSize={18}
                       color={activeColors.tint}
                     >
-                      {telp}
+                      {userData?.phone || ""}
                     </Text>
                   )}
                 </Flex>
@@ -158,8 +199,10 @@ const MyProfileScreen = () => {
                       mt={1}
                       mb={1}
                       fontSize={18}
-                      value={newEmail}
-                      onChangeText={setNewEmail}
+                      value={userData?.email}
+                      onChangeText={(value) =>
+                        handleFieldChange("Email", value)
+                      }
                       color={activeColors.tint}
                     />
                   ) : (
@@ -170,7 +213,7 @@ const MyProfileScreen = () => {
                       fontSize={18}
                       color={activeColors.tint}
                     >
-                      {email}
+                      {userData?.email || ""}
                     </Text>
                   )}
                 </Flex>
@@ -225,7 +268,7 @@ const MyProfileScreen = () => {
                           fontSize={18}
                           color={activeColors.tint}
                         >
-                          00521
+                          {userData?.id || ""}
                         </Text>
                       </Box>
                     </Flex>
@@ -237,7 +280,12 @@ const MyProfileScreen = () => {
         </Box>
 
         <Box mb={5} backgroundColor={activeColors.secondary}>
-          <Box p={5} rounded={10} borderWidth={0.7} borderColor={activeColors.tint}>
+          <Box
+            p={5}
+            rounded={10}
+            borderWidth={0.7}
+            borderColor={activeColors.tint}
+          >
             <Flex direction="column">
               <Box alignItems={"center"}>
                 <Flex direction="row">
@@ -266,8 +314,10 @@ const MyProfileScreen = () => {
                       mb={1}
                       fontSize={18}
                       textTransform={"uppercase"}
-                      value={newNama}
-                      onChangeText={setNewNama}
+                      value={userData?.namaLengkap}
+                      onChangeText={(value) =>
+                        handleFieldChange("Biodata", { nama: value })
+                      }
                       color={activeColors.tint}
                     />
                   ) : (
@@ -279,7 +329,7 @@ const MyProfileScreen = () => {
                       textTransform={"uppercase"}
                       color={activeColors.tint}
                     >
-                      {nama}
+                      {userData?.namaLengkap || ""}
                     </Text>
                   )}
                 </Flex>
@@ -303,13 +353,21 @@ const MyProfileScreen = () => {
                             mt={1}
                             mb={1}
                             fontSize={18}
-                            value={newGender}
-                            onChangeText={setNewGender}
+                            value={userData?.jenisKelamin}
+                            onChangeText={(value) =>
+                              handleFieldChange("Biodata", { gender: value })
+                            }
                             color={activeColors.tint}
                           />
                         ) : (
-                          <Text flex={1} mt={1.5} pb={1.5} fontSize={18} color={activeColors.tint}>
-                            {Gender}
+                          <Text
+                            flex={1}
+                            mt={1.5}
+                            pb={1.5}
+                            fontSize={18}
+                            color={activeColors.tint}
+                          >
+                            {userData?.jenisKelamin || ""}
                           </Text>
                         )}
                       </Box>
@@ -332,13 +390,19 @@ const MyProfileScreen = () => {
                             mt={1}
                             mb={1}
                             fontSize={18}
-                            value={newTgl}
-                            onChangeText={setNewTgl}
+                            value={userData?.tglLahir}
+                            onChangeText={(value) => handleFieldChange("Biodata", { tgl: value })}
                             color={activeColors.tint}
                           />
                         ) : (
-                          <Text flex={1} mt={1.5} pb={1.5} fontSize={18} color={activeColors.tint}>
-                            {Tgl}
+                          <Text
+                            flex={1}
+                            mt={1.5}
+                            pb={1.5}
+                            fontSize={18}
+                            color={activeColors.tint}
+                          >
+                            {userData?.tglLahir || ""}
                           </Text>
                         )}
                       </Box>
@@ -365,8 +429,8 @@ const MyProfileScreen = () => {
                       mb={1}
                       fontSize={18}
                       textTransform={"uppercase"}
-                      value={newAlamat}
-                      onChangeText={setNewAlamat}
+                      value={userData?.alamat}
+                      onChangeText={(value) => handleFieldChange("Biodata", { alamat: value })}
                       color={activeColors.tint}
                     />
                   ) : (
@@ -378,7 +442,7 @@ const MyProfileScreen = () => {
                       textTransform={"uppercase"}
                       color={activeColors.tint}
                     >
-                      {Alamat}
+                      {userData?.alamat || ""}
                     </Text>
                   )}
                 </Flex>
@@ -386,7 +450,9 @@ const MyProfileScreen = () => {
 
               <Box mt={4}>
                 <Flex direction="row">
-                  <Text mb={1.5} color={activeColors.tertiary}>Kota / Kabupaten</Text>
+                  <Text mb={1.5} color={activeColors.tertiary}>
+                    Kota / Kabupaten
+                  </Text>
                 </Flex>
               </Box>
               <Box>
@@ -400,8 +466,8 @@ const MyProfileScreen = () => {
                       mb={1}
                       fontSize={18}
                       textTransform={"uppercase"}
-                      value={newCity}
-                      onChangeText={setNewCity}
+                      value={userData?.cities}
+                      onChangeText={(value) => handleFieldChange("Biodata", { city: value })}
                       color={activeColors.tint}
                     />
                   ) : (
@@ -413,7 +479,7 @@ const MyProfileScreen = () => {
                       textTransform={"uppercase"}
                       color={activeColors.tint}
                     >
-                      {City}
+                      {userData?.cities || ""}
                     </Text>
                   )}
                 </Flex>
@@ -425,7 +491,5 @@ const MyProfileScreen = () => {
     </ScrollView>
   );
 };
-
-
 
 export default MyProfileScreen;
