@@ -30,7 +30,7 @@ const SplashScreen = () => {
         } else {
           // Waktu login telah berakhir, hapus data credentials
           await AsyncStorage.removeItem("credentials");
-          console.log("Session Time Expired")
+          console.log("Sorry, Session Time Expired")
           // Redirect ke halaman Welcome
           navigation.replace("Welcome");
         }
