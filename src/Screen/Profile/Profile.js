@@ -253,7 +253,16 @@ const ProfileScreen = () => {
                   {userData.name}
                 </Text>
                 <Text
-                  mt={3}
+                  mt={2}
+                  fontSize={14}
+                  fontWeight={400}
+                  color={activeColors.tertiary}
+                  textAlign={"center"}
+                >
+                  ID : {userData.id} 
+                </Text>
+                <Text
+                  mt={1}
                   fontSize={15}
                   fontWeight={600}
                   color={activeColors.tertiary}
