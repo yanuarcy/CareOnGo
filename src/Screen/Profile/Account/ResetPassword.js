@@ -20,12 +20,30 @@ import {
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { ThemeContext } from "../../../component/themeContext";
 import colors from "../../../component/theme";
+import {
+  getDocs,
+  collection,
+  query,
+  where,
+  getFirestore,
+  doc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "../../../../firebase-config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import bcrypt from 'bcryptjs';
+
 
 // import SvgIcon from '../common/assets/images/SvgIcon';
 
 const ResetPasswordScreen = ({ navigation }) => {
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
+
+  const DB = initializeApp(firebaseConfig);
+  const firestore = getFirestore(DB);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -37,26 +55,85 @@ const ResetPasswordScreen = ({ navigation }) => {
     Dimensions.get("window")
   );
 
-  const handleResetButton = (currentPassword, newPassword, newPassword2) => {
+  const [userDataa, setUserDataa] = useState(null);
+  useEffect(() => {
+    // Ambil data dari AsyncStorage saat komponen dipasang (mounted)
+    AsyncStorage.getItem("credentials")
+      .then((data) => {
+        if (data) {
+          const credentials = JSON.parse(data);
+          setUserDataa(credentials);
+        }
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
+  const handleResetButton = async (
+    currentPassword,
+    newPassword,
+    newPassword2
+  ) => {
     if (
       currentPassword.trim() === "" ||
       newPassword.trim() === "" ||
       newPassword2.trim() === ""
     ) {
-      Alert.alert(
-        "Error",
-        "Mohon isi semua kolom password."
-      );
-    } else if (newPassword !== newPassword2) {
-      Alert.alert(
-        "Error",
-        "Password baru dan konfirmasi password tidak cocok."
-      );
-    } else {
-      Alert.alert("Success", "Password anda telah berhasil di reset")
-      navigation.goBack();
+      Alert.alert("Error", "Mohon isi semua kolom password.");
+      return;
     }
-  }
+
+    try {
+      console.log(userDataa);
+      // 1. Verifikasi Password Saat Ini
+      const userId = userDataa.uid;
+      const userCollection = collection(firestore, "users");
+      const userDocRef = doc(userCollection, userId);
+      const hashedPasswordFromDB = userDataa.password;
+
+      // const bcrypt = require("bcryptjs");
+      const passwordMatch = await bcrypt.compare(
+        currentPassword,
+        hashedPasswordFromDB
+      );
+
+      if (!passwordMatch) {
+        Alert.alert("Error", "Password saat ini tidak cocok.");
+        return;
+      }
+
+      // 2. Simpan Password Baru yang Terenkripsi
+      if (newPassword !== newPassword2) {
+        Alert.alert(
+          "Error",
+          "Password baru dan konfirmasi password tidak cocok."
+        );
+        return;
+      }
+
+      bcrypt.setRandomFallback((len) => {
+        // Menghasilkan nilai acak (bisa menggunakan metode lain yang tersedia)
+        const randomBytes = new Array(len);
+        for (let i = 0; i < len; i++) {
+          randomBytes[i] = Math.floor(Math.random() * 256);
+        }
+        return randomBytes;
+      });
+
+      // const saltRounds = 10;
+      const salt = bcrypt.genSaltSync(10);
+
+      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+      // Update password baru yang terenkripsi ke Firestore
+      await updateDoc(userDocRef, { password: hashedNewPassword });
+
+      Alert.alert("Success", "Password Anda berhasil direset");
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error:", error);
+      Alert.alert("Error", "Gagal mereset password. Silakan coba lagi.");
+    }
+  };
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -228,7 +305,13 @@ const ResetPasswordScreen = ({ navigation }) => {
                         backgroundColor: "#0082f7",
                         borderRadius: 12,
                       }}
-                      onPress={() => handleResetButton(currentPassword, newPassword, newPassword2)}
+                      onPress={() =>
+                        handleResetButton(
+                          currentPassword,
+                          newPassword,
+                          newPassword2
+                        )
+                      }
                     >
                       <Text
                         textAlign="center"

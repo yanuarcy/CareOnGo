@@ -114,6 +114,7 @@ const LoginScreen = () => {
                 email: userData.email,
                 name: userData.name,
                 namaLengkap: userData.namaLengkap,
+                password: userData.password,
                 phone: userData.phone,
                 jenisKelamin: userData.jenisKelamin,
                 tglLahir: userData.tglLahir,
