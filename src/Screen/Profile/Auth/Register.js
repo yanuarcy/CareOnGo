@@ -34,7 +34,10 @@ import {
   setDoc,
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs';
+// import { compare, hash } from "react-native-simple-bcrypt";
+import { Base64 } from "js-base64"; 
+// import { sha1 } from 'react-native-sha1';
 
 const DB = initializeApp(firebaseConfig);
 const auth = getAuth(DB);
@@ -49,17 +52,53 @@ const RegisterScreen = () => {
   const [Password, setPassword] = useState("");
   const [ConfirmPassword, setConfirmPassword] = useState("");
 
-  // const handleCreateAccount = () => {
-  //   createUserWithEmailAndPassword( auth, Email, Password)
-  //   .then((userCredential) => {
-  //     console.log("Account created!")
-  //     const user = userCredential.user;
-  //     console.log(user)
-  //   })
-  //   .catch(error => {
-  //     console.log(error)
-  //   })
-  // }
+  const encrypt = (text, shift) => {
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+      let char = text[i];
+      if (char.match(/[a-z]/i)) {
+        let code = text.charCodeAt(i);
+        if (code >= 65 && code <= 90) {
+          char = String.fromCharCode(((code - 65 + shift) % 26) + 65);
+        } else if (code >= 97 && code <= 122) {
+          char = String.fromCharCode(((code - 97 + shift) % 26) + 97);
+        }
+      }
+      result += char;
+    }
+    return result;
+  };
+  
+  // Fungsi Dekripsi untuk metode penggeseran karakter (caesar cipher)
+  const decrypt = (text, shift) => {
+    return encrypt(text, (26 - shift) % 26);
+  };
+
+  const compare = (text, encryptedText, shift) => {
+    const decryptedText = decrypt(encryptedText, shift);
+    return text === decryptedText;
+  };
+  
+  // Contoh penggunaan:
+  // const plainText = "RubahGesit";
+  // const shiftAmount = 3;
+  // console.log("Text awal: ", plainText);
+  
+  // const encryptedText = encrypt(plainText, shiftAmount);
+  // console.log("Teks Terenkripsi:", encryptedText);
+  
+  
+  // const Plaintext = encryptedText;
+  // const Chipertext = Base64.encode(Plaintext);
+  // console.log(Chipertext);
+  // const Decodetext = Base64.decode(Chipertext);
+  // console.log(Decodetext);
+  
+  // const decryptedText = decrypt(Decodetext, shiftAmount);
+  // console.log("Teks Terdekripsi:", decryptedText);
+
+  // const isMatched = compare(plainText, Decodetext, 3);
+  // console.log("Pembandingan:", isMatched ? "Cocok" : "Tidak Cocok");
 
   const generateRandomID = () => {
     const min = 10000; // Minimal angka acak (4 digit)
@@ -77,24 +116,13 @@ const RegisterScreen = () => {
 
   const handleCreateAccount = async () => {
     try {
-      // Simpan data pengguna ke AsyncStorage
-      bcrypt.setRandomFallback((len) => {
-        // Menghasilkan nilai acak (bisa menggunakan metode lain yang tersedia)
-        const randomBytes = new Array(len);
-        for (let i = 0; i < len; i++) {
-          randomBytes[i] = Math.floor(Math.random() * 256);
-        }
-        return randomBytes;
-      });
 
-      // const saltRounds = 10; // Jumlah putaran enkripsi
-      const salt = bcrypt.genSaltSync(10);
-
-      // Enkripsi password sebelum menyimpannya
-      const hashedPassword = bcrypt.hashSync(Password, salt);
+      const shiftAmount = 3;
+      const encryptedStg1 = encrypt(Password, shiftAmount);
+      const encrpytedStg2 = Base64.encode(encryptedStg1);
 
       // Simpan data pengguna ke Firebase Authentication
-      await createUserWithEmailAndPassword(auth, Email, hashedPassword);
+      await createUserWithEmailAndPassword(auth, Email, encrpytedStg2);
 
       // Simpan informasi tambahan ke Firestore
       const userCollection = collection(firestore, "users");
@@ -103,7 +131,7 @@ const RegisterScreen = () => {
         name: Name,
         email: Email,
         phone: Phone,
-        password: hashedPassword,
+        password: encrpytedStg2,
         namaLengkap: Name,
         jenisKelamin: "",
         tglLahir: "",
@@ -123,7 +151,7 @@ const RegisterScreen = () => {
         name: Name,
         email: Email,
         phone: Phone,
-        password: Password,
+        password: encrpytedStg2,
         namaLengkap: Name,
         jenisKelamin: "",
         tglLahir: "",

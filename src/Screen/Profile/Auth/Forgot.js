@@ -8,7 +8,7 @@ import {
   Image,
   Icon,
   ScrollView,
-	KeyboardAvoidingView,
+  KeyboardAvoidingView,
 } from "native-base";
 import {
   Dimensions,
@@ -18,6 +18,22 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+// import * as firebase from "firebase";
+import * as MailComposer from "expo-mail-composer";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "../../../../firebase-config";
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from "firebase/firestore";
+import emailjs from "@emailjs/browser";
+import { Base64 } from "js-base64"; 
+
+
+// ...
 
 // import SvgIcon from '../common/assets/images/SvgIcon';
 
@@ -26,17 +42,120 @@ const ForgotPasswordScreen = ({ navigation }) => {
     Dimensions.get("window")
   );
 
+  const DB = initializeApp(firebaseConfig);
+  const firestore = getFirestore(DB);
+
   const [email, setEmail] = useState("");
 
-  const handleForgotButton = (email) => {
+  const encrypt = (text, shift) => {
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+      let char = text[i];
+      if (char.match(/[a-z]/i)) {
+        let code = text.charCodeAt(i);
+        if (code >= 65 && code <= 90) {
+          char = String.fromCharCode(((code - 65 + shift) % 26) + 65);
+        } else if (code >= 97 && code <= 122) {
+          char = String.fromCharCode(((code - 97 + shift) % 26) + 97);
+        }
+      }
+      result += char;
+    }
+    return result;
+  };
+  
+  // Fungsi Dekripsi untuk metode penggeseran karakter (caesar cipher)
+  const decrypt = (text, shift) => {
+    return encrypt(text, (26 - shift) % 26);
+  };
+
+  // function generateNewPassword() {
+  //   const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  //   const symbols = "@#";
+  //   const numbers = "0123456789";
+
+  //   const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+  //   const letterLength = Math.random() > 0.5 ? 5 : 6;
+  //   const numLength = letterLength === 5 ? 2 : 1;
+
+  //   let newPassword = symbol;
+
+  //   for (let i = 0; i < letterLength; i++) {
+  //     const randomIndex = Math.floor(Math.random() * letters.length);
+  //     newPassword += letters[randomIndex];
+  //   }
+
+  //   for (let i = 0; i < numLength; i++) {
+  //     const randomIndex = Math.floor(Math.random() * numbers.length);
+  //     newPassword += numbers[randomIndex];
+  //   }
+
+  //   return newPassword;
+  // }
+
+  const handleForgotButton = async (email) => {
     if (email.trim() === "") {
-      Alert.alert("Error", "Mohon isi Email terlebih dahulu")
+      Alert.alert("Error", "Mohon isi Email terlebih dahulu");
+    } else {
+      try {
+
+        const usersCollection = collection(firestore, "users");
+        const queryByEmail = query(
+          usersCollection,
+          where("email", "==", email)
+        );
+        const snapshotByEmail = await getDocs(queryByEmail);
+
+        if (snapshotByEmail.empty) {
+          Alert.alert("Error", "Email tidak terdaftar");
+        }
+
+        let password = "";
+
+        snapshotByEmail.forEach((doc) => {
+          const userData = doc.data();
+          // console.log(userData);
+          const decodePass = Base64.decode(userData.password);
+          const decryptedPass = decrypt(decodePass, 3);
+
+          // 2. Kirim email dengan password yang ditemukan
+          // await MailComposer.composeAsync({
+          //   recipients: [email],
+          //   subject: "Forgot Password CareOnGo",
+          //   body: `Terimakasih sudah mengirimkan request forgot password kepada kami dan sabar menunggu respon dari kami. ini adalah password baru kamu, Password : ${password} dimohon untuk berhati-hati terhadap password anda karena ini merupakan privasi, dan untuk lebih di ingat-ingat lagi untuk kedepannya. Terimakasih`,
+          // });
+
+          const serviceId = "service_ngo3tdh";
+          const templateId = "template_m29j3ql";
+          const publicKey = "j00igohsXtNjDq6rv";
+
+          const templateParams = {
+            from_name: "CareOnGo Team",
+            from_email: "yanuarcahyo567@gmail.com",
+            to_name: userData.name,
+            to_email: email,
+            message: `Password lama kamu: ${decryptedPass}`,
+          };
+
+          emailjs
+            .send(serviceId, templateId, templateParams, publicKey)
+            .then((response) => {
+              console.log("Email sent successfully !", response);
+              console.log(userData);
+              Alert.alert("Success", "Email berhasil dikirim");
+              navigation.navigate("Login");
+            })
+            .catch((error) => {
+              console.log("Error sending email: ", error);
+            });
+
+        });
+      } catch (error) {
+        console.error("Error:", error);
+        Alert.alert("Error", "Gagal mengirim email. Silakan coba lagi.");
+      }
     }
-    else {
-      Alert.alert("Success", "Silahkan mengecek Email untuk melihat password anda")
-      navigation.navigate("Login")
-    }
-  }
+  };
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -107,7 +226,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                       fontSize={16}
                     />
                   </Box>
-                  <Box paddingTop={20} mb={16} >
+                  <Box paddingTop={20} mb={16}>
                     <TouchableOpacity
                       style={{
                         width: "95%",
@@ -115,6 +234,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                         borderRadius: 12,
                       }}
                       onPress={() => handleForgotButton(email)}
+                      // onPress={() => sendEmail()}
                     >
                       <Text
                         textAlign="center"
