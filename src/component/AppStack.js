@@ -24,6 +24,8 @@ import BookAppointmentScreen from "../Screen/BookAppointment";
 import AppointmentBookedScreen from "../Screen/AppointmentBooked";
 import AppointmentDetailsScreen from "../Screen/AppointmentDetails";
 import ArticleDetails from "../Screen/ArtikelDetails";
+import SplashScreen from "../Splash";
+import HistoryDetailsScreen from "../Screen/Profile/Content/HistoryDetails";
 
 const Stack = createStackNavigator();
 
@@ -33,7 +35,7 @@ const AppStack = () => {
 
   return (
     <>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="Splash">
         <Stack.Screen
           name="DoctorDetails"
           component={DoctorDetailsScreen}
@@ -141,7 +143,29 @@ const AppStack = () => {
         <Stack.Screen
           name="History"
           component={HistoryScreen}
-          options={{ headerShown: false }}
+          options={{ 
+            headerShown: true,
+            headerTitle: "History Pemeriksaan",
+            headerStyle: {
+              backgroundColor: activeColors.primary,
+            },
+            headerTintColor: activeColors.tint,
+            headerTitleAlign: "center",
+            }}
+        />
+        
+        <Stack.Screen
+          name="HistoryDetails"
+          component={HistoryDetailsScreen}
+          options={{ 
+            headerShown: true,
+            headerTitle: "Detail Informasi",
+            headerStyle: {
+              backgroundColor: activeColors.primary,
+            },
+            headerTintColor: activeColors.tint,
+            headerTitleAlign: "center",
+            }}
         />
 
         <Stack.Screen
@@ -170,6 +194,12 @@ const AppStack = () => {
             headerTintColor: activeColors.tint,
             headerTitleAlign: "center",
           }}
+        />
+
+        <Stack.Screen
+          name="Splash"
+          component={SplashScreen}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
