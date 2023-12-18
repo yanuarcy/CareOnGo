@@ -34,22 +34,11 @@ import {
   getFirestore,
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Base64 } from "js-base64"; 
 
 const DB = initializeApp(firebaseConfig);
 const auth = getAuth(DB);
 const firestore = getFirestore(DB);
-
-const handleCreateAccount = () => {
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      console.log("Account created!");
-      const user = userCredential.user;
-      console.log(user);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -57,20 +46,32 @@ const LoginScreen = () => {
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // const handleSignIn = () => {
-  //   signInWithEmailAndPassword(auth, emailOrUsername, password)
-  //   .then((userCredential) => {
-  //     console.log("Signed In!")
-  //     Alert.alert("Success", "Akun anda berhasil login")
-  //     navigation.replace("Tabs");
+  const encrypt = (text, shift) => {
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+      let char = text[i];
+      if (char.match(/[a-z]/i)) {
+        let code = text.charCodeAt(i);
+        if (code >= 65 && code <= 90) {
+          char = String.fromCharCode(((code - 65 + shift) % 26) + 65);
+        } else if (code >= 97 && code <= 122) {
+          char = String.fromCharCode(((code - 97 + shift) % 26) + 97);
+        }
+      }
+      result += char;
+    }
+    return result;
+  };
+  
+  // Fungsi Dekripsi untuk metode penggeseran karakter (caesar cipher)
+  const decrypt = (text, shift) => {
+    return encrypt(text, (26 - shift) % 26);
+  };
 
-  //     const user = userCredential.user;
-  //     console.log(user)
-  //   })
-  //   .catch(error => {
-  //     console.log(error)
-  //   })
-  // }
+  const compare = (text, encryptedText, shift) => {
+    const decryptedText = decrypt(encryptedText, shift);
+    return text === decryptedText;
+  };
 
   const handleSignIn = async () => {
     try {
@@ -100,12 +101,11 @@ const LoginScreen = () => {
           const hashedPassword = userData.password;
 
           try {
-            const bcryptjs = require("bcryptjs");
 
-            const passwordMatch = await bcryptjs.compare(
-              password,
-              hashedPassword
-            );
+            console.log("From DB: ",hashedPassword);
+            const Decodetext = Base64.decode(hashedPassword);
+            console.log("After Decode: ",Decodetext);
+            const passwordMatch = compare(password, Decodetext, 3);
 
             if (passwordMatch) {
               // Login berhasil
@@ -121,6 +121,7 @@ const LoginScreen = () => {
                 alamat: userData.alamat,
                 cities: userData.cities,
                 uid: doc.id,
+                loginTime: new Date().getTime(),
               };
 
               AsyncStorage.setItem("credentials", JSON.stringify(credentials))
@@ -159,7 +160,6 @@ const LoginScreen = () => {
     Keyboard.dismiss();
   };
 
-  
   return (
     <TouchableWithoutFeedback onPress={handleDismissKeyboard}>
       <Box flex={1}>
