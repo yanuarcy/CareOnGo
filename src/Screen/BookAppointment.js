@@ -30,7 +30,7 @@ const BookAppointmentScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
 
-	const { theme, updateTheme } = useContext(ThemeContext);
+  const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
   const initialName = route.params ? route.params.userName : "";
@@ -50,6 +50,8 @@ const BookAppointmentScreen = () => {
   const swiper = useRef();
   const [value, setValue] = useState(new Date());
   const [week, setWeek] = useState(0);
+  // console.log(value);
+  console.log(week);
 
   const weeks = useMemo(() => {
     const start = moment().add(week, "weeks").startOf("week");
@@ -67,7 +69,7 @@ const BookAppointmentScreen = () => {
   }, [week]);
 
   return (
-    <ScrollView backgroundColor={activeColors.primary}>
+    <ScrollView backgroundColor={activeColors.primary} pagingEnabled>
       <Box bg={activeColors.secondary} p={4} mb={2} mt={3}>
         <Box flexDirection="row" alignItems="center">
           <Image
@@ -77,7 +79,9 @@ const BookAppointmentScreen = () => {
             borderRadius="50px"
           />
           <Box ml={4}>
-            <Text fontSize={20} color={activeColors.tint}>{initialName}</Text>
+            <Text fontSize={20} color={activeColors.tint}>
+              {initialName}
+            </Text>
             <Text fontSize={16} color={activeColors.tertiary}>
               {initialSpecialty}
             </Text>
@@ -90,7 +94,13 @@ const BookAppointmentScreen = () => {
         </Box>
       </Box>
 
-      <Box bg={activeColors.secondary} p="2" my="4" borderRadius="md" shadow={2}>
+      <Box
+        bg={activeColors.secondary}
+        p="2"
+        my="4"
+        borderRadius="md"
+        shadow={2}
+      >
         <Text fontSize="16" p={2} color={activeColors.tint} fontWeight={800}>
           Select Date
         </Text>
@@ -116,10 +126,21 @@ const BookAppointmentScreen = () => {
                   return;
                 }
                 setTimeout(() => {
-                  const newIndex = ind - 1;
-                  const newWeek = week + newIndex;
+                  // const newIndex = ind - 1.5;
+                  // const newWeek = week + newIndex;
+                  // setWeek(newWeek);
+                  // setValue(moment(value).add(newIndex, "week").toDate());
+                  // swiper.current.scrollTo(1, false);
+
+                  let newIndex;
+                  if (ind > 1) {
+                    newIndex = ind - 1.5;
+                  } else {
+                    newIndex = ind - 0.5, -1; // Menggunakan Math.max untuk batasan -1
+                  }
+                  const newWeek = week + newIndex; // Menggunakan Math.min untuk batasan 1
                   setWeek(newWeek);
-                  setValue(moment(value).add(newIndex, "week").toDate());
+                  setValue(moment(value).add(newWeek, "week").toDate());
                   swiper.current.scrollTo(1, false);
                 }, 0);
               }}
@@ -179,7 +200,13 @@ const BookAppointmentScreen = () => {
         </Box>
       </Box>
 
-      <Box bg={activeColors.secondary} p="2" my="2" borderRadius="md" shadow={2}>
+      <Box
+        bg={activeColors.secondary}
+        p="2"
+        my="2"
+        borderRadius="md"
+        shadow={2}
+      >
         <Text fontSize="16" p={2} color={activeColors.tint} fontWeight={800}>
           Select Appointment Time
         </Text>
@@ -209,7 +236,7 @@ const BookAppointmentScreen = () => {
                     my={4}
                     mx={1}
                     rounded={12}
-                    bg={isActive ? "#0082f7" : activeColors.tertiary}
+                    bg={isActive ? "#0082f7" : "gray.100"}
                   >
                     <Text fontWeight={500} color={isActive ? "white" : "black"}>
                       {formattedTime}
@@ -222,7 +249,13 @@ const BookAppointmentScreen = () => {
         </Center>
       </Box>
 
-      <Box bg={activeColors.secondary} p="4" my="4" borderRadius="md" shadow={2}>
+      <Box
+        bg={activeColors.secondary}
+        p="4"
+        my="4"
+        borderRadius="md"
+        shadow={2}
+      >
         <Text fontSize="16" fontWeight={800} color={activeColors.tint}>
           Appointment for
         </Text>
@@ -239,17 +272,17 @@ const BookAppointmentScreen = () => {
           my={3}
         />
         <TouchableOpacity
-					style={{ 
-						backgroundColor: "#0082f7",
-						borderRadius: 8
-					 }}
+          style={{
+            backgroundColor: "#0082f7",
+            borderRadius: 8,
+          }}
           onPress={() => {
-            navigation.replace("BookedAppointment")
+            navigation.replace("BookedAppointment");
           }}
         >
-				<Text py={3} textAlign={'center'} color={'white'}>
-          Confirm Appointment
-				</Text>
+          <Text py={3} textAlign={"center"} color={"white"}>
+            Confirm Appointment
+          </Text>
         </TouchableOpacity>
       </Box>
     </ScrollView>

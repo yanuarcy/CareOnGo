@@ -293,7 +293,7 @@ const LoginScreen = () => {
             </Text>
           </TouchableOpacity>
         </Center>
-        <Center>
+        {/* <Center>
           <Spacer mt="36">
             <Text fontSize={16} color={"blue.700"} fontWeight={"bold"}>
               Or continue with
@@ -348,7 +348,7 @@ const LoginScreen = () => {
               ></Button>
             </Stack>
           </Box>
-        </Center>
+        </Center> */}
       </Box>
     </TouchableWithoutFeedback>
   );

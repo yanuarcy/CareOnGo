@@ -385,7 +385,7 @@ const RegisterScreen = () => {
             </Text>
           </TouchableOpacity>
         </Center>
-        <Center>
+        {/* <Center>
           <Spacer>
             <Text fontSize={16} color={"blue.700"} fontWeight={"bold"}>
               Or continue with
@@ -440,7 +440,7 @@ const RegisterScreen = () => {
               ></Button>
             </Stack>
           </Box>
-        </Center>
+        </Center> */}
       </Box>
     </TouchableWithoutFeedback>
   );

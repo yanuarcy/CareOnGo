@@ -20,6 +20,7 @@
     "base32": "^0.0.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
+    "date-fns": "^3.0.5",
     "emailjs-com": "^3.2.0",
     "expo": "~49.0.15",
     "expo-checkbox": "~2.4.0",
@@ -27,7 +28,6 @@
     "expo-mail-composer": "^12.5.0",
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
-    "firebase": "^10.7.1",
     "firebase": "^10.6.0",
     "js-base64": "^3.7.5",
     "lottie-ios": "^3.1.8",
@@ -45,7 +45,8 @@
     "react-native-sha1": "^1.2.3",
     "react-native-simple-bcrypt": "^0.3.0",
     "react-native-svg": "13.9.0",
-    "react-native-swiper": "^1.6.0"
+    "react-native-swiper": "^1.6.0",
+    "react-native-webview": "13.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

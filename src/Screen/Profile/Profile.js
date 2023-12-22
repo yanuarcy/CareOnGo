@@ -55,13 +55,13 @@ const SECTIONS = [
       //   label: "Use Wi-Fi",
       //   type: "toogle",
       // },
-      {
-        id: "Location",
-        icon: "navigation",
-        color: "#32c759",
-        label: "Location",
-        type: "link",
-      },
+      // {
+      //   id: "Location",
+      //   icon: "navigation",
+      //   color: "#32c759",
+      //   label: "Location",
+      //   type: "link",
+      // },
       // {
       //   id: "showCollaborators",
       //   icon: "users",
@@ -115,13 +115,13 @@ const SECTIONS = [
         label: "Contact Us",
         type: "link",
       },
-      {
-        id: "AddAccount",
-        icon: "users",
-        color: "#32c759",
-        label: "Add Account",
-        type: "link",
-      },
+      // {
+      //   id: "AddAccount",
+      //   icon: "users",
+      //   color: "#32c759",
+      //   label: "Add Account",
+      //   type: "link",
+      // },
       {
         id: "LogOut",
         icon: "log-out",
