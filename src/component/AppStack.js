@@ -26,6 +26,7 @@ import AppointmentDetailsScreen from "../Screen/AppointmentDetails";
 import ArticleDetails from "../Screen/ArtikelDetails";
 import SplashScreen from "../Splash";
 import HistoryDetailsScreen from "../Screen/Profile/Content/HistoryDetails";
+import Webview from "../Screen/WebView";
 
 const Stack = createStackNavigator();
 
@@ -122,6 +123,7 @@ const AppStack = () => {
 						}
           })}
 					initialParams={{
+            link: "",
             image: null,
             title: "",
             content: "",
@@ -129,9 +131,21 @@ const AppStack = () => {
         />
 
         <Stack.Screen
-          name="Location"
-          component={LocationScreen}
-          options={{ headerShown: false }}
+          name="WebView"
+          component={Webview}
+          options={({ route }) => ({
+            title: route.params.title,
+            headerShown: true,
+            headerTitle: "Read Article", 
+            headerTitleAlign: "center",
+						headerTintColor: activeColors.tint,
+						headerStyle: {
+							backgroundColor: activeColors.primary
+						}
+          })}
+					initialParams={{
+            link: "",
+          }}
         />
 
         <Stack.Screen
