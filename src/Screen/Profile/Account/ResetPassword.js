@@ -33,8 +33,7 @@ import {
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../../../firebase-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import bcrypt from 'bcryptjs';
-
+import { Base64 } from "js-base64"; 
 
 // import SvgIcon from '../common/assets/images/SvgIcon';
 
@@ -51,6 +50,26 @@ const ResetPasswordScreen = ({ navigation }) => {
   const [newPassword, setNewPassword] = useState("");
   const [newPassword2, setNewPassword2] = useState("");
 
+  const encrypt = (text, shift) => {
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+      let char = text[i];
+      if (char.match(/[a-z]/i)) {
+        let code = text.charCodeAt(i);
+        if (code >= 65 && code <= 90) {
+          char = String.fromCharCode(((code - 65 + shift) % 26) + 65);
+        } else if (code >= 97 && code <= 122) {
+          char = String.fromCharCode(((code - 97 + shift) % 26) + 97);
+        }
+      }
+      result += char;
+    }
+    return result;
+  };
+  
+  const decrypt = (text, shift) => {
+    return encrypt(text, (26 - shift) % 26);
+  };
   const [windowDimensions, setWindowDimensions] = useState(
     Dimensions.get("window")
   );
@@ -81,7 +100,7 @@ const ResetPasswordScreen = ({ navigation }) => {
       Alert.alert("Error", "Mohon isi semua kolom password.");
       return;
     }
-
+  
     try {
       console.log(userDataa);
       // 1. Verifikasi Password Saat Ini
@@ -89,18 +108,35 @@ const ResetPasswordScreen = ({ navigation }) => {
       const userCollection = collection(firestore, "users");
       const userDocRef = doc(userCollection, userId);
       const hashedPasswordFromDB = userDataa.password;
-
-      // const bcrypt = require("bcryptjs");
-      const passwordMatch = await bcrypt.compare(
-        currentPassword,
-        hashedPasswordFromDB
+      const passwordMatch = query(
+        userCollection,
+        where("password", "==", hashedPasswordFromDB)
       );
-
-      if (!passwordMatch) {
+      const snapshotByPassword = await getDocs(passwordMatch);
+  
+      if (snapshotByPassword.empty) {
         Alert.alert("Error", "Password saat ini tidak cocok.");
         return;
       }
-
+  
+      // Decode password (mengubah password menjadi enkripsi)
+      console.log("From DB: ", hashedPasswordFromDB);
+      const Decodetext = Base64.decode(hashedPasswordFromDB);
+      console.log("After Decode: ", Decodetext);
+  
+      // Compare password ( mengcompare password)
+      const compare = (text, encryptedText, shift) => {
+        const decryptedText = decrypt(encryptedText, shift);
+        return text === decryptedText;
+      };
+  
+      const passwordMatch2 = compare(currentPassword, Decodetext, 3);
+  
+      if (!passwordMatch2) {
+        Alert.alert("Error", "Password saat ini tidak cocok.");
+        return;
+      }
+  
       // 2. Simpan Password Baru yang Terenkripsi
       if (newPassword !== newPassword2) {
         Alert.alert(
@@ -109,24 +145,15 @@ const ResetPasswordScreen = ({ navigation }) => {
         );
         return;
       }
-
-      bcrypt.setRandomFallback((len) => {
-        // Menghasilkan nilai acak (bisa menggunakan metode lain yang tersedia)
-        const randomBytes = new Array(len);
-        for (let i = 0; i < len; i++) {
-          randomBytes[i] = Math.floor(Math.random() * 256);
-        }
-        return randomBytes;
-      });
-
-      // const saltRounds = 10;
-      const salt = bcrypt.genSaltSync(10);
-
-      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
-
+  
+      // Enkripsi password baru
+      const shiftAmount = 3;
+      const encryptedPassword = encrypt(newPassword, shiftAmount);
+      const hashedNewPassword = Base64.encode(encryptedPassword);
+  
       // Update password baru yang terenkripsi ke Firestore
       await updateDoc(userDocRef, { password: hashedNewPassword });
-
+  
       Alert.alert("Success", "Password Anda berhasil direset");
       navigation.goBack();
     } catch (error) {
@@ -134,7 +161,8 @@ const ResetPasswordScreen = ({ navigation }) => {
       Alert.alert("Error", "Gagal mereset password. Silakan coba lagi.");
     }
   };
-
+  
+  
   useEffect(() => {
     const updateDimensions = () => {
       setWindowDimensions(Dimensions.get("window"));
@@ -148,7 +176,6 @@ const ResetPasswordScreen = ({ navigation }) => {
       // Dimensions.removeEventListener('change', updateDimensions);
     };
   }, []);
-
   return (
     <KeyboardAvoidingView behavior="position" h={{ base: "800" }}>
       <ScrollView>
