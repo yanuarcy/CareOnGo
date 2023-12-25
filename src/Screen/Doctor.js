@@ -12,6 +12,7 @@ import {
   Icon,
   InputGroup,
   Input,
+  Modal,
 } from "native-base";
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
@@ -119,6 +120,9 @@ const DoctorScreen = () => {
   const [pencarian, setPencarian] = useState("");
   const [isLoading, setLoading] = useState(true);
   const [doctorData, setDoctorData] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -194,19 +198,44 @@ const DoctorScreen = () => {
                   <TouchableOpacity style={{ width: "100%" }}>
                     <Box justifyContent={"space-between"}>
                       <Flex direction="row">
+                        {showModal && (
+                          <Modal
+                            isOpen={showModal}
+                            onClose={() => {setShowModal(false); setSelectedImage(null)}}
+                          >
+                            <Modal.Content>
+                              <Modal.CloseButton />
+                              <Modal.Body>
+                                <Image
+                                  alt="Selected Image"
+                                  source={
+                                    selectedImage
+                                      ? { uri: selectedImage }
+                                      : require("../../assets/Chat/ProfileDefault.jpeg")
+                                  }
+                                  w={"100%"}
+                                  h={400}
+                                  resizeMode="contain"
+                                />
+                              </Modal.Body>
+                            </Modal.Content>
+                          </Modal>
+                        )}
                         <Box pt={4} pb={4}>
-                          <Image
-                            w={"60"}
-                            h={"60"}
-                            rounded={"35"}
-                            // source={item.userImg}
-                            source={
-                              item.picture
-                                ? { uri: item.picture }
-                                : require("../../assets/Chat/ProfileDefault.jpeg")
-                            }
-                            alt="ProfileUserChat"
-                          />
+                          <TouchableOpacity onPress={() => {setShowModal(true); setSelectedImage(item.picture)}}>
+                            <Image
+                              w={"60"}
+                              h={"60"}
+                              rounded={"35"}
+                              // source={item.userImg}
+                              source={
+                                item.picture
+                                  ? { uri: item.picture }
+                                  : require("../../assets/Chat/ProfileDefault.jpeg")
+                              }
+                              alt="ProfileUserChat"
+                            />
+                          </TouchableOpacity>
                         </Box>
 
                         <Box
