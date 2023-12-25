@@ -25,7 +25,13 @@ import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import Header from "../component/Header";
 import { firebaseConfig } from "../../firebase-config";
 import { initializeApp } from "firebase/app";
-import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from "firebase/firestore";
 
 const Data = [
   {
@@ -114,7 +120,6 @@ const DoctorScreen = () => {
   const [isLoading, setLoading] = useState(true);
   const [doctorData, setDoctorData] = useState([]);
 
-
   useEffect(() => {
     const fetchData = async () => {
       // const db = getFirestore(firebaseApp);
@@ -145,13 +150,15 @@ const DoctorScreen = () => {
     return <Text>Loading...</Text>;
   }
 
-	const filterDoctorsBySpecialty = (Pencarian) => {
-    return doctorData.filter((doctor) =>
-      doctor.specialist.toLowerCase().includes(Pencarian.toLowerCase()) ||
-      doctor.username.toLowerCase().includes(Pencarian.toLowerCase())
+  const filterDoctorsBySpecialty = (Pencarian) => {
+    return doctorData.filter(
+      (doctor) =>
+        doctor.specialist.toLowerCase().includes(Pencarian.toLowerCase()) ||
+        doctor.username.toLowerCase().includes(Pencarian.toLowerCase())
     );
   };
 
+  console.log(doctorData);
 
   return (
     <TouchableWithoutFeedback
@@ -166,7 +173,7 @@ const DoctorScreen = () => {
               <HStack alignItems="center" space={2} p={2} rounded="md">
                 <Input
                   value={pencarian}
-									onChangeText={(pencarian) => setPencarian(pencarian)}
+                  onChangeText={(pencarian) => setPencarian(pencarian)}
                   placeholder="Search Name or Specialist"
                   color={activeColors.tint}
                   placeholderTextColor={activeColors.tint}
@@ -192,7 +199,12 @@ const DoctorScreen = () => {
                             w={"60"}
                             h={"60"}
                             rounded={"35"}
-                            source={item.userImg}
+                            // source={item.userImg}
+                            source={
+                              item.picture
+                                ? { uri: item.picture }
+                                : require("../../assets/Chat/ProfileDefault.jpeg")
+                            }
                             alt="ProfileUserChat"
                           />
                         </Box>
@@ -216,11 +228,15 @@ const DoctorScreen = () => {
                                       fontWeight={"bold"}
                                       color={activeColors.tint}
                                     >
-                                      {item.username}
+                                      {item.namaLengkap}
                                     </Text>
                                   </HStack>
                                   <HStack alignItems="center" space={1}>
-                                    <FontAwesome name="star" color="orange" size={12} />
+                                    <FontAwesome
+                                      name="star"
+                                      color="orange"
+                                      size={12}
+                                    />
                                     <Text color={activeColors.tint}>
                                       {item.rating}
                                     </Text>
@@ -241,7 +257,8 @@ const DoctorScreen = () => {
                                 mr={10}
                                 color={activeColors.tertiary}
                               >
-                                Exp: <Text fontWeight="bold">{item.experience}</Text>
+                                Exp:{" "}
+                                <Text fontWeight="bold">{item.experience}</Text>
                               </Text>
                               <TouchableOpacity
                                 onPress={() =>
