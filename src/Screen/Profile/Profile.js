@@ -1,8 +1,13 @@
 import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useContext, useEffect, useState } from "react";
-import { SafeAreaView, TouchableOpacity, Switch, RefreshControl } from "react-native";
-import { Box, Text, ScrollView, Image, Flex } from "native-base";
+import {
+  SafeAreaView,
+  TouchableOpacity,
+  Switch,
+  RefreshControl,
+} from "react-native";
+import { Box, Text, ScrollView, Image, Flex, Modal } from "native-base";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import colors from "../../component/theme";
 import { ThemeContext } from "../../component/themeContext";
@@ -168,10 +173,9 @@ const ProfileScreen = () => {
   };
 
   const [userData, setUserData] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
-  const [picture, setPicture] = useState("");
   const [image, setImage] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const onRefresh = async () => {
     // Lakukan proses pembaruan data di sini
@@ -214,7 +218,6 @@ const ProfileScreen = () => {
   };
 
   useEffect(() => {
-
     const uploadImage = async () => {
       const blobImage = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -379,21 +382,43 @@ const ProfileScreen = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {showModal && (
+          <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+            <Modal.Content>
+              <Modal.CloseButton />
+              <Modal.Body>
+                <Image
+                  alt="Selected Image"
+                  source={
+                    userData && userData.picture
+                      ? { uri: userData.picture }
+                      : require("../../../assets/Chat/ProfileDefault.jpeg")
+                  }
+                  w={"100%"}
+                  h={400}
+                  resizeMode="contain"
+                />
+              </Modal.Body>
+            </Modal.Content>
+          </Modal>
+        )}
         <Box paddingY={6}>
           <Box p={6} alignItems={"center"} justifyContent={"center"}>
             <Box position={"relative"}>
-              <Image
-                alt="Profile Picture"
-                // source={require("../../../assets/Chat/user-2.jpg")}
-                source={
-                  userData && userData.picture
-                    ? { uri: userData.picture }
-                    : require("../../../assets/Chat/ProfileDefault.jpeg")
-                }
-                w={"110"}
-                h={"110"}
-                rounded={99999}
-              />
+              <TouchableOpacity onPress={() => setShowModal(true)}>
+                <Image
+                  alt="Profile Picture"
+                  // source={require("../../../assets/Chat/user-2.jpg")}
+                  source={
+                    userData && userData.picture
+                      ? { uri: userData.picture }
+                      : require("../../../assets/Chat/ProfileDefault.jpeg")
+                  }
+                  w={"110"}
+                  h={"110"}
+                  rounded={99999}
+                />
+              </TouchableOpacity>
 
               <TouchableOpacity onPress={() => pickImage()}>
                 <Box
