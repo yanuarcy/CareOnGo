@@ -46,17 +46,18 @@ const AppStack = () => {
 						headerStyle: {
 							backgroundColor: activeColors.primary
 						},
-            title: route.params.userName,
+            title: route.params.namaLengkap,
           })}
           initialParams={{
-            userName: "",
-            userImg: null,
+            namaLengkap: "",
+            picture: null,
             // star: "",
-            text: "",
-            specialty: "",
+            rating: "",
+            specialist: "",
             patients: "",
-            exp: "",
+            experience: "",
             reviews: "",
+            lokasiClinic: "",
           }}
         />
 
@@ -64,7 +65,7 @@ const AppStack = () => {
           name="BookAppointment"
           component={BookAppointmentScreen}
           options={({ route }) => ({
-            title: route.params.userName,
+            title: route.params.namaLengkap,
             headerShown: true,
             headerTitle: "Select Date & Time",
             headerTitleAlign: "center",
@@ -74,10 +75,10 @@ const AppStack = () => {
 						}
           })}
           initialParams={{
-            userName: "",
-            userImg: null,
-            text: "",
-            specialty: "",
+            namaLengkap: "",
+            picture: null,
+            specialist: "",
+            rating: "",
           }}
         />
 

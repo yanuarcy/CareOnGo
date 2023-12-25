@@ -293,14 +293,15 @@ const DoctorScreen = () => {
                                 onPress={() =>
                                   navigation.navigate("DoctorDetails", {
                                     doctorData: {
-                                      userName: item.userName,
-                                      userImg: item.userImg,
+                                      namaLengkap: item.namaLengkap,
+                                      picture: item.picture,
                                       // star: item.star,
-                                      text: item.text,
-                                      specialty: item.specialty,
+                                      rating: item.rating,
+                                      specialist: item.specialist,
                                       patients: item.patients,
-                                      exp: item.exp,
+                                      experience: item.experience,
                                       reviews: item.reviews,
+                                      lokasiClinic: item.lokasiClinic,
                                     },
                                   })
                                 }

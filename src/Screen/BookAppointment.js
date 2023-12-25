@@ -10,6 +10,7 @@ import {
   Image,
   FlatList,
   Icon,
+  Modal,
 } from "native-base";
 import moment from "moment";
 import Swiper from "react-native-swiper";
@@ -33,14 +34,15 @@ const BookAppointmentScreen = () => {
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
-  const initialName = route.params ? route.params.userName : "";
-  const initialUserImg = route.params ? route.params.userImg : null;
-  const initialText = route.params ? route.params.text : "";
-  const initialSpecialty = route.params ? route.params.specialty : "";
+  const initialName = route.params ? route.params.namaLengkap : "";
+  const initialPicture = route.params ? route.params.picture : null;
+  const initialRating = route.params ? route.params.rating : "";
+  const initialSpecialist = route.params ? route.params.specialist : "";
 
   const [selectedTime, setSelectedTime] = useState("11:00 AM");
   const [initialTimeSelected, setInitialTimeSelected] = useState(true);
   const [message, setMessage] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   const timeSlots = Array.from({ length: 11 }, (_, i) => ({
     id: i,
@@ -72,24 +74,56 @@ const BookAppointmentScreen = () => {
   return (
     <ScrollView backgroundColor={activeColors.primary} pagingEnabled>
       <Box bg={activeColors.secondary} p={4} mb={2} mt={3}>
+        {showModal && (
+          <Modal
+            isOpen={showModal}
+            onClose={() => {
+              setShowModal(false);
+            }}
+          >
+            <Modal.Content>
+              <Modal.CloseButton />
+              <Modal.Body>
+                <Image
+                  alt="Selected Image"
+                  source={
+                    initialPicture
+                      ? { uri: initialPicture }
+                      : require("../../assets/Chat/ProfileDefault.jpeg")
+                  }
+                  w={"100%"}
+                  h={400}
+                  resizeMode="contain"
+                />
+              </Modal.Body>
+            </Modal.Content>
+          </Modal>
+        )}
         <Box flexDirection="row" alignItems="center">
-          <Image
-            source={initialUserImg} // Ganti dengan URL gambar profil dokter
-            alt="Doctor Profile"
-            size="100"
-            borderRadius="50px"
-          />
+          <TouchableOpacity onPress={() => setShowModal(true)}>
+            <Image
+              // source={initialPicture} // Ganti dengan URL gambar profil dokter
+              source={
+                initialPicture
+                  ? { uri: initialPicture }
+                  : require("../../assets/Chat/ProfileDefault.jpeg")
+              } // Ganti dengan URL gambar profil dokter
+              alt="Doctor Profile"
+              size="100"
+              borderRadius="50px"
+            />
+          </TouchableOpacity>
           <Box ml={4}>
             <Text fontSize={20} color={activeColors.tint}>
               {initialName}
             </Text>
             <Text fontSize={16} color={activeColors.tertiary}>
-              {initialSpecialty}
+              {initialSpecialist}
             </Text>
             <Text fontSize={12} color={activeColors.tertiary}>
               Rating:
               <FontAwesome name="star" color="orange" size={12} />{" "}
-              <Text>{initialText}</Text>
+              <Text>{initialRating}</Text>
             </Text>
           </Box>
         </Box>
@@ -137,7 +171,7 @@ const BookAppointmentScreen = () => {
                   if (ind > 1) {
                     newIndex = ind - 1.5;
                   } else {
-                    newIndex = ind - 0.5, -1; // Menggunakan Math.max untuk batasan -1
+                    (newIndex = ind - 0.5), -1; // Menggunakan Math.max untuk batasan -1
                   }
                   const newWeek = week + newIndex; // Menggunakan Math.min untuk batasan 1
                   setWeek(newWeek);

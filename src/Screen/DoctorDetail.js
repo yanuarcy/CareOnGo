@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   Box,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   Icon,
   Center,
+  Modal,
 } from "native-base";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
@@ -19,6 +20,8 @@ const DoctorDetailsScreen = () => {
 
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
+
+  const [showModal, setShowModal] = useState(false);
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -34,23 +37,25 @@ const DoctorDetailsScreen = () => {
   const initialData = route.params ? route.params.doctorData : null;
 
   // Kemudian, Anda dapat mengakses data seperti ini:
-  const userName = initialData.userName;
-  const userImg = initialData.userImg;
-  const text = initialData.text;
-  const specialty = initialData.specialty;
+  const namaLengkap = initialData.namaLengkap;
+  const picture = initialData.picture;
+  const rating = initialData.rating;
+  const specialist = initialData.specialist;
   const patients = initialData.patients;
-  const exp = initialData.exp;
+  const experience = initialData.experience;
   const reviews = initialData.reviews;
+  const lokasiClinic = initialData.lokasiClinic;
 
   const doctorData = [
     {
-      name: userName,
-      userImg: userImg,
-      speciality: specialty,
-      text: text,
+      name: namaLengkap,
+      picture: picture,
+      speciality: specialist,
+      rating: rating,
       patients: patients,
-      exp: exp,
+      experience: experience,
       reviews: reviews,
+      lokasiClinic: lokasiClinic,
       about:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam at est quis est porttitor aliquet auctor non quam. Aliquam erat volutpat. Proin fringilla tincidunt ligula. Sed sagittis luctus egestas.\n\n Donec ex magna, pharetra sed viverra quis, faucibus faucibus nulla. Nunc libero sem, posuere quis sem eu, placerat consequat lacus. Fusce eu neque eu ligula consequat bibendum a vitae felis. Donec facilisis accumsan nisi, ac pellentesque felis fermentum pellentesque.Vestibulum consectetur metus vitae dictum facilisis. Proin eleifend maximus diam at sollicitudin. Maecenas iaculis mollis efficitur. Proin tristique tortor nec purus vehicula ultrices.",
     },
@@ -60,22 +65,56 @@ const DoctorDetailsScreen = () => {
     <ScrollView>
       <Box flex={1} p={2} backgroundColor={activeColors.primary}>
         <Box bg={activeColors.secondary} p={2} mb={2}>
+          {showModal && (
+            <Modal
+              isOpen={showModal}
+              onClose={() => {
+                setShowModal(false);
+              }}
+            >
+              <Modal.Content>
+                <Modal.CloseButton />
+                <Modal.Body>
+                  <Image
+                    alt="Selected Image"
+                    source={
+                      doctorData[0].picture
+                        ? { uri: doctorData[0].picture }
+                        : require("../../assets/Chat/ProfileDefault.jpeg")
+                    }
+                    w={"100%"}
+                    h={400}
+                    resizeMode="contain"
+                  />
+                </Modal.Body>
+              </Modal.Content>
+            </Modal>
+          )}
           <Box flexDirection="row" alignItems="center">
-            <Image
-              source={doctorData[0].userImg} // Ganti dengan URL gambar profil dokter
-              alt="Doctor Profile"
-              size="100"
-              borderRadius="50px"
-            />
+            <TouchableOpacity onPress={() => setShowModal(true)}>
+              <Image
+                // source={doctorData[0].picture} // Ganti dengan URL gambar profil dokter
+                source={
+                  doctorData[0].picture
+                    ? { uri: doctorData[0].picture }
+                    : require("../../assets/Chat/ProfileDefault.jpeg")
+                } // Ganti dengan URL gambar profil dokter
+                alt="Doctor Profile"
+                size="100"
+                borderRadius="50px"
+              />
+            </TouchableOpacity>
             <Box ml={4}>
-              <Text fontSize={20} color={activeColors.tint}>{doctorData[0].name}</Text>
+              <Text fontSize={20} color={activeColors.tint}>
+                {doctorData[0].name}
+              </Text>
               <Text fontSize={16} color={activeColors.tertiary}>
                 {doctorData[0].speciality}
               </Text>
               <Text fontSize={12} color={activeColors.tertiary}>
                 Rating:
                 <FontAwesome name="star" color="orange" size={12} />{" "}
-                <Text>{doctorData[0].text}</Text>
+                <Text>{doctorData[0].rating}</Text>
               </Text>
             </Box>
             <Box ml={"auto"}>
@@ -92,25 +131,40 @@ const DoctorDetailsScreen = () => {
         </Box>
 
         <Box bg={activeColors.secondary} p={2} mb={2}>
-          <Text fontWeight={"bold"} color={activeColors.tint}>About Doctor</Text>
+          <Text fontWeight={"bold"} color={activeColors.tint}>
+            About Doctor
+          </Text>
           <Text color={activeColors.tint}>{doctorData[0].about}</Text>
         </Box>
 
         <Box bg={activeColors.secondary} p={2}>
           <Text color={activeColors.tertiary}>
-            Patients: <Text fontWeight={"bold"} color={activeColors.tint}>{doctorData[0].patients}</Text>
+            Patients:{" "}
+            <Text fontWeight={"bold"} color={activeColors.tint}>
+              {doctorData[0].patients}
+            </Text>
           </Text>
           <Text color={activeColors.tertiary}>
-            Experience: <Text fontWeight={"bold"} color={activeColors.tint}>{doctorData[0].exp}</Text>
+            Experience:{" "}
+            <Text fontWeight={"bold"} color={activeColors.tint}>
+              {doctorData[0].experience}
+            </Text>
           </Text>
           <Text color={activeColors.tertiary}>
-            Reviews: <Text fontWeight={"bold"} color={activeColors.tint}>{doctorData[0].reviews}</Text>
+            Reviews:{" "}
+            <Text fontWeight={"bold"} color={activeColors.tint}>
+              {doctorData[0].reviews}
+            </Text>
           </Text>
         </Box>
 
         <Box bg={activeColors.secondary} p={2}>
-          <Text mb={1} color={activeColors.tint}>Service at</Text>
-          <Text fontWeight={600} color={activeColors.tint}>Maya Clinic Scottsdale AZ</Text>
+          <Text mb={1} color={activeColors.tint}>
+            Service at
+          </Text>
+          <Text fontWeight={600} color={activeColors.tint}>
+            {doctorData[0].lokasiClinic}
+          </Text>
           <Text color={activeColors.tertiary}>
             <Icon
               as={Ionicons}
@@ -124,10 +178,10 @@ const DoctorDetailsScreen = () => {
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate("BookAppointment", {
-                  userName: userName,
-                  userImg: userImg,
-                  specialty: specialty,
-                  text: text,
+                  namaLengkap: namaLengkap,
+                  picture: picture,
+                  specialist: specialist,
+                  rating: rating,
                 })
               }
               style={{
