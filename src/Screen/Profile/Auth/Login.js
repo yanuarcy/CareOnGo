@@ -84,14 +84,14 @@ const LoginScreen = () => {
       const snapshotByEmail = await getDocs(queryByEmail);
 
       // Query kedua untuk mencari berdasarkan nama
-      const queryByName = query(
+      const queryByUsername = query(
         usersCollection,
-        where("name", "==", emailOrUsername)
+        where("username", "==", emailOrUsername)
       );
-      const snapshotByName = await getDocs(queryByName);
+      const snapshotByUsername = await getDocs(queryByUsername);
 
       // Gabungkan hasil kedua query
-      const combinedSnapshot = snapshotByEmail.docs.concat(snapshotByName.docs);
+      const combinedSnapshot = snapshotByEmail.docs.concat(snapshotByUsername.docs);
 
       // Periksa apakah ada hasil dari kombinasi query
       if (combinedSnapshot.length > 0) {
@@ -112,7 +112,7 @@ const LoginScreen = () => {
               const credentials = {
                 id: userData.id,
                 email: userData.email,
-                name: userData.name,
+                username: userData.username,
                 namaLengkap: userData.namaLengkap,
                 password: userData.password,
                 phone: userData.phone,
@@ -120,6 +120,8 @@ const LoginScreen = () => {
                 tglLahir: userData.tglLahir,
                 alamat: userData.alamat,
                 cities: userData.cities,
+                role: userData.role,
+                picture: userData.picture,
                 uid: doc.id,
                 loginTime: new Date().getTime(),
               };

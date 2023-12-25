@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Box,
   ScrollView,
@@ -23,11 +23,14 @@ import {
 } from "react-native";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import Header from "../component/Header";
+import { firebaseConfig } from "../../firebase-config";
+import { initializeApp } from "firebase/app";
+import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
 
 const Data = [
   {
     id: "1",
-    userName: "John Doe",
+    userName: "Dr. John Doe",
     userImg: require("../../assets/Chat/Doctor-3.png"),
     // rating: {
     //   star: <FontAwesome name="star" color="orange" size={12} />,
@@ -42,7 +45,7 @@ const Data = [
   },
   {
     id: "2",
-    userName: "Ken William",
+    userName: "Dr. Ken William",
     userImg: require("../../assets/Chat/Doctor-2.png"),
     // rating: {
     //   star: <FontAwesome name="star" color="orange" size={12} />,
@@ -57,7 +60,7 @@ const Data = [
   },
   {
     id: "3",
-    userName: "Sellina Paul",
+    userName: "Dr. Sellina Paul",
     userImg: require("../../assets/Chat/Doctor-5.jpg"),
     // rating: {
     //   star: <FontAwesome name="star" color="orange" size={12} />,
@@ -72,7 +75,7 @@ const Data = [
   },
   {
     id: "4",
-    userName: "Jenny Doe",
+    userName: "Dr. Jenny Doe",
     userImg: require("../../assets/Chat/Doctor-1.jpg"),
     // rating: {
     //   star: <FontAwesome name="star" color="orange" size={12} />,
@@ -87,7 +90,7 @@ const Data = [
   },
   {
     id: "5",
-    userName: "Christy Alex",
+    userName: "Dr. Christy Alex",
     userImg: require("../../assets/Chat/Doctor-4.jpg"),
     // rating: {
     //   star: <FontAwesome name="star" color="orange" size={12} />,
@@ -104,18 +107,51 @@ const Data = [
 
 const DoctorScreen = () => {
   // const theme = { mode: "dark" };
+  const navigation = useNavigation();
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
-
   const [pencarian, setPencarian] = useState("");
+  const [isLoading, setLoading] = useState(true);
+  const [doctorData, setDoctorData] = useState([]);
 
-	const filterDoctorsBySpecialty = (specialty) => {
-    return Data.filter((doctor) =>
-      doctor.specialty.toLowerCase().includes(specialty.toLowerCase())
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // const db = getFirestore(firebaseApp);
+      const DB = initializeApp(firebaseConfig);
+      const firestore = getFirestore(DB);
+      const doctorRef = collection(firestore, "users");
+      const doctorQuery = query(doctorRef, where("role", "==", "Doctor"));
+
+      try {
+        const querySnapshot = await getDocs(doctorQuery);
+        const doctors = [];
+
+        querySnapshot.forEach((doc) => {
+          doctors.push({ id: doc.id, ...doc.data() });
+        });
+
+        setDoctorData(doctors);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+	const filterDoctorsBySpecialty = (Pencarian) => {
+    return doctorData.filter((doctor) =>
+      doctor.specialist.toLowerCase().includes(Pencarian.toLowerCase()) ||
+      doctor.username.toLowerCase().includes(Pencarian.toLowerCase())
     );
   };
 
-  const navigation = useNavigation();
 
   return (
     <TouchableWithoutFeedback
@@ -131,7 +167,7 @@ const DoctorScreen = () => {
                 <Input
                   value={pencarian}
 									onChangeText={(pencarian) => setPencarian(pencarian)}
-                  placeholder="Search Specialist"
+                  placeholder="Search Name or Specialist"
                   color={activeColors.tint}
                   placeholderTextColor={activeColors.tint}
                   size="lg"
@@ -180,13 +216,13 @@ const DoctorScreen = () => {
                                       fontWeight={"bold"}
                                       color={activeColors.tint}
                                     >
-                                      {item.userName}
+                                      {item.username}
                                     </Text>
                                   </HStack>
                                   <HStack alignItems="center" space={1}>
-                                    {item.star}
+                                    <FontAwesome name="star" color="orange" size={12} />
                                     <Text color={activeColors.tint}>
-                                      {item.text}
+                                      {item.rating}
                                     </Text>
                                   </HStack>
                                 </HStack>
@@ -197,7 +233,7 @@ const DoctorScreen = () => {
                               mr={10}
                               color={activeColors.tertiary}
                             >
-                              {item.specialty}
+                              {item.specialist}
                             </Text>
                             <HStack space={16}>
                               <Text
@@ -205,7 +241,7 @@ const DoctorScreen = () => {
                                 mr={10}
                                 color={activeColors.tertiary}
                               >
-                                Exp: <Text fontWeight="bold">{item.exp}</Text>
+                                Exp: <Text fontWeight="bold">{item.experience}</Text>
                               </Text>
                               <TouchableOpacity
                                 onPress={() =>

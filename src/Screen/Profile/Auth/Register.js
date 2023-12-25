@@ -128,7 +128,7 @@ const RegisterScreen = () => {
       const userCollection = collection(firestore, "users");
       const newUser = {
         id: customID.toString(),
-        name: Name,
+        username: Name,
         email: Email,
         phone: Phone,
         password: encrpytedStg2,
@@ -137,6 +137,15 @@ const RegisterScreen = () => {
         tglLahir: "",
         alamat: "",
         cities: "",
+        specialist: "",
+        patients: "",
+        experience: "",
+        reviews: "",
+        rating: "",
+        lokasiClinic: "",
+        picture: "",
+        role: "Pasien",
+
       };
 
       const newDoc = await addDoc(userCollection, newUser);
@@ -148,7 +157,7 @@ const RegisterScreen = () => {
 
       const userData = {
         id: customID.toString(),
-        name: Name,
+        username: Name,
         email: Email,
         phone: Phone,
         password: encrpytedStg2,
@@ -157,6 +166,14 @@ const RegisterScreen = () => {
         tglLahir: "",
         alamat: "",
         cities: "",
+        specialist: "",
+        patients: "",
+        experience: "",
+        reviews: "",
+        rating: "",
+        lokasiClinic: "",
+        picture: "",
+        role: "Pasien",
         uid: uid,
       };
 

@@ -50,7 +50,8 @@ const BookAppointmentScreen = () => {
   const swiper = useRef();
   const [value, setValue] = useState(new Date());
   const [week, setWeek] = useState(0);
-  // console.log(value);
+  console.log(selectedTime);
+  console.log(value);
   console.log(week);
 
   const weeks = useMemo(() => {

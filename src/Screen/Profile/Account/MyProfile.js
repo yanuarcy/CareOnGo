@@ -24,6 +24,7 @@ const MyProfileScreen = () => {
   const [editingCity, setEditingCity] = useState(false);
 
   const [userData, setUserData] = useState(null);
+  const [userRole, setUserRole] = useState("");
   useEffect(() => {
     // Ambil data dari AsyncStorage saat komponen dipasang (mounted)
     AsyncStorage.getItem("credentials")
@@ -31,6 +32,7 @@ const MyProfileScreen = () => {
         if (data) {
           const credentials = JSON.parse(data);
           setUserData(credentials);
+          setUserRole(credentials.role);
         }
       })
       .catch((error) => console.log(error));
@@ -247,7 +249,7 @@ const MyProfileScreen = () => {
                           fontSize={18}
                           color={activeColors.tint}
                         >
-                          Pasien
+                          {userRole === "Doctor" ? "Doctor" : "Pasien"}
                         </Text>
                       </Box>
                     </Flex>

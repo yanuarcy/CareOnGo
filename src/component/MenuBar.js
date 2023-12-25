@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TouchableOpacity } from "react-native";
 import { Text } from "native-base";
 import Icon from "react-native-vector-icons/Ionicons";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 import colors from "./theme";
 import { ThemeContext } from "./themeContext";
@@ -30,7 +32,6 @@ const StackScreen = () => {
         name="Profile"
         component={ProfileScreen}
       />
-
     </Stack.Navigator>
   );
 };
@@ -39,6 +40,25 @@ const MenuBar = () => {
   // const theme = { mode: "dark" };
   const { theme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
+
+  const [UserRole, setUserRole] = useState("");
+
+  useEffect(() => {
+    // Fetch user role from AsyncStorage on component mount
+    const getUserRole = async () => {
+      try {
+        const credentials = await AsyncStorage.getItem("credentials");
+        if (credentials !== null) {
+          const parsedCredentials = JSON.parse(credentials);
+          setUserRole(parsedCredentials.role);
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+      }
+    };
+
+    getUserRole();
+  }, []);
 
   return (
     <>
@@ -92,45 +112,47 @@ const MenuBar = () => {
           })}
         />
 
-        <Tab.Screen
-          name="Doctor"
-          component={DoctorScreen}
-          options={({ navigation }) => ({
-            headerShown: false,
-            tabBarLabel: "",
-            tabBarVisible: false,
-            tabBarIcon: ({ color, size, focused }) => (
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  marginTop: 10,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={() => navigation.navigate("Doctor")}
-              >
-                <Icon
-                  name="person"
-                  size={size}
-                  color={
-                    focused ? activeColors.iconFocus : activeColors.barIcon
-                  }
-                />
-                <Text
-                  fontSize={12}
-                  color={
-                    focused ? activeColors.iconFocus : activeColors.barIcon
-                  }
+        {UserRole === "Doctor" ? null : (
+          <Tab.Screen
+            name="Doctor"
+            component={DoctorScreen}
+            options={({ navigation }) => ({
+              headerShown: false,
+              tabBarLabel: "",
+              tabBarVisible: false,
+              tabBarIcon: ({ color, size, focused }) => (
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    marginTop: 10,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={() => navigation.navigate("Doctor")}
                 >
-                  Doctor
-                </Text>
-              </TouchableOpacity>
-            ),
-            tabBarStyle: {
-              backgroundColor: activeColors.barStyle, // Ganti 'your_color_here' dengan warna latar belakang yang Anda inginkan
-            },
-          })}
-        />
+                  <Icon
+                    name="person"
+                    size={size}
+                    color={
+                      focused ? activeColors.iconFocus : activeColors.barIcon
+                    }
+                  />
+                  <Text
+                    fontSize={12}
+                    color={
+                      focused ? activeColors.iconFocus : activeColors.barIcon
+                    }
+                  >
+                    Doctor
+                  </Text>
+                </TouchableOpacity>
+              ),
+              tabBarStyle: {
+                backgroundColor: activeColors.barStyle, // Ganti 'your_color_here' dengan warna latar belakang yang Anda inginkan
+              },
+            })}
+          />
+        )}
 
         <Tab.Screen
           name="Appointment"
@@ -140,7 +162,7 @@ const MenuBar = () => {
             headerTitle: "My Appointment",
             headerTintColor: activeColors.tint,
             headerStyle: {
-              backgroundColor: activeColors.primary
+              backgroundColor: activeColors.primary,
             },
             tabBarLabel: "",
             tabBarVisible: false,
@@ -182,7 +204,7 @@ const MenuBar = () => {
           component={PesanScreen}
           options={({ navigation }) => ({
             headerStyle: {
-              backgroundColor: activeColors.primary
+              backgroundColor: activeColors.primary,
             },
             headerTintColor: activeColors.tint,
             tabBarLabel: "",

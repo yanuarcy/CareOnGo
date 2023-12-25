@@ -1,13 +1,23 @@
 import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useContext, useEffect, useState } from "react";
-import { SafeAreaView, TouchableOpacity, Switch } from "react-native";
+import { SafeAreaView, TouchableOpacity, Switch, RefreshControl } from "react-native";
 import { Box, Text, ScrollView, Image, Flex } from "native-base";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import colors from "../../component/theme";
 import { ThemeContext } from "../../component/themeContext";
 import { getAuth, signOut } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { firebaseConfig } from "../../../firebase-config";
+import { initializeApp } from "firebase/app";
+import { collection, doc, getFirestore, updateDoc } from "firebase/firestore";
 
 const SECTIONS = [
   {
@@ -136,6 +146,9 @@ const ProfileScreen = () => {
   const Stack = createStackNavigator();
   const navigation = useNavigation();
   const auth = getAuth();
+  const DB = initializeApp(firebaseConfig);
+  const firestore = getFirestore(DB);
+  const storage = getStorage(DB);
 
   // const theme = { mode: "light" };
   const { theme, updateTheme } = useContext(ThemeContext);
@@ -155,17 +168,165 @@ const ProfileScreen = () => {
   };
 
   const [userData, setUserData] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+  const [picture, setPicture] = useState("");
+  const [image, setImage] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    // Lakukan proses pembaruan data di sini
+    // Contoh: panggil fungsi untuk mengambil data baru
+    // dan atur refreshing ke false setelah selesai
+    setRefreshing(true);
+    await reloadUserData(); // Ganti dengan fungsi yang sesuai untuk memuat ulang data
+    setRefreshing(false);
+  };
+
+  const reloadUserData = async () => {
+    try {
+      const credentials = await AsyncStorage.getItem("credentials");
+      if (credentials) {
+        const user = JSON.parse(credentials);
+        // Lakukan sesuatu dengan data pengguna yang sudah dimuat ulang, misalnya:
+        setUserData(user);
+      }
+    } catch (error) {
+      console.error("Error reloading user data: ", error);
+    }
+  };
+
+  // const userId = userData.uid;
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.uri);
+    }
+  };
+
   useEffect(() => {
-    // Ambil data dari AsyncStorage saat komponen dipasang (mounted)
-    AsyncStorage.getItem("credentials")
-      .then((data) => {
-        if (data) {
-          const credentials = JSON.parse(data);
-          setUserData(credentials);
+
+    const uploadImage = async () => {
+      const blobImage = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function () {
+          reject(new TypeError("Network request Failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", image, true);
+        xhr.send(null);
+      });
+      // Create the file metadata
+      /** @type {any} */
+      const metadata = {
+        contentType: "image/jpeg",
+      };
+
+      // Upload file and metadata to the object 'images/mountains.jpg'
+      const storageRef = ref(storage, "Profile/" + Date.now());
+      const uploadTask = uploadBytesResumable(storageRef, blobImage, metadata);
+
+      // Listen for state changes, errors, and completion of the upload.
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          // A full list of error codes is available at
+          // https://firebase.google.com/docs/storage/web/handle-errors
+          switch (error.code) {
+            case "storage/unauthorized":
+              // User doesn't have permission to access the object
+              break;
+            case "storage/canceled":
+              // User canceled the upload
+              break;
+
+            // ...
+
+            case "storage/unknown":
+              // Unknown error occurred, inspect error.serverResponse
+              break;
+          }
+        },
+        () => {
+          // Upload completed successfully, now we can get the download URL
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            console.log("File available at", downloadURL);
+
+            const updateFirestore = async (NewPicture) => {
+              try {
+                const userId = userData.uid;
+                console.log(userId);
+                const userCollection = collection(firestore, "users");
+                const userDocRef = doc(userCollection, userId);
+                await updateDoc(userDocRef, { picture: NewPicture });
+              } catch (error) {
+                console.error("Error: ", error);
+              }
+            };
+
+            const updateProfile = async (NewPicture) => {
+              const credentials = await AsyncStorage.getItem("credentials");
+              if (credentials) {
+                const updatedCredentials = JSON.parse(credentials);
+                updatedCredentials.picture = NewPicture;
+                await AsyncStorage.setItem(
+                  "credentials",
+                  JSON.stringify(updatedCredentials)
+                );
+                console.log(NewPicture);
+              }
+              await reloadUserData();
+            };
+            updateFirestore(downloadURL);
+            updateProfile(downloadURL);
+          });
         }
-      })
-      .catch((error) => console.log(error));
-  }, []);
+      );
+    };
+    if (image != null) {
+      uploadImage();
+      setImage(null);
+    }
+
+    // Ambil data dari AsyncStorage saat komponen dipasang (mounted)
+    // AsyncStorage.getItem("credentials")
+    //   .then(async (data) => {
+    //     if (data) {
+    //       const credentials = JSON.parse(data);
+    //       // const userCollection = collection(firestore, "users");
+    //       // const userDocRef = doc(userCollection, credentials.uid);
+    //       setUserData(credentials);
+    //     }
+    //   })
+    //   .catch((error) => console.log(error));
+    reloadUserData();
+  }, [image]);
 
   console.log(userData);
   const handleLogout = async () => {
@@ -174,7 +335,6 @@ const ProfileScreen = () => {
       await signOut(auth);
 
       // Hapus informasi pengguna yang disimpan di AsyncStorage jika ada
-      // await AsyncStorage.removeItem("userData");
       await AsyncStorage.removeItem("credentials");
 
       // Navigasikan pengguna kembali ke halaman login
@@ -212,19 +372,30 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView flex={1} backgroundColor={activeColors.primary}>
+      <ScrollView
+        flex={1}
+        backgroundColor={activeColors.primary}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <Box paddingY={6}>
           <Box p={6} alignItems={"center"} justifyContent={"center"}>
-            <TouchableOpacity onPress={() => {}}>
-              <Box position={"relative"}>
-                <Image
-                  alt="Profile Picture"
-                  source={require("../../image/UserProfile1.jpg")}
-                  w={"110"}
-                  h={"110"}
-                  rounded={99999}
-                />
+            <Box position={"relative"}>
+              <Image
+                alt="Profile Picture"
+                // source={require("../../../assets/Chat/user-2.jpg")}
+                source={
+                  userData && userData.picture
+                    ? { uri: userData.picture }
+                    : require("../../../assets/Chat/ProfileDefault.jpeg")
+                }
+                w={"110"}
+                h={"110"}
+                rounded={99999}
+              />
 
+              <TouchableOpacity onPress={() => pickImage()}>
                 <Box
                   w={10}
                   h={10}
@@ -238,8 +409,8 @@ const ProfileScreen = () => {
                 >
                   <FeatherIcon name="edit-3" size={15} color="#fff" />
                 </Box>
-              </Box>
-            </TouchableOpacity>
+              </TouchableOpacity>
+            </Box>
 
             {userData && (
               <>
@@ -250,7 +421,7 @@ const ProfileScreen = () => {
                   color={activeColors.tint}
                   textAlign={"center"}
                 >
-                  {userData.name}
+                  {userData.namaLengkap}
                 </Text>
                 <Text
                   mt={2}
@@ -259,7 +430,7 @@ const ProfileScreen = () => {
                   color={activeColors.tertiary}
                   textAlign={"center"}
                 >
-                  ID : {userData.id} 
+                  ID : {userData.id}
                 </Text>
                 <Text
                   mt={1}
