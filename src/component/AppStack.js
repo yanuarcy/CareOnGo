@@ -297,7 +297,7 @@ const AppStack = () => {
             headerTintColor: activeColors.tint,
             headerTitleAlign: "center",
           })}
-          initialParams={{ messageText: "", userImg: null }}
+          initialParams={{ userId: "" ,userImg: null }}
         />
       </Stack.Navigator>
     </>
