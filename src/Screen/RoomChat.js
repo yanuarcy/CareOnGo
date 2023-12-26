@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Box, ScrollView, Text, Center } from "native-base";
+import { Box, ScrollView, Text, Center, View, Image } from "native-base";
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
 import {
@@ -13,7 +13,20 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Alert } from "react-native";
+import { Alert, Platform, TextInput, KeyboardAvoidingView } from "react-native";
+import { firebaseConfig } from "../../firebase-config";
+import { initializeApp } from "firebase/app";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  getFirestore,
+  onSnapshot,
+  query,
+  serverTimestamp,
+  where,
+} from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
 
 const RoomChatScreen = () => {
   // const theme = { mode: "dark" };
@@ -21,132 +34,257 @@ const RoomChatScreen = () => {
   let activeColors = colors[theme.mode];
 
   const route = useRoute();
-  const initialMessageText = route.params ? route.params.messageText : "";
+  const DB = initializeApp(firebaseConfig);
+  const firestore = getFirestore(DB);
+
+  const initialUserId = route.params ? route.params.userId : "";
   const initialUserImg = route.params ? route.params.userImg : null;
 
-	const STORAGE_KEY = `chatHistory_${route.params.userName}`;
+  const STORAGE_KEY = `chatHistory_${route.params.userName}`;
 
-  const [messages, setMessages] = useState([
-    {
-      _id: 2,
-      text: initialMessageText,
-      createdAt: new Date(),
-      user: {
-        _id: 2,
-        name: "React Native",
-        avatar: initialUserImg,
-      },
-    },
-    {
-      _id: 1,
-      text: "Hello",
-      createdAt: new Date(),
-      user: {
-        _id: 2,
-        name: "React Native",
-        avatar: initialUserImg,
-      },
-    },
-  ]);
+  const [UserDataa, setUserData] = useState("");
+  const [refreshUI, setRefreshUI] = useState(false);
+  // const [messages, setMessages] = useState([
+  //   {
+  //     _id: 2,
+  //     text: "heloo world",
+  //     createdAt: new Date(),
+  //     user: {
+  //       _id: 2,
+  //       name: "React Native",
+  //       avatar: initialUserImg,
+  //     },
+  //   },
+  //   {
+  //     _id: 1,
+  //     text: "Hello",
+  //     createdAt: new Date(),
+  //     user: {
+  //       _id: 2,
+  //       name: "React Native",
+  //       avatar: initialUserImg,
+  //     },
+  //   },
+  // ]);
+  const [messages, setMessages] = useState([]);
 
-  const onSend = useCallback((messages = []) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, messages)
-    );
-  }, []);
-
-
-	// Menggunakan useEffect untuk mendapatkan riwayat pesan saat komponen dimuat
-  useEffect(() => {
-    const fetchChatHistory = async () => {
+  const onSend = useCallback(
+    async (messages = []) => {
       try {
-        const storedChatHistory = await AsyncStorage.getItem(STORAGE_KEY);
+        // Menambahkan pesan ke daftar pesan yang ditampilkan di layar
+        setMessages((previousMessages) =>
+          GiftedChat.append(previousMessages, messages)
+        );
 
-        if (storedChatHistory) {
-          setMessages(JSON.parse(storedChatHistory));
-        }
+        // Mengirim pesan ke Firestore
+        await sendMessageToFirestore(messages);
       } catch (error) {
-        console.error('Error fetching chat history:', error);
+        console.error("Error sending message:", error);
       }
-    };
+    },
+    [setMessages]
+  );
 
-    fetchChatHistory();
-  }, []); // Eksekusi hanya saat komponen pertama kali dimuat
-
-  // Menggunakan useEffect untuk menyimpan riwayat pesan setiap kali pesan berubah
-  useEffect(() => {
-    const saveChatHistory = async () => {
-      try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-      } catch (error) {
-        console.error('Error saving chat history:', error);
-      }
-    };
-
-    saveChatHistory();
-  }, [messages]);
-
-
-	const onLongPress = (context, message) => {
-    Alert.alert(
-      'Hapus Pesan',
-      'Apakah Anda yakin ingin menghapus pesan ini?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', onPress: () => deleteMessage(message._id) },
-      ],
-      { cancelable: true }
-    );
+  const generateMessageId = () => {
+    return uuidv4(); // Menggunakan uuidv4 untuk membuat ID unik
   };
 
-	const deleteMessage = (messageId) => {
-    // Mendapatkan indeks pesan yang dipilih
-    const selectedMessageIndex = messages.findIndex((msg) => msg._id === messageId);
+  // const messageToSend = [{ text: 'Contoh pesan' }];
+  const sendMessageToFirestore = async (messageText) => {
+    try {
+      const credentials = await AsyncStorage.getItem("credentials");
+      const user = JSON.parse(credentials);
 
-    if (selectedMessageIndex !== -1) {
-      // Menghapus pesan dari state
-      const updatedMessages = [...messages];
-      updatedMessages.splice(selectedMessageIndex, 1);
-      setMessages(updatedMessages);
+      const user1Id = user.id; // Ganti dengan ID pengguna pertama
+      console.log("user1ID: ", user1Id);
+      const user2Id = initialUserId;
+      console.log("user2ID: ", user2Id);
+      const chatRef = collection(firestore, "chats");
 
-      // Menghapus pesan dari AsyncStorage
-      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMessages))
-        .then(() => {
-          console.log('Pesan berhasil dihapus dari AsyncStorage.');
-        })
-        .catch((error) => {
-          console.error('Gagal menghapus pesan dari AsyncStorage:', error);
+      const sortedIds = [user1Id, user2Id].sort();
+
+      // Query untuk mendapatkan obrolan yang memiliki kedua user
+      const membersArray = [user1Id, user2Id];
+      const chatQuery = query(chatRef, where("members", "==", sortedIds));
+
+      const chatQuerySnapshot = await getDocs(chatQuery);
+
+      let chatID;
+
+      if (!chatQuerySnapshot.empty) {
+        // Jika obrolan sudah ada, gunakan chatId yang sudah ada
+        chatQuerySnapshot.forEach((doc) => {
+          chatID = doc.id;
         });
+        console.log("Chat ID di messages:", chatID);
+      } else {
+        const newChatDocRef = await addDoc(chatRef, {
+          members: sortedIds, // Daftar ID pengguna dalam obrolan
+          createdAt: serverTimestamp(),
+          // Field lain dalam obrolan
+          // Misalnya: 'members', 'createdAt', dll.
+        });
+
+        const chatID = newChatDocRef.id;
+        console.log("Chat ID chats:", chatID);
+      }
+
+      const messageRef = collection(firestore, "chats", chatID, "messages");
+
+      const newMessage = {
+        messageId: generateMessageId(), // Misalnya, menggunakan UUID untuk ID pesan
+        senderId: user.id,
+        content: messageText,
+        timestamp: serverTimestamp(),
+      };
+
+      await addDoc(messageRef, newMessage);
+      fetchMessages();
+      console.log("Pesan berhasil dikirim ke Firestore!");
+    } catch (error) {
+      console.error("Error sending message to Firestore:", error);
     }
   };
+
+  const fetchMessages = async () => {
+    try {
+      const credentials = await AsyncStorage.getItem("credentials");
+      const user = JSON.parse(credentials);
+      // setUserData(user);
+      // console.log(user);
+
+      const user1Id = user.id; // Ganti dengan ID pengguna pertama
+      console.log("user1ID: ", user1Id);
+      const user2Id = initialUserId;
+      console.log("user2ID: ", user2Id);
+      const chatRef = collection(firestore, "chats");
+
+      const sortedIds = [user1Id, user2Id].sort();
+
+      // Query untuk mendapatkan obrolan yang memiliki kedua user
+      const membersArray = [user2Id, user1Id];
+      const chatQuery = query(
+        chatRef,
+        where("members", "==", sortedIds)
+        // where("members", "array-contains-any", membersArray)
+      );
+
+      const chatQuerySnapshot = await getDocs(chatQuery);
+
+      let chatID;
+
+      if (!chatQuerySnapshot.empty) {
+        // Jika obrolan sudah ada, gunakan chatId yang sudah ada
+        chatQuerySnapshot.forEach((doc) => {
+          chatID = doc.id;
+        });
+        console.log("Chat ID di messages:", chatID);
+      } else {
+        // Jika room chat belum ada, buat room chat baru
+        const newChatDocRef = await addDoc(chatRef, {
+          members: sortedIds, // Membuat room chat baru dengan member dari kedua user
+          createdAt: serverTimestamp(),
+        });
+
+        chatID = newChatDocRef.id;
+        console.log("Chat ID chats:", chatID);
+      }
+
+      const messageRef = collection(firestore, "chats", chatID, "messages");
+      const unsubscribe = onSnapshot(messageRef, (snapshot) => {
+        const updatedMessages = [];
+        snapshot.forEach((doc) => {
+          const messageData = doc.data();
+          if (messageData.content) {
+            messageData.content.forEach((contentItem) => {
+              if (contentItem.text) {
+                const isCurrentUser = user.id === messageData.senderId;
+                updatedMessages.push({
+                  _id: contentItem._id,
+                  text: contentItem.text,
+                  createdAt: contentItem.createdAt.toDate(),
+                  user: {
+                    _id: isCurrentUser ? 1 : 2,
+                    SenderID: messageData.senderId,
+                    avatar: initialUserImg,
+                  },
+                });
+              }
+            });
+          }
+        });
+        setMessages(updatedMessages);
+      });
+
+      return () => {
+        unsubscribe(); // Membersihkan langganan saat komponen unmount
+      };
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      return []; // Kembalikan array kosong jika terjadi kesalahan
+    }
+  };
+
+  // Menggunakan useEffect untuk mendapatkan riwayat pesan saat komponen dimuat
+  useEffect(() => {
+    fetchMessages();
+    // ReloadData();
+  }, []); // Eksekusi hanya saat komponen pertama kali dimuat
 
   const scrollToBottomComponent = () => {
     return <FontAwesome name="angle-double-down" size={22} color={"#333"} />;
   };
 
-  const renderBubble = (props) => {
+  const renderMessage = (props) => {
+    const { currentMessage } = props;
+    // console.log(currentMessage.user._id);
     return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            backgroundColor: "#0082F7",
-						marginRight: 10,
-						paddingRight: 6
-          },
-          left: {
-            backgroundColor: "#0082F7",
-          },
-        }}
-        textStyle={{
-          right: {
-            color: "#fff",
-          },
-          left: {
-            color: "#fff",
-          },
-        }}
-      />
+      <View flexDirection={"row"} alignItems={"center"}>
+        {currentMessage.user._id === 2 && ( // Menampilkan gambar profil hanya di sebelah kiri
+          <Image
+            source={
+              currentMessage.user.avatar
+                ? { uri: currentMessage.user.avatar }
+                : require("../../assets/Chat/ProfileDefault.jpeg")
+            }
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              marginRight: 4,
+              marginLeft: 8,
+            }}
+            alt="AvatarUser"
+          />
+        )}
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            right: {
+              backgroundColor:
+                currentMessage.user._id === 1 ? "#0082F7" : "#EEE", // Ubah warna untuk pesan Anda
+              marginRight: 20,
+              marginVertical: 2,
+              paddingRight: 6,
+            },
+            left: {
+              marginLeft: 5,
+              marginVertical: 2,
+              paddingRight: 6,
+              backgroundColor:
+                currentMessage.user._id === 2 ? "#525252" : "#0082F7", // Ubah warna untuk pesan teman
+            },
+          }}
+          textStyle={{
+            right: {
+              color: currentMessage.user._id === 1 ? "#fff" : "#000", // Ubah warna teks untuk pesan Anda
+            },
+            left: {
+              color: currentMessage.user._id === 2 ? "#fff" : "#fff", // Ubah warna teks untuk pesan teman
+            },
+          }}
+        />
+      </View>
     );
   };
 
@@ -156,55 +294,104 @@ const RoomChatScreen = () => {
         <Box>
           <MaterialCommunityIcons
             name="send-circle"
-            size={32}
+            size={40}
             color={"#0082F7"}
-            style={{ marginBottom: 5, marginRight: 5 }}
+            style={{ marginRight: -10, margin: -10 }}
           />
         </Box>
       </Send>
     );
   };
 
-  const sortedMessages = messages.sort((a, b) => b._id - a._id);
+  const sortedMessages = messages.sort((a, b) => b.createdAt - a.createdAt);
 
   const renderInputToolbar = (props) => {
     return (
+      // <InputToolbar
+      //   {...props}
+      //   containerStyle={{
+      //     margin: 3,
+      //     marginHorizontal: 15,
+      //     backgroundColor: "#F8F0E5",
+      //     borderRadius: 30,
+      //     borderTopWidth: 0,
+      //     borderColor: "black",
+      //     // borderTopLeftRadius: 20, // Atur radius sesuai keinginan Anda
+      //     // borderTopRightRadius: 20, // Atur radius sesuai keinginan Anda
+      //   }}
+      // />
       <InputToolbar
         {...props}
         containerStyle={{
           margin: 3,
+          marginBottom: 10,
           marginHorizontal: 15,
-          backgroundColor: "#F8F0E5",
-          borderRadius: 30,
+          backgroundColor: "transparent",
           borderTopWidth: 0,
-          borderColor: "black",
-          // borderTopLeftRadius: 20, // Atur radius sesuai keinginan Anda
-          // borderTopRightRadius: 20, // Atur radius sesuai keinginan Anda
         }}
+        renderComposer={(composerProps) => (
+          <ScrollView
+            style={{
+              maxHeight: 100, // Atur tinggi maksimum sebelum scroll
+              backgroundColor: "#F8F0E5",
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              borderRadius: 20,
+              marginHorizontal: 5,
+            }}
+            showsVerticalScrollIndicator={true}
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            <TextInput
+              {...composerProps}
+              style={{ margin: 5 }}
+              placeholder="Type a message..."
+              multiline // Aktifkan mode multiline
+              maxHeight={100} // Atur tinggi maksimum sebelum scroll
+              onChangeText={(text) => composerProps.onTextChanged(text)} // Pastikan properti onChangeText diproses dengan benar
+              value={composerProps.text}
+            />
+          </ScrollView>
+        )}
       />
     );
   };
 
-	const renderTime = (timeProps) => {
-		const createdAt = new Date(timeProps.currentMessage.createdAt);
-		const hours = createdAt.getHours();
-		const minutes = createdAt.getMinutes();
-		const amOrPm = hours >= 12 ? 'PM' : 'AM';
-		const formattedTime = `${hours % 12}:${minutes} ${amOrPm}`;
-	
-		return (
-			<Text
-				style={{
-					paddingLeft: 8,
-					paddingBottom: 4,
-					fontSize: 10,
-					color: '#fff', // Atur warna teks waktu menjadi putih
-				}}
-			>
-				{formattedTime}
-			</Text>
-		);
-	};
+  const renderTime = (timeProps) => {
+    // const createdAt = new Date(timeProps.currentMessage.createdAt);
+    // const hours = createdAt.getHours();
+    // const minutes = createdAt.getMinutes();
+    // const amOrPm = hours >= 12 ? 'PM' : 'AM';
+    // const formattedTime = `${hours % 12}:${minutes} ${amOrPm}`;
+
+    // return (
+    // 	<Text
+    // 		style={{
+    // 			paddingLeft: 8,
+    // 			paddingBottom: 4,
+    // 			fontSize: 10,
+    // 			color: '#fff', // Atur warna teks waktu menjadi putih
+    // 		}}
+    // 	>
+    // 		{formattedTime}
+    // 	</Text>
+    // );
+    const createdAt = new Date(timeProps.currentMessage.createdAt);
+    const formattedTime = `${createdAt.getHours()}:${createdAt.getMinutes()}`;
+    return (
+      <Text
+        style={{
+          paddingRight: 6,
+          paddingLeft: 10,
+          paddingBottom: 4,
+          fontSize: 10,
+          color: "#fff",
+        }}
+      >
+        {formattedTime}
+      </Text>
+    );
+  };
 
   return (
     <GiftedChat
@@ -213,7 +400,7 @@ const RoomChatScreen = () => {
       user={{
         _id: 1,
       }}
-      renderBubble={renderBubble}
+      renderMessage={renderMessage}
       alwaysShowSend
       renderSend={renderSend}
       scrollToBottom
@@ -224,8 +411,9 @@ const RoomChatScreen = () => {
         backgroundColor: activeColors.secondary,
       }}
       renderInputToolbar={renderInputToolbar}
-			renderTime={renderTime}
-			onLongPress={onLongPress}
+      renderTime={renderTime}
+      keyboardShouldPersistTaps="never"
+      // onLongPress={onLongPress}
     />
   );
 };
