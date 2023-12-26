@@ -36,6 +36,8 @@ import {
   getDoc,
   getDocs,
   getFirestore,
+  limit,
+  orderBy,
   query,
   updateDoc,
   where,
@@ -116,6 +118,69 @@ const PesanScreen = () => {
     setRefreshing(false);
   };
 
+  const getLastMessage = async (userId, friendId) => {
+    try {
+      const sortedIds = [userId, friendId].sort(); // Membuat string dari id yang diurutkan
+
+      const chatRef = collection(firestore, "chats");
+      const chatQuery = query(chatRef, where("members", "==", sortedIds));
+
+      const chatSnapshot = await getDocs(chatQuery);
+
+      let latestMessage = "";
+      let latestcreateAt = null;
+
+      if (!chatSnapshot.empty) {
+        for (const doc of chatSnapshot.docs) {
+          const chatID = doc.id;
+          const messageRef = collection(firestore, "chats", chatID, "messages");
+          const messagesSnapshot = await getDocs(messageRef);
+
+          if (!messagesSnapshot.empty) {
+            let allMessages = [];
+            messagesSnapshot.forEach((messageDoc) => {
+              const messageData = messageDoc.data();
+              if (messageData.content && messageData.content.length > 0) {
+                allMessages = [...allMessages, ...messageData.content];
+              }
+            });
+
+            allMessages.sort((a, b) => {
+              return a.createdAt.toDate() - b.createdAt.toDate();
+            });
+
+            const lastMessage = allMessages[allMessages.length - 1];
+            console.log("Last Message:", lastMessage);
+
+            if (lastMessage && lastMessage.text && lastMessage.createdAt) {
+              const messageCreatedAt = lastMessage.createdAt.toDate();
+
+              // Membandingkan dengan pesan terbaru yang ditemukan
+              if (
+                !latestMessage.createdAt ||
+                messageCreatedAt > latestMessage.createdAt
+              ) {
+                latestMessage = lastMessage.text;
+                latestcreateAt = messageCreatedAt;
+              }
+            }
+          } else {
+            console.log("No messages found.");
+          }
+        }
+
+        console.log("Lates Messages Fix: ", latestMessage);
+      } else {
+        console.log("No chat found.");
+      }
+
+      return [latestMessage, latestcreateAt];
+    } catch (error) {
+      console.error("Error getting last message:", error);
+      return "";
+    }
+  };
+
   const retrieveUidFromStorage = async () => {
     try {
       const credentials = await AsyncStorage.getItem("credentials");
@@ -130,12 +195,28 @@ const PesanScreen = () => {
       const querySnapshot = await getDocs(friendQuery);
 
       const DataUsers = [];
-      if (!querySnapshot.empty) {
-        querySnapshot.forEach(async (doc) => {
-          DataUsers.push({ id: doc.id, ...doc.data() });
-        });
-        setUserDataChat(DataUsers);
+      const promises = [];
+
+      for (const doc of querySnapshot.docs) {
+        const userData = doc.data();
+        const promise = getLastMessage(user.id, userData.id)
+          .then(([latestMessage, latestCreatedAt]) => {
+            DataUsers.push({
+              id: doc.id,
+              ...userData,
+              lastMessage: latestMessage,
+              lastCreatedAt: latestCreatedAt,
+            });
+          })
+          .catch((error) => {
+            console.error("Error retrieving message:", error);
+          });
+
+        promises.push(promise);
       }
+
+      await Promise.all(promises);
+      setUserDataChat(DataUsers);
     } catch (error) {
       console.error("Error retrieving uid:", error);
     }
@@ -287,6 +368,11 @@ const PesanScreen = () => {
     }
   };
 
+  const formatDate = (date) => {
+    const options = { hour: '2-digit', minute: '2-digit' };
+    return new Date(date).toLocaleTimeString([], options);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <Box flex={1}>
@@ -409,7 +495,7 @@ const PesanScreen = () => {
                                 </Text>
                                 <Box ml={-5}>
                                   <Text fontSize={12} color={activeColors.tint}>
-                                    3.41
+                                    {formatDate(item.lastCreatedAt)}
                                   </Text>
                                 </Box>
                               </HStack>
@@ -418,11 +504,13 @@ const PesanScreen = () => {
                           {/* <Text fontSize={"14"} mr={10} color={activeColors.tertiary}>
                           {item.messageText}
                         </Text> */}
-                          {/* <Text fontSize={"14"} color={activeColors.tertiary}>
-                            {item.messageText.length > 40
-                              ? item.messageText.slice(0, 40) + "..."
-                              : item.messageText}
-                          </Text> */}
+                          <Text fontSize={"14"} color={activeColors.tertiary}>
+                            {item.lastMessage
+                              ? item.lastMessage.length > 35
+                                ? item.lastMessage.slice(0, 35) + "..."
+                                : item.lastMessage
+                              : "No message available"}
+                          </Text>
                         </Flex>
                       </Box>
                     </Flex>
