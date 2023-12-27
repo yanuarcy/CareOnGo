@@ -67,7 +67,6 @@ const Home = () => {
       .catch((error) => console.error(error))
       .finally(() => {
         setIsLoadingNews(false);
-        // setIsFetching(false);
       });
   };
 

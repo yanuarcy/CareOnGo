@@ -49,6 +49,7 @@ const AppStack = () => {
             title: route.params.namaLengkap,
           })}
           initialParams={{
+            id: "",
             namaLengkap: "",
             picture: null,
             // star: "",

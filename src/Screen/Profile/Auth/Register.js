@@ -144,6 +144,7 @@ const RegisterScreen = () => {
         rating: "",
         lokasiClinic: "",
         picture: "",
+        friends: "",
         role: "Pasien",
 
       };

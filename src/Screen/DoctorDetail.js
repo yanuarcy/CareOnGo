@@ -37,6 +37,7 @@ const DoctorDetailsScreen = () => {
   const initialData = route.params ? route.params.doctorData : null;
 
   // Kemudian, Anda dapat mengakses data seperti ini:
+  const UserID = initialData.id;
   const namaLengkap = initialData.namaLengkap;
   const picture = initialData.picture;
   const rating = initialData.rating;
@@ -118,7 +119,15 @@ const DoctorDetailsScreen = () => {
               </Text>
             </Box>
             <Box ml={"auto"}>
-              <TouchableOpacity onPress={() => navigation.navigate("Message")}>
+              <TouchableOpacity
+                onPress={() => 
+                  navigation.navigate("RoomChat", {
+                    userName: namaLengkap,
+                    userId: UserID,
+                    userImg: picture,
+                  })
+                }
+              >
                 <Icon
                   as={Ionicons}
                   name="chatbox-ellipses-sharp"

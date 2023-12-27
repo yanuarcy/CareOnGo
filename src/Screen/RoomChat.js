@@ -11,19 +11,23 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert, Platform, TextInput, KeyboardAvoidingView } from "react-native";
 import { firebaseConfig } from "../../firebase-config";
 import { initializeApp } from "firebase/app";
 import {
   addDoc,
+  arrayUnion,
   collection,
+  doc,
+  getDoc,
   getDocs,
   getFirestore,
   onSnapshot,
   query,
   serverTimestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
@@ -33,39 +37,20 @@ const RoomChatScreen = () => {
   const { theme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
+  const navigation = useNavigation();
+
   const route = useRoute();
   const DB = initializeApp(firebaseConfig);
   const firestore = getFirestore(DB);
 
   const initialUserId = route.params ? route.params.userId : "";
   const initialUserImg = route.params ? route.params.userImg : null;
+  const initialUserName = route.params ? route.params.userName : null;
 
   const STORAGE_KEY = `chatHistory_${route.params.userName}`;
 
   const [UserDataa, setUserData] = useState("");
   const [refreshUI, setRefreshUI] = useState(false);
-  // const [messages, setMessages] = useState([
-  //   {
-  //     _id: 2,
-  //     text: "heloo world",
-  //     createdAt: new Date(),
-  //     user: {
-  //       _id: 2,
-  //       name: "React Native",
-  //       avatar: initialUserImg,
-  //     },
-  //   },
-  //   {
-  //     _id: 1,
-  //     text: "Hello",
-  //     createdAt: new Date(),
-  //     user: {
-  //       _id: 2,
-  //       name: "React Native",
-  //       avatar: initialUserImg,
-  //     },
-  //   },
-  // ]);
   const [messages, setMessages] = useState([]);
 
   const onSend = useCallback(
@@ -88,6 +73,15 @@ const RoomChatScreen = () => {
   const generateMessageId = () => {
     return uuidv4(); // Menggunakan uuidv4 untuk membuat ID unik
   };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      e.preventDefault();
+      navigation.navigate('Message'); // Ganti 'Chat' dengan nama rute halaman Chat Anda
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   // const messageToSend = [{ text: 'Contoh pesan' }];
   const sendMessageToFirestore = async (messageText) => {
@@ -152,6 +146,71 @@ const RoomChatScreen = () => {
       const user = JSON.parse(credentials);
       // setUserData(user);
       // console.log(user);
+
+      const userRef = doc(firestore, "users", user.uid);
+
+      const userSnapshot = await getDoc(userRef);
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        const friendToAdd = initialUserName;
+
+        const doctorRef = collection(firestore, "users");
+        const friendQuery = query(
+          doctorRef,
+          where("namaLengkap", "==", friendToAdd)
+        );
+
+        if (
+          friendToAdd !== user.namaLengkap &&
+          (!userData.friends ||
+            !userData.friends.includes ||
+            !userData.friends.includes(friendToAdd))
+        ) {
+          await updateDoc(userRef, {
+            friends: arrayUnion(friendToAdd),
+          });
+          console.log("Berhasil menambahkan Teman: ", friendToAdd);
+          // setFriend("");
+          // setShowModal(false);
+
+          // Tambahkan diri Anda ke field friends teman yang baru saja Anda tambahkan
+          const doctorRef = collection(firestore, "users");
+          const friendQuery = query(
+            doctorRef,
+            where("namaLengkap", "==", friendToAdd)
+          );
+          const querySnapshot = await getDocs(friendQuery);
+
+          if (!querySnapshot.empty) {
+            querySnapshot.forEach(async (doc) => {
+              const friendDocRef = doc.ref;
+
+              // Mendapatkan data teman untuk mendapatkan friends saat ini
+              const friendData = doc.data();
+              const currentFriends = friendData.friends || [];
+
+              // Pastikan retrievedUid.namaLengkap belum ada dalam currentFriends
+              if (!currentFriends.includes(user.namaLengkap)) {
+                // Tambahkan retrievedUid.namaLengkap ke dalam array currentFriends
+                currentFriends.push(user.namaLengkap);
+
+                // Update field 'friends' dengan array yang telah diperbarui
+                await updateDoc(friendDocRef, { friends: currentFriends });
+                console.log("Anda sudah berhasil ditambahkan sebagai Teman");
+              } else {
+                console.log("Anda sudah berteman dengan orang ini.");
+              }
+            });
+          } else {
+            console.log("Tidak ada teman dengan nama lengkap tersebut.");
+          }
+        } else {
+          // Alert.alert("Info", "Teman sudah ada dalam daftar teman Anda");
+          console.log("Teman sudah ada dalam daftar teman Anda");
+        }
+      } else {
+        console.log("Pengguna tidak ditemukan.");
+      }
 
       const user1Id = user.id; // Ganti dengan ID pengguna pertama
       console.log("user1ID: ", user1Id);
@@ -307,19 +366,6 @@ const RoomChatScreen = () => {
 
   const renderInputToolbar = (props) => {
     return (
-      // <InputToolbar
-      //   {...props}
-      //   containerStyle={{
-      //     margin: 3,
-      //     marginHorizontal: 15,
-      //     backgroundColor: "#F8F0E5",
-      //     borderRadius: 30,
-      //     borderTopWidth: 0,
-      //     borderColor: "black",
-      //     // borderTopLeftRadius: 20, // Atur radius sesuai keinginan Anda
-      //     // borderTopRightRadius: 20, // Atur radius sesuai keinginan Anda
-      //   }}
-      // />
       <InputToolbar
         {...props}
         containerStyle={{

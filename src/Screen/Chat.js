@@ -150,7 +150,7 @@ const PesanScreen = () => {
             });
 
             const lastMessage = allMessages[allMessages.length - 1];
-            console.log("Last Message:", lastMessage);
+            // console.log("Last Message:", lastMessage);
 
             if (lastMessage && lastMessage.text && lastMessage.createdAt) {
               const messageCreatedAt = lastMessage.createdAt.toDate();
@@ -165,13 +165,13 @@ const PesanScreen = () => {
               }
             }
           } else {
-            console.log("No messages found.");
+            // console.log("No messages found.");
           }
         }
 
-        console.log("Lates Messages Fix: ", latestMessage);
+        // console.log("Lates Messages Fix: ", latestMessage);
       } else {
-        console.log("No chat found.");
+        // console.log("No chat found.");
       }
 
       return [latestMessage, latestcreateAt];
@@ -225,9 +225,9 @@ const PesanScreen = () => {
   useEffect(() => {
     // setUserDataChat(DataUsers);
     retrieveUidFromStorage();
-  }, []);
+  }, [userDataChat]);
 
-  console.log(userDataChat);
+  // console.log(userDataChat);
   const addFriend = async () => {
     try {
       const DataUsers = [];
