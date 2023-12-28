@@ -33,6 +33,8 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import LottieView from "lottie-react-native";
+
 
 const Data = [
   {
@@ -123,7 +125,6 @@ const DoctorScreen = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-
   useEffect(() => {
     const fetchData = async () => {
       // const db = getFirestore(firebaseApp);
@@ -149,10 +150,6 @@ const DoctorScreen = () => {
 
     fetchData();
   }, []);
-
-  if (isLoading) {
-    return <Text>Loading...</Text>;
-  }
 
   const filterDoctorsBySpecialty = (Pencarian) => {
     return doctorData.filter(
@@ -191,141 +188,168 @@ const DoctorScreen = () => {
               </HStack>
             </Box>
             <Box mt={4}>
-              <FlatList
-                data={filterDoctorsBySpecialty(pencarian)}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <TouchableOpacity style={{ width: "100%" }}>
-                    <Box justifyContent={"space-between"}>
-                      <Flex direction="row">
-                        {showModal && (
-                          <Modal
-                            isOpen={showModal}
-                            onClose={() => {setShowModal(false); setSelectedImage(null)}}
-                          >
-                            <Modal.Content>
-                              <Modal.CloseButton />
-                              <Modal.Body>
-                                <Image
-                                  alt="Selected Image"
-                                  source={
-                                    selectedImage
-                                      ? { uri: selectedImage }
-                                      : require("../../assets/Chat/ProfileDefault.jpeg")
-                                  }
-                                  w={"100%"}
-                                  h={400}
-                                  resizeMode="contain"
-                                />
-                              </Modal.Body>
-                            </Modal.Content>
-                          </Modal>
-                        )}
-                        <Box pt={4} pb={4}>
-                          <TouchableOpacity onPress={() => {setShowModal(true); setSelectedImage(item.picture)}}>
-                            <Image
-                              w={"60"}
-                              h={"60"}
-                              rounded={"35"}
-                              // source={item.userImg}
-                              source={
-                                item.picture
-                                  ? { uri: item.picture }
-                                  : require("../../assets/Chat/ProfileDefault.jpeg")
-                              }
-                              alt="ProfileUserChat"
-                            />
-                          </TouchableOpacity>
-                        </Box>
-
-                        <Box
-                          justifyContent={"center"}
-                          p={"15"}
-                          pl={0}
-                          ml={"3"}
-                          w={"300"}
-                          borderBottomWidth={"1"}
-                          borderBottomColor={"#cccccc"}
-                        >
-                          <Flex direction="column">
-                            <Box mb={"1"}>
-                              <Flex direction="row">
-                                <HStack space={32}>
-                                  <HStack space={2}>
-                                    <Text
-                                      fontSize={"14"}
-                                      fontWeight={"bold"}
-                                      color={activeColors.tint}
-                                    >
-                                      {item.namaLengkap}
-                                    </Text>
-                                  </HStack>
-                                  <HStack alignItems="center" space={1}>
-                                    <FontAwesome
-                                      name="star"
-                                      color="orange"
-                                      size={12}
-                                    />
-                                    <Text color={activeColors.tint}>
-                                      {item.rating}
-                                    </Text>
-                                  </HStack>
-                                </HStack>
-                              </Flex>
-                            </Box>
-                            <Text
-                              fontSize={"14"}
-                              mr={10}
-                              color={activeColors.tertiary}
+              {isLoading ? (
+                <Center flex={1} justifyContent={"center"}>
+                  {/* <Spinner size="lg" color={"black"} /> */}
+                  <LottieView
+                    style={{
+                      width: 70,
+                      height: 170,
+                      marginTop: -100,
+                    }}
+                    source={require("../../assets/LoadingAnimation.json")}
+                    autoPlay
+                    loop={true}
+                    speed={1.5}
+                  />
+                </Center>
+              ) : (
+                <FlatList
+                  data={filterDoctorsBySpecialty(pencarian)}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity style={{ width: "100%" }}>
+                      <Box justifyContent={"space-between"}>
+                        <Flex direction="row">
+                          {showModal && (
+                            <Modal
+                              isOpen={showModal}
+                              onClose={() => {
+                                setShowModal(false);
+                                setSelectedImage(null);
+                              }}
                             >
-                              {item.specialist}
-                            </Text>
-                            <HStack space={16}>
+                              <Modal.Content>
+                                <Modal.CloseButton />
+                                <Modal.Body>
+                                  <Image
+                                    alt="Selected Image"
+                                    source={
+                                      selectedImage
+                                        ? { uri: selectedImage }
+                                        : require("../../assets/Chat/ProfileDefault.jpeg")
+                                    }
+                                    w={"100%"}
+                                    h={400}
+                                    resizeMode="contain"
+                                  />
+                                </Modal.Body>
+                              </Modal.Content>
+                            </Modal>
+                          )}
+                          <Box pt={4} pb={4}>
+                            <TouchableOpacity
+                              onPress={() => {
+                                setShowModal(true);
+                                setSelectedImage(item.picture);
+                              }}
+                            >
+                              <Image
+                                w={"60"}
+                                h={"60"}
+                                rounded={"35"}
+                                // source={item.userImg}
+                                source={
+                                  item.picture
+                                    ? { uri: item.picture }
+                                    : require("../../assets/Chat/ProfileDefault.jpeg")
+                                }
+                                alt="ProfileUserChat"
+                              />
+                            </TouchableOpacity>
+                          </Box>
+
+                          <Box
+                            justifyContent={"center"}
+                            p={"15"}
+                            pl={0}
+                            ml={"3"}
+                            w={"300"}
+                            borderBottomWidth={"1"}
+                            borderBottomColor={"#cccccc"}
+                          >
+                            <Flex direction="column">
+                              <Box mb={"1"}>
+                                <Flex direction="row">
+                                  <HStack space={32}>
+                                    <HStack space={2}>
+                                      <Text
+                                        fontSize={"14"}
+                                        fontWeight={"bold"}
+                                        color={activeColors.tint}
+                                      >
+                                        {item.namaLengkap}
+                                      </Text>
+                                    </HStack>
+                                    <HStack alignItems="center" space={1}>
+                                      <FontAwesome
+                                        name="star"
+                                        color="orange"
+                                        size={12}
+                                      />
+                                      <Text color={activeColors.tint}>
+                                        {item.rating}
+                                      </Text>
+                                    </HStack>
+                                  </HStack>
+                                </Flex>
+                              </Box>
                               <Text
                                 fontSize={"14"}
                                 mr={10}
                                 color={activeColors.tertiary}
                               >
-                                Exp:{" "}
-                                <Text fontWeight="bold">{item.experience}</Text>
+                                {item.specialist}
                               </Text>
-                              <TouchableOpacity
-                                onPress={() =>
-                                  navigation.navigate("DoctorDetails", {
-                                    doctorData: {
-                                      id: item.id,
-                                      namaLengkap: item.namaLengkap,
-                                      picture: item.picture,
-                                      // star: item.star,
-                                      rating: item.rating,
-                                      specialist: item.specialist,
-                                      patients: item.patients,
-                                      experience: item.experience,
-                                      reviews: item.reviews,
-                                      lokasiClinic: item.lokasiClinic,
-                                    },
-                                  })
-                                }
-                              >
-                                <Text color={"#FDB436"} fontWeight={600}>
-                                  Detail
-                                  <Icon
-                                    as={Ionicons}
-                                    name="chevron-forward-outline"
-                                    size={4}
-                                    ml="2"
-                                    color={"#FDB436"}
-                                  />
+                              <HStack space={16}>
+                                <Text
+                                  fontSize={"14"}
+                                  mr={10}
+                                  color={activeColors.tertiary}
+                                >
+                                  Exp:{" "}
+                                  <Text fontWeight="bold">
+                                    {item.experience}
+                                  </Text>
                                 </Text>
-                              </TouchableOpacity>
-                            </HStack>
-                          </Flex>
-                        </Box>
-                      </Flex>
-                    </Box>
-                  </TouchableOpacity>
-                )}
-              />
+                                <TouchableOpacity
+                                  onPress={() =>
+                                    navigation.navigate("DoctorDetails", {
+                                      doctorData: {
+                                        id: item.id,
+                                        namaLengkap: item.namaLengkap,
+                                        picture: item.picture,
+                                        // star: item.star,
+                                        rating: item.rating,
+                                        specialist: item.specialist,
+                                        patients: item.patients,
+                                        experience: item.experience,
+                                        reviews: item.reviews,
+                                        lokasiClinic: item.lokasiClinic,
+                                      },
+                                    })
+                                  }
+                                >
+                                  <Text color={"#FDB436"} fontWeight={600}>
+                                    Detail
+                                    <Icon
+                                      as={Ionicons}
+                                      name="chevron-forward-outline"
+                                      size={4}
+                                      ml="2"
+                                      color={"#FDB436"}
+                                    />
+                                  </Text>
+                                </TouchableOpacity>
+                              </HStack>
+                            </Flex>
+                          </Box>
+                        </Flex>
+                      </Box>
+                    </TouchableOpacity>
+                  )}
+                />
+              )}
             </Box>
           </Center>
         </Box>

@@ -11,6 +11,7 @@ import {
   Pressable,
   Spinner,
   Center,
+  View,
 } from "native-base";
 import { TouchableOpacity, ImageBackground } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -26,6 +27,7 @@ import { useNavigation } from "@react-navigation/native";
 import DataArticles from "../../DataArticle";
 import DataObats from "../../DataObat";
 import { format } from "date-fns";
+import LottieView from "lottie-react-native";
 // import { ThemeContext } from "../component/themeContext";
 
 const Home = () => {
@@ -61,7 +63,7 @@ const Home = () => {
   };
 
   const getNews = () => {
-    fetch('https://api-berita-indonesia.vercel.app/cnn/gayaHidup')
+    fetch("https://api-berita-indonesia.vercel.app/cnn/gayaHidup")
       .then((response) => response.json())
       .then((json) => setLifestyle(json.data.posts))
       .catch((error) => console.error(error))
@@ -136,7 +138,18 @@ const Home = () => {
         <Box>
           {isLoadingNews ? (
             <Center flex={1} justifyContent={"center"}>
-              <Spinner size="lg" color={"black"} />
+              {/* <Spinner size="lg" color={"black"} /> */}
+              <LottieView
+                style={{
+                  width: 70,
+                  height: 170,
+                  marginTop: 20,
+                }}
+                source={require("../../assets/LoadingAnimation.json")}
+                autoPlay
+                loop={true}
+                speed={1.5}
+              />
             </Center>
           ) : (
             <FlatList

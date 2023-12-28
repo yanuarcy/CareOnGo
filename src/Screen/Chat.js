@@ -17,7 +17,7 @@ import {
 } from "native-base";
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import {
   Alert,
   Keyboard,
@@ -43,6 +43,7 @@ import {
   where,
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LottieView from "lottie-react-native";
 
 const Messages = [
   {
@@ -92,10 +93,14 @@ const PesanScreen = () => {
   const { theme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
+  const isFocused = useIsFocused();
+  const [refreshChat, setRefreshChat] = useState(false);
+
   const navigation = useNavigation();
   const DB = initializeApp(firebaseConfig);
   const firestore = getFirestore(DB);
 
+  const [isLoading, setLoading] = useState(true);
   const [pencarian, setPencarian] = useState("");
   const [Friend, setFriend] = useState("");
   const [retrievedUid, setRetrievedUid] = useState("");
@@ -217,17 +222,26 @@ const PesanScreen = () => {
 
       await Promise.all(promises);
       setUserDataChat(DataUsers);
+      setLoading(false);
     } catch (error) {
       console.error("Error retrieving uid:", error);
     }
   };
 
   useEffect(() => {
-    // setUserDataChat(DataUsers);
-    retrieveUidFromStorage();
-  }, [userDataChat]);
+    if (isFocused) {
+      // Lakukan sesuatu saat halaman fokus, misalnya refresh chat
+      // setRefreshChat(prevState => !prevState); // Trigger refresh dengan mengubah state
+      retrieveUidFromStorage();
+    }
+  }, [isFocused]);
 
-  // console.log(userDataChat);
+  // useEffect(() => {
+  //   // setUserDataChat(DataUsers);
+  //   retrieveUidFromStorage();
+  // }, []);
+
+  console.log("Data ini kerefresh", userDataChat);
   const addFriend = async () => {
     try {
       const DataUsers = [];
@@ -369,7 +383,7 @@ const PesanScreen = () => {
   };
 
   const formatDate = (date) => {
-    const options = { hour: '2-digit', minute: '2-digit' };
+    const options = { hour: "2-digit", minute: "2-digit" };
     return new Date(date).toLocaleTimeString([], options);
   };
 
@@ -437,87 +451,110 @@ const PesanScreen = () => {
                 </TouchableOpacity>
               </HStack>
             </Box>
-            <FlatList
-              data={filterChatByName(pencarian)}
-              keyExtractor={(item) => item.id}
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={{ width: "100%" }}
-                  onPress={() =>
-                    navigation.navigate("RoomChat", {
-                      userName: item.namaLengkap,
-                      userId: item.id,
-                      userImg: item.picture,
-                    })
-                  }
-                  onLongPress={() =>
-                    deleteFriendAlert(item.namaLengkap, item.uid)
-                  }
-                >
-                  <Box justifyContent={"space-between"}>
-                    <Flex direction="row">
-                      <Box pt={4} pb={2}>
-                        <Image
-                          w={"60"}
-                          h={"60"}
-                          rounded={"35"}
-                          source={
-                            item.picture
-                              ? { uri: item.picture }
-                              : require("../../assets/Chat/ProfileDefault.jpeg")
-                          }
-                          alt="ProfileUserChat"
-                        />
-                      </Box>
+            {isLoading ? (
+              <Center flex={1} justifyContent={"center"}>
+                {/* <Spinner size="lg" color={"black"} /> */}
+                <LottieView
+                  style={{
+                    width: 70,
+                    height: 170,
+                    marginTop: 150,
+                  }}
+                  source={require("../../assets/LoadingAnimation.json")}
+                  autoPlay
+                  loop={true}
+                  speed={1.5}
+                />
+              </Center>
+            ) : (
+              <FlatList
+                data={filterChatByName(pencarian)}
+                keyExtractor={(item) => item.id}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={{ width: "100%" }}
+                    onPress={() =>
+                      navigation.navigate("RoomChat", {
+                        userName: item.namaLengkap,
+                        userId: item.id,
+                        userImg: item.picture,
+                      })
+                    }
+                    onLongPress={() =>
+                      deleteFriendAlert(item.namaLengkap, item.uid)
+                    }
+                  >
+                    <Box justifyContent={"space-between"}>
+                      <Flex direction="row">
+                        <Box pt={4} pb={2}>
+                          <Image
+                            w={"60"}
+                            h={"60"}
+                            rounded={"35"}
+                            source={
+                              item.picture
+                                ? { uri: item.picture }
+                                : require("../../assets/Chat/ProfileDefault.jpeg")
+                            }
+                            alt="ProfileUserChat"
+                          />
+                        </Box>
 
-                      <Box
-                        justifyContent={"center"}
-                        p={"15"}
-                        pl={0}
-                        ml={"3"}
-                        w={"300"}
-                        // borderBottomWidth={"1"}
-                        // borderBottomColor={"#cccccc"}
-                      >
-                        <Flex direction="column">
-                          <Box mb={"1"}>
-                            <Flex direction="row">
-                              <HStack space={40}>
-                                <Text
-                                  fontSize={"14"}
-                                  fontWeight={"bold"}
-                                  color={activeColors.tint}
-                                >
-                                  {item.namaLengkap}
-                                </Text>
-                                <Box ml={-5}>
-                                  <Text fontSize={12} color={activeColors.tint}>
-                                    {formatDate(item.lastCreatedAt)}
+                        <Box
+                          justifyContent={"center"}
+                          p={"15"}
+                          pl={0}
+                          ml={"3"}
+                          w={"300"}
+                          // borderBottomWidth={"1"}
+                          // borderBottomColor={"#cccccc"}
+                        >
+                          <Flex direction="column">
+                            <Box mb={"1"}>
+                              <Flex direction="row">
+                                <HStack space={40}>
+                                  <Text
+                                    fontSize={"14"}
+                                    fontWeight={"bold"}
+                                    color={activeColors.tint}
+                                  >
+                                    {item.namaLengkap}
                                   </Text>
-                                </Box>
-                              </HStack>
-                            </Flex>
-                          </Box>
-                          {/* <Text fontSize={"14"} mr={10} color={activeColors.tertiary}>
+                                  <Box ml={-5}>
+                                    <Text
+                                      fontSize={12}
+                                      color={activeColors.tint}
+                                    >
+                                      {formatDate(item.lastCreatedAt)}
+                                    </Text>
+                                  </Box>
+                                </HStack>
+                              </Flex>
+                            </Box>
+                            {/* <Text fontSize={"14"} mr={10} color={activeColors.tertiary}>
                           {item.messageText}
                         </Text> */}
-                          <Text fontSize={"14"} color={activeColors.tertiary}>
-                            {item.lastMessage
-                              ? item.lastMessage.length > 35
-                                ? item.lastMessage.slice(0, 35) + "..."
-                                : item.lastMessage
-                              : "No message available"}
-                          </Text>
-                        </Flex>
-                      </Box>
-                    </Flex>
-                  </Box>
-                </TouchableOpacity>
-              )}
-            />
+                            <Text fontSize={"14"} color={activeColors.tertiary}>
+                              {item.lastMessage
+                                ? item.lastMessage.length > 35
+                                  ? item.lastMessage.slice(0, 35) + "..."
+                                  : item.lastMessage
+                                : "No message available"}
+                            </Text>
+                          </Flex>
+                        </Box>
+                      </Flex>
+                    </Box>
+                  </TouchableOpacity>
+                )}
+              />
+            )}
           </Center>
         </Box>
         {/* </ScrollView> */}
