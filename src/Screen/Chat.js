@@ -106,6 +106,8 @@ const PesanScreen = () => {
   const [retrievedUid, setRetrievedUid] = useState("");
   const [userDataChat, setUserDataChat] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const filterChatByName = (userName) => {
@@ -493,17 +495,47 @@ const PesanScreen = () => {
                     <Box justifyContent={"space-between"}>
                       <Flex direction="row">
                         <Box pt={4} pb={2}>
-                          <Image
-                            w={"60"}
-                            h={"60"}
-                            rounded={"35"}
-                            source={
-                              item.picture
-                                ? { uri: item.picture }
-                                : require("../../assets/Chat/ProfileDefault.jpeg")
-                            }
-                            alt="ProfileUserChat"
-                          />
+                          {showModal2 && (
+                            <Modal
+                              isOpen={showModal2}
+                              onClose={() => {
+                                setShowModal2(false);
+                                setSelectedImage(null);
+                              }}
+                            >
+                              <Modal.Content>
+                                <Modal.CloseButton />
+                                <Modal.Body>
+                                  <Image
+                                    alt="Selected Image"
+                                    source={
+                                      selectedImage
+                                        ? { uri: selectedImage }
+                                        : require("../../assets/Chat/ProfileDefault.jpeg")
+                                    }
+                                    w={"100%"}
+                                    h={400}
+                                    resizeMode="contain"
+                                  />
+                                </Modal.Body>
+                              </Modal.Content>
+                            </Modal>
+                          )}
+                          <TouchableOpacity
+                            onPress={() => { setShowModal2(true); setSelectedImage(item.picture)} }
+                          >
+                            <Image
+                              w={"60"}
+                              h={"60"}
+                              rounded={"35"}
+                              source={
+                                item.picture
+                                  ? { uri: item.picture }
+                                  : require("../../assets/Chat/ProfileDefault.jpeg")
+                              }
+                              alt="ProfileUserChat"
+                            />
+                          </TouchableOpacity>
                         </Box>
 
                         <Box
