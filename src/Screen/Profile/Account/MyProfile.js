@@ -1,10 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import { TouchableOpacity } from "react-native";
-import { Box, Text, Input, ScrollView, Flex, HStack } from "native-base";
+import { Alert, TouchableOpacity } from "react-native";
+import { Box, Text, Input, ScrollView, Flex, HStack, Spinner } from "native-base";
 import { ThemeContext } from "../../../component/themeContext";
 import colors from "../../../component/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { doc, getFirestore, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  getFirestore,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { firebaseConfig } from "../../../../firebase-config";
 import { initializeApp } from "firebase/app";
 
@@ -14,6 +21,8 @@ const MyProfileScreen = () => {
 
   const DB = initializeApp(firebaseConfig);
   const firestore = getFirestore(DB);
+
+  const [loadingData, setLoadingData] = useState(true);
 
   const [editingTelp, setEditingTelp] = useState(false);
   const [editingEmail, setEditingEmail] = useState(false);
@@ -25,6 +34,13 @@ const MyProfileScreen = () => {
 
   const [userData, setUserData] = useState(null);
   const [userRole, setUserRole] = useState("");
+
+  const [nama, setNama] = useState("");
+  const [gender, setGender] = useState("");
+  const [tglLahir, setTglLahir] = useState("");
+  const [alamat, setAlamat] = useState("");
+  const [city, setCity] = useState("");
+
   useEffect(() => {
     // Ambil data dari AsyncStorage saat komponen dipasang (mounted)
     AsyncStorage.getItem("credentials")
@@ -32,8 +48,14 @@ const MyProfileScreen = () => {
         if (data) {
           const credentials = JSON.parse(data);
           setUserData(credentials);
+          setNama(credentials.namaLengkap);
+          setGender(credentials.jenisKelamin);
+          setTglLahir(credentials.tglLahir);
+          setAlamat(credentials.alamat);
+          setCity(credentials.cities);
           setUserRole(credentials.role);
         }
+        setLoadingData(false);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -45,6 +67,7 @@ const MyProfileScreen = () => {
     }
 
     let updatedUserData = { ...userData };
+    console.log("UpdateUserData ke - 1: ", updatedUserData);
 
     switch (field) {
       case "Telp":
@@ -55,10 +78,16 @@ const MyProfileScreen = () => {
         break;
       case "Biodata":
         if (newValue.nama) {
-          updatedUserData = { ...updatedUserData, namaLengkap: newValue.nama };
+          updatedUserData = {
+            ...updatedUserData,
+            namaLengkap: newValue.nama,
+          };
         }
         if (newValue.gender) {
-          updatedUserData = { ...updatedUserData, jenisKelamin: newValue.gender };
+          updatedUserData = {
+            ...updatedUserData,
+            jenisKelamin: newValue.gender,
+          };
         }
         if (newValue.tgl) {
           updatedUserData = { ...updatedUserData, tglLahir: newValue.tgl };
@@ -74,15 +103,54 @@ const MyProfileScreen = () => {
         break;
     }
 
-    setUserData(updatedUserData);
+    console.log("Ini NewValue Gender  : ", newValue.gender);
+    console.log("Ini updateUserData ke - 2 : ", updatedUserData);
 
     try {
+      if (newValue.nama) {
+        const querySnapshot = await getDocs(
+          collection(firestore, "users"),
+          where("friends", "array-contains", newValue.nama)
+        );
+
+        // Loop melalui hasil query
+        querySnapshot.forEach(async (doc) => {
+          const userRef = doc.ref;
+          const userDataa = doc.data();
+
+          if (
+            userDataa &&
+            userDataa.friends &&
+            Array.isArray(userDataa.friends)
+          ) {
+            const friends = userDataa.friends;
+            console.log("Friends:", friends);
+
+            // Perbarui nama di friends jika ditemukan
+            const updatedFriends = friends.map((name) =>
+              name === userData.namaLengkap ? newValue.nama : name
+            );
+            console.log("UpdatedFriends:", updatedFriends);
+
+            // Perbarui field friends di Firestore
+            await updateDoc(userRef, { friends: updatedFriends });
+          } else {
+            console.log("Data teman tidak ditemukan atau tidak valid.");
+          }
+        });
+      }
+
+      console.log("Ini UpdateUserData: ", updatedUserData);
+
+      const userDoc = doc(firestore, "users", userData.uid);
+      await updateDoc(userDoc, updatedUserData);
+
       await AsyncStorage.setItem(
         "credentials",
         JSON.stringify(updatedUserData)
       );
-      const userDoc = doc(firestore, "users", userData.uid);
-      await updateDoc(userDoc, updatedUserData);
+
+      setUserData(updatedUserData);
     } catch (error) {
       console.error("Error saving or updating data:", error);
     }
@@ -92,17 +160,30 @@ const MyProfileScreen = () => {
   const handleEditAndSave = async (field) => {
     if (field === "Telp") {
       setEditingTelp(!editingTelp);
-
     } else if (field === "Email") {
       setEditingEmail(!editingEmail);
-      
     } else if (field === "Biodata") {
+      if (editingNama) {
+        if (nama.trim() === "") {
+          Alert.alert(
+            "Error",
+            "Data nama lengkap tidak boleh kosong, harap di isi !"
+          );
+        } else {
+          handleFieldChange("Biodata", {
+            nama: nama,
+            gender: gender,
+            tgl: tglLahir,
+            alamat: alamat,
+            city: city,
+          });
+        }
+      }
       setEditingNama(!editingNama);
       setEditingGender(!editingGender);
       setEditingTgl(!editingTgl);
       setEditingAlamat(!editingAlamat);
       setEditingCity(!editingCity);
-      
     }
   };
 
@@ -158,7 +239,7 @@ const MyProfileScreen = () => {
                       fontSize={18}
                       color={activeColors.tint}
                     >
-                      {userData?.phone || ""}
+                      {loadingData ? <Spinner size="small" color="blue" /> : (userData?.phone || "")}
                     </Text>
                   )}
                 </Flex>
@@ -215,7 +296,7 @@ const MyProfileScreen = () => {
                       fontSize={18}
                       color={activeColors.tint}
                     >
-                      {userData?.email || ""}
+                      {loadingData ? <Spinner size="small" color="blue" /> : (userData?.email || "")}
                     </Text>
                   )}
                 </Flex>
@@ -249,7 +330,8 @@ const MyProfileScreen = () => {
                           fontSize={18}
                           color={activeColors.tint}
                         >
-                          {userRole === "Doctor" ? "Doctor" : "Pasien"}
+                          {/* {userRole === "Doctor" ? "Doctor" : "Pasien"} */}
+                          {loadingData ? <Spinner size="small" color="blue" /> : (userRole || "")}
                         </Text>
                       </Box>
                     </Flex>
@@ -270,7 +352,7 @@ const MyProfileScreen = () => {
                           fontSize={18}
                           color={activeColors.tint}
                         >
-                          {userData?.id || ""}
+                          {loadingData ? <Spinner size="small" color="blue" /> : (userData?.id || "")}
                         </Text>
                       </Box>
                     </Flex>
@@ -315,11 +397,9 @@ const MyProfileScreen = () => {
                       mt={1}
                       mb={1}
                       fontSize={18}
-                      textTransform={"uppercase"}
-                      value={userData?.namaLengkap}
-                      onChangeText={(value) =>
-                        handleFieldChange("Biodata", { nama: value })
-                      }
+                      // textTransform={"uppercase"}
+                      value={nama}
+                      onChangeText={(value) => setNama(value)}
                       color={activeColors.tint}
                     />
                   ) : (
@@ -331,7 +411,7 @@ const MyProfileScreen = () => {
                       textTransform={"uppercase"}
                       color={activeColors.tint}
                     >
-                      {userData?.namaLengkap || ""}
+                      {loadingData ? <Spinner size="small" color="blue" /> : (nama || "")}
                     </Text>
                   )}
                 </Flex>
@@ -355,10 +435,8 @@ const MyProfileScreen = () => {
                             mt={1}
                             mb={1}
                             fontSize={18}
-                            value={userData?.jenisKelamin}
-                            onChangeText={(value) =>
-                              handleFieldChange("Biodata", { gender: value })
-                            }
+                            value={gender}
+                            onChangeText={(value) => setGender(value)}
                             color={activeColors.tint}
                           />
                         ) : (
@@ -369,7 +447,7 @@ const MyProfileScreen = () => {
                             fontSize={18}
                             color={activeColors.tint}
                           >
-                            {userData?.jenisKelamin || ""}
+                            {loadingData ? <Spinner size="small" color="blue" /> : (gender || "")}
                           </Text>
                         )}
                       </Box>
@@ -392,8 +470,8 @@ const MyProfileScreen = () => {
                             mt={1}
                             mb={1}
                             fontSize={18}
-                            value={userData?.tglLahir}
-                            onChangeText={(value) => handleFieldChange("Biodata", { tgl: value })}
+                            value={tglLahir}
+                            onChangeText={(value) => setTglLahir(value)}
                             color={activeColors.tint}
                           />
                         ) : (
@@ -404,7 +482,7 @@ const MyProfileScreen = () => {
                             fontSize={18}
                             color={activeColors.tint}
                           >
-                            {userData?.tglLahir || ""}
+                            {loadingData ? <Spinner size="small" color="blue" /> : (tglLahir || "")}
                           </Text>
                         )}
                       </Box>
@@ -430,9 +508,9 @@ const MyProfileScreen = () => {
                       mt={1}
                       mb={1}
                       fontSize={18}
-                      textTransform={"uppercase"}
-                      value={userData?.alamat}
-                      onChangeText={(value) => handleFieldChange("Biodata", { alamat: value })}
+                      // textTransform={"uppercase"}
+                      value={alamat}
+                      onChangeText={(value) => setAlamat(value)}
                       color={activeColors.tint}
                     />
                   ) : (
@@ -444,7 +522,7 @@ const MyProfileScreen = () => {
                       textTransform={"uppercase"}
                       color={activeColors.tint}
                     >
-                      {userData?.alamat || ""}
+                      {loadingData ? <Spinner size="small" color="blue" /> : (alamat || "")}
                     </Text>
                   )}
                 </Flex>
@@ -467,9 +545,9 @@ const MyProfileScreen = () => {
                       mt={1}
                       mb={1}
                       fontSize={18}
-                      textTransform={"uppercase"}
-                      value={userData?.cities}
-                      onChangeText={(value) => handleFieldChange("Biodata", { city: value })}
+                      // textTransform={"uppercase"}
+                      value={city}
+                      onChangeText={(value) => setCity(value)}
                       color={activeColors.tint}
                     />
                   ) : (
@@ -481,7 +559,7 @@ const MyProfileScreen = () => {
                       textTransform={"uppercase"}
                       color={activeColors.tint}
                     >
-                      {userData?.cities || ""}
+                      {loadingData ? <Spinner size="small" color="blue" /> : (city || "")}
                     </Text>
                   )}
                 </Flex>
