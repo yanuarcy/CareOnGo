@@ -107,7 +107,7 @@ const PesanScreen = () => {
   const [userDataChat, setUserDataChat] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedData, setSelectedData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const filterChatByName = (userName) => {
@@ -486,6 +486,7 @@ const PesanScreen = () => {
                         userName: item.namaLengkap,
                         userId: item.id,
                         userImg: item.picture,
+                        userEmail: item.email,
                       })
                     }
                     onLongPress={() =>
@@ -500,7 +501,7 @@ const PesanScreen = () => {
                               isOpen={showModal2}
                               onClose={() => {
                                 setShowModal2(false);
-                                setSelectedImage(null);
+                                setSelectedData(null);
                               }}
                             >
                               <Modal.Content>
@@ -509,20 +510,42 @@ const PesanScreen = () => {
                                   <Image
                                     alt="Selected Image"
                                     source={
-                                      selectedImage
-                                        ? { uri: selectedImage }
+                                      selectedData.picture
+                                        ? { uri: selectedData.picture }
                                         : require("../../assets/Chat/ProfileDefault.jpeg")
                                     }
                                     w={"100%"}
                                     h={400}
                                     resizeMode="contain"
                                   />
+                                  <Text
+                                    mt={2}
+                                    fontSize={14}
+                                    fontWeight={400}
+                                    color={activeColors.tertiary}
+                                    textAlign={"center"}
+                                  >
+                                    ID : {selectedData.id}
+                                  </Text>
+                                  <Text
+                                    mt={1}
+                                    fontSize={15}
+                                    fontWeight={600}
+                                    mb={4}
+                                    color={activeColors.tertiary}
+                                    textAlign={"center"}
+                                  >
+                                    {selectedData.email}
+                                  </Text>
                                 </Modal.Body>
                               </Modal.Content>
                             </Modal>
                           )}
                           <TouchableOpacity
-                            onPress={() => { setShowModal2(true); setSelectedImage(item.picture)} }
+                            onPress={() => {
+                              setShowModal2(true);
+                              setSelectedData(item);
+                            }}
                           >
                             <Image
                               w={"60"}

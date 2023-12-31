@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Box, ScrollView, Text, Center, View, Image } from "native-base";
+import { Box, ScrollView, Text, Center, View, Image, Modal } from "native-base";
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
 import {
@@ -13,7 +13,13 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Alert, Platform, TextInput, KeyboardAvoidingView } from "react-native";
+import {
+  Alert,
+  Platform,
+  TextInput,
+  KeyboardAvoidingView,
+  TouchableOpacity,
+} from "react-native";
 import { firebaseConfig } from "../../firebase-config";
 import { initializeApp } from "firebase/app";
 import {
@@ -46,12 +52,14 @@ const RoomChatScreen = () => {
   const initialUserId = route.params ? route.params.userId : "";
   const initialUserImg = route.params ? route.params.userImg : null;
   const initialUserName = route.params ? route.params.userName : null;
+  const initialUserEmail = route.params ? route.params.userEmail : null;
 
   const STORAGE_KEY = `chatHistory_${route.params.userName}`;
 
   const [UserDataa, setUserData] = useState("");
   const [refreshUI, setRefreshUI] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   const onSend = useCallback(
     async (messages = []) => {
@@ -75,9 +83,9 @@ const RoomChatScreen = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
       e.preventDefault();
-      navigation.navigate('Message'); // Ganti 'Chat' dengan nama rute halaman Chat Anda
+      navigation.navigate("Message"); // Ganti 'Chat' dengan nama rute halaman Chat Anda
     });
 
     return unsubscribe;
@@ -299,23 +307,69 @@ const RoomChatScreen = () => {
     // console.log(currentMessage.user._id);
     return (
       <View flexDirection={"row"} alignItems={"center"}>
-        {currentMessage.user._id === 2 && ( // Menampilkan gambar profil hanya di sebelah kiri
-          <Image
-            source={
-              currentMessage.user.avatar
-                ? { uri: currentMessage.user.avatar }
-                : require("../../assets/Chat/ProfileDefault.jpeg")
-            }
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              marginRight: 4,
-              marginLeft: 8,
+        {showModal && (
+          <Modal
+            isOpen={showModal}
+            onClose={() => {
+              setShowModal(false);
             }}
-            alt="AvatarUser"
-          />
+          >
+            <Modal.Content>
+              <Modal.CloseButton />
+              <Modal.Body>
+                <Image
+                  alt="Selected Image"
+                  source={
+                    currentMessage.user.avatar
+                      ? { uri: currentMessage.user.avatar }
+                      : require("../../assets/Chat/ProfileDefault.jpeg")
+                  }
+                  w={"100%"}
+                  h={400}
+                  resizeMode="contain"
+                />
+                <Text
+                  mt={2}
+                  fontSize={14}
+                  fontWeight={400}
+                  color={activeColors.tertiary}
+                  textAlign={"center"}
+                >
+                  ID : {initialUserId}
+                </Text>
+                <Text
+                  mt={1}
+                  fontSize={15}
+                  fontWeight={600}
+                  mb={4}
+                  color={activeColors.tertiary}
+                  textAlign={"center"}
+                >
+                  {initialUserEmail}
+                </Text>
+              </Modal.Body>
+            </Modal.Content>
+          </Modal>
         )}
+        <TouchableOpacity onPress={() => setShowModal(true)}>
+          {currentMessage.user._id === 2 && ( // Menampilkan gambar profil hanya di sebelah kiri
+            <Image
+              source={
+                currentMessage.user.avatar
+                  ? { uri: currentMessage.user.avatar }
+                  : require("../../assets/Chat/ProfileDefault.jpeg")
+              }
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                marginRight: 4,
+                marginLeft: 8,
+              }}
+              alt="AvatarUser"
+            />
+          )}
+        </TouchableOpacity>
         <Bubble
           {...props}
           wrapperStyle={{
