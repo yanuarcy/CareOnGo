@@ -40,10 +40,19 @@ const HistoryDetailsScreen = () => {
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
-  const initialName = route.params ? route.params.userName : "";
-  const initialUserImg = route.params ? route.params.userImg : null;
-  const initialText = route.params ? route.params.text : "";
-  const initialSpecialty = route.params ? route.params.specialty : "";
+  const initialSelectedRecord = route.params
+    ? route.params.selectedRecord
+    : null;
+  const initialUserData = route.params ? route.params.userData : null;
+
+  console.log("Ini record dari history: ", initialSelectedRecord);
+  console.log("Ini userData dari history: ", initialUserData);
+  // console.log("Ini role dari userData: ", initialUserData.role);
+
+  const formatDate = (date) => {
+    const options = { day: "numeric", month: "long", year: "numeric" };
+    return new Date(date).toLocaleDateString("id-ID", options);
+  };
 
   return (
     <ScrollView backgroundColor={activeColors.primary}>
@@ -57,13 +66,16 @@ const HistoryDetailsScreen = () => {
           />
           <Box ml={4}>
             <Text fontSize={18} color={activeColors.tint}>
-              Poli Umum
+              {initialSelectedRecord.JenisPoli}
             </Text>
             <Text fontSize={16} color={activeColors.tertiary}>
-              Dr. Ken William
+              {/* {initialSelectedRecord.NamaDokter} */}
+              {initialUserData.role === "Doctor"
+                ? initialSelectedRecord.PasienData.namaLengkap
+                : initialSelectedRecord.NamaDokter} {initialUserData.role === "Doctor" ? `(${initialSelectedRecord.PasienData.id})` : ""}
             </Text>
             <Text fontSize={14} marginTop={2} color={activeColors.tertiary}>
-              17 Desember 2023
+              {formatDate(initialSelectedRecord.tanggal)}
             </Text>
           </Box>
         </Box>
@@ -85,7 +97,7 @@ const HistoryDetailsScreen = () => {
               Rekam Medis ID
             </Text>
             <Text fontSize="16" py={2} color={activeColors.tertiary}>
-              215612661
+              {initialSelectedRecord.RekamMedisID}
             </Text>
           </Box>
 
@@ -94,7 +106,7 @@ const HistoryDetailsScreen = () => {
               Keluhan
             </Text>
             <Text fontSize="16" py={2} color={activeColors.tertiary}>
-              Demam sejak 2 hari lalu, disertai batuk dan pilek
+              {initialSelectedRecord.Keluhan}
             </Text>
           </Box>
 
@@ -103,7 +115,7 @@ const HistoryDetailsScreen = () => {
               Diagnosis
             </Text>
             <Text fontSize="16" py={2} color={activeColors.tertiary}>
-              Influenza
+              {initialSelectedRecord.Diagnosis}
             </Text>
           </Box>
 
@@ -112,7 +124,7 @@ const HistoryDetailsScreen = () => {
               Saran Perawatan
             </Text>
             <Text fontSize="16" py={2} color={activeColors.tertiary}>
-              Paracetamol{"\n"}Istirahat Cukup
+              {initialSelectedRecord.SaranPerawatan}
             </Text>
           </Box>
 
@@ -127,8 +139,13 @@ const HistoryDetailsScreen = () => {
                   fontWeight={600}
                   color={activeColors.tertiary}
                 >
-                  <Icon as={Ionicons} name="ellipse" size={5} color={"#65B741"} />
-                  Loratadine 200 mg
+                  <Icon
+                    as={Ionicons}
+                    name="ellipse"
+                    size={5}
+                    color={"#65B741"}
+                  />
+                  {initialSelectedRecord.ResepObat}
                 </Text>
                 <Text fontSize="16" ml={5} color={activeColors.tertiary}>
                   Sebelum makan, 3x sehari
@@ -140,7 +157,12 @@ const HistoryDetailsScreen = () => {
                   fontWeight={600}
                   color={activeColors.tertiary}
                 >
-                  <Icon as={Ionicons} name="ellipse" size={5} color={"#65B741"} />
+                  <Icon
+                    as={Ionicons}
+                    name="ellipse"
+                    size={5}
+                    color={"#65B741"}
+                  />
                   Dexteem 200 mg
                 </Text>
                 <Text fontSize="16" ml={5} color={activeColors.tertiary}>
@@ -153,7 +175,12 @@ const HistoryDetailsScreen = () => {
                   fontWeight={600}
                   color={activeColors.tertiary}
                 >
-                  <Icon as={Ionicons} name="ellipse" size={5} color={"#65B741"} />
+                  <Icon
+                    as={Ionicons}
+                    name="ellipse"
+                    size={5}
+                    color={"#65B741"}
+                  />
                   Sanmol 20 mg
                 </Text>
                 <Text fontSize="16" ml={5} color={activeColors.tertiary}>

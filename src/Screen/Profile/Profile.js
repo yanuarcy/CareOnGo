@@ -339,6 +339,7 @@ const ProfileScreen = () => {
 
       // Hapus informasi pengguna yang disimpan di AsyncStorage jika ada
       await AsyncStorage.removeItem("credentials");
+      await AsyncStorage.removeItem("MedicalRecord");
 
       // Navigasikan pengguna kembali ke halaman login
       navigation.replace("Login");

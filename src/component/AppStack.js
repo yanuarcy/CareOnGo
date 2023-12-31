@@ -27,6 +27,7 @@ import ArticleDetails from "../Screen/ArtikelDetails";
 import SplashScreen from "../Splash";
 import HistoryDetailsScreen from "../Screen/Profile/Content/HistoryDetails";
 import Webview from "../Screen/WebView";
+import MedicalRecordForm from "../Screen/Profile/Content/MedicalRecordForm";
 
 const Stack = createStackNavigator();
 
@@ -42,10 +43,10 @@ const AppStack = () => {
           component={DoctorDetailsScreen}
           options={({ route }) => ({
             headerShown: true,
-						headerTintColor: activeColors.tint,
-						headerStyle: {
-							backgroundColor: activeColors.primary
-						},
+            headerTintColor: activeColors.tint,
+            headerStyle: {
+              backgroundColor: activeColors.primary,
+            },
             title: route.params.namaLengkap,
           })}
           initialParams={{
@@ -70,10 +71,10 @@ const AppStack = () => {
             headerShown: true,
             headerTitle: "Select Date & Time",
             headerTitleAlign: "center",
-						headerTintColor: activeColors.tint,
-						headerStyle: {
-							backgroundColor: activeColors.primary
-						}
+            headerTintColor: activeColors.tint,
+            headerStyle: {
+              backgroundColor: activeColors.primary,
+            },
           })}
           initialParams={{
             namaLengkap: "",
@@ -90,10 +91,10 @@ const AppStack = () => {
             headerShown: true,
             headerTitle: "Appointment Booked",
             headerTitleAlign: "center",
-						headerTintColor: activeColors.tint,
-						headerStyle: {
-							backgroundColor: activeColors.primary
-						}
+            headerTintColor: activeColors.tint,
+            headerStyle: {
+              backgroundColor: activeColors.primary,
+            },
           }}
         />
 
@@ -104,10 +105,10 @@ const AppStack = () => {
             headerShown: true,
             headerTitle: "Appointment Details",
             headerTitleAlign: "center",
-						headerTintColor: activeColors.tint,
-						headerStyle: {
-							backgroundColor: activeColors.primary
-						}
+            headerTintColor: activeColors.tint,
+            headerStyle: {
+              backgroundColor: activeColors.primary,
+            },
           }}
         />
 
@@ -119,12 +120,12 @@ const AppStack = () => {
             headerShown: true,
             headerTitle: "Article Details", // Menggunakan judul dari parameter rute
             headerTitleAlign: "center",
-						headerTintColor: activeColors.tint,
-						headerStyle: {
-							backgroundColor: activeColors.primary
-						}
+            headerTintColor: activeColors.tint,
+            headerStyle: {
+              backgroundColor: activeColors.primary,
+            },
           })}
-					initialParams={{
+          initialParams={{
             link: "",
             image: null,
             title: "",
@@ -138,28 +139,36 @@ const AppStack = () => {
           options={({ route }) => ({
             title: route.params.title,
             headerShown: true,
-            headerTitle: "Read Article", 
+            headerTitle: "Read Article",
             headerTitleAlign: "center",
-						headerTintColor: activeColors.tint,
-						headerStyle: {
-							backgroundColor: activeColors.primary
-						}
+            headerTintColor: activeColors.tint,
+            headerStyle: {
+              backgroundColor: activeColors.primary,
+            },
           })}
-					initialParams={{
+          initialParams={{
             link: "",
           }}
         />
 
         <Stack.Screen
-          name="Language"
-          component={LanguageScreen}
-          options={{ headerShown: false }}
+          name="RecordForm"
+          component={MedicalRecordForm}
+          options={{
+            headerShown: true,
+            headerTitle: "Medical Record Form",
+            headerStyle: {
+              backgroundColor: activeColors.primary,
+            },
+            headerTintColor: activeColors.tint,
+            headerTitleAlign: "center",
+          }}
         />
 
         <Stack.Screen
           name="History"
           component={HistoryScreen}
-          options={{ 
+          options={{
             headerShown: true,
             headerTitle: "History Pemeriksaan",
             headerStyle: {
@@ -167,13 +176,13 @@ const AppStack = () => {
             },
             headerTintColor: activeColors.tint,
             headerTitleAlign: "center",
-            }}
+          }}
         />
-        
+
         <Stack.Screen
           name="HistoryDetails"
           component={HistoryDetailsScreen}
-          options={{ 
+          options={({ route }) => ({
             headerShown: true,
             headerTitle: "Detail Informasi",
             headerStyle: {
@@ -181,7 +190,11 @@ const AppStack = () => {
             },
             headerTintColor: activeColors.tint,
             headerTitleAlign: "center",
-            }}
+          })}
+          initialParams={{
+            selectedRecord: null,
+            userData: null,
+          }}
         />
 
         <Stack.Screen
@@ -298,7 +311,7 @@ const AppStack = () => {
             headerTintColor: activeColors.tint,
             headerTitleAlign: "center",
           })}
-          initialParams={{ userId: "" ,userImg: null }}
+          initialParams={{ userId: "", userImg: null }}
         />
       </Stack.Navigator>
     </>
