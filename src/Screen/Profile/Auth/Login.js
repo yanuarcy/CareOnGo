@@ -34,7 +34,7 @@ import {
   getFirestore,
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Base64 } from "js-base64"; 
+import { Base64 } from "js-base64";
 
 const DB = initializeApp(firebaseConfig);
 const auth = getAuth(DB);
@@ -47,7 +47,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
 
   const encrypt = (text, shift) => {
-    let result = '';
+    let result = "";
     for (let i = 0; i < text.length; i++) {
       let char = text[i];
       if (char.match(/[a-z]/i)) {
@@ -62,7 +62,7 @@ const LoginScreen = () => {
     }
     return result;
   };
-  
+
   // Fungsi Dekripsi untuk metode penggeseran karakter (caesar cipher)
   const decrypt = (text, shift) => {
     return encrypt(text, (26 - shift) % 26);
@@ -91,7 +91,9 @@ const LoginScreen = () => {
       const snapshotByUsername = await getDocs(queryByUsername);
 
       // Gabungkan hasil kedua query
-      const combinedSnapshot = snapshotByEmail.docs.concat(snapshotByUsername.docs);
+      const combinedSnapshot = snapshotByEmail.docs.concat(
+        snapshotByUsername.docs
+      );
 
       // Periksa apakah ada hasil dari kombinasi query
       if (combinedSnapshot.length > 0) {
@@ -100,17 +102,84 @@ const LoginScreen = () => {
           const userData = doc.data();
           const hashedPassword = userData.password;
 
-          try {
+          const DataRekamMedis = collection(firestore, "RekamMedis");
+          // const querySnapshot = await getDocs(
+          //   query(DataRekamMedis, where("PasienID", "==", userData.id))
+          // );
 
-            console.log("From DB: ",hashedPassword);
+          const queryByPatient = query(
+            DataRekamMedis,
+            where("PasienID", "==", userData.id)
+          );
+          const queryByDoctor = query(
+            DataRekamMedis,
+            where("NamaDokter", "==", userData.namaLengkap)
+          );
+
+          const snapshotByPatient = await getDocs(queryByPatient);
+          const snapshotByDoctor = await getDocs(queryByDoctor);
+
+          const combinedPatientDoc = snapshotByPatient.docs.concat(
+            snapshotByDoctor.docs
+          );
+
+          const medicalRecords = [];
+
+          combinedPatientDoc.forEach(async (doc) => {
+            const DataRekamMedis = doc.data();
+            console.log("data Rekam Medis:", DataRekamMedis);
+
+            const convertTimestampToISOString = (timestamp) => {
+              const milliseconds =
+                timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6;
+              const date = new Date(milliseconds);
+              return date.toISOString(); // Mengembalikan tanggal dalam format ISO (misal: "2023-12-29T22:43:04.298Z")
+            };
+
+            const convertedDate = convertTimestampToISOString(
+              DataRekamMedis.tanggal
+            );
+
+            const RekamMedis = {
+              RekamMedisID: DataRekamMedis.RekamMedisID,
+              PasienID: DataRekamMedis.PasienID,
+              JenisPoli: DataRekamMedis.JenisPoli,
+              NamaDokter: DataRekamMedis.NamaDokter,
+              tanggal: convertedDate,
+              Keluhan: DataRekamMedis.Keluhan,
+              Diagnosis: DataRekamMedis.Diagnosis,
+              SaranPerawatan: DataRekamMedis.SaranPerawatan,
+              ResepObat: DataRekamMedis.ResepObat,
+              NamaClinic: DataRekamMedis.NamaClinic,
+            };
+
+            console.log("RekamMedis: ", RekamMedis);
+            medicalRecords.push(RekamMedis);
+
+            console.log("medicalRecords: ", medicalRecords);
+            AsyncStorage.setItem("MedicalRecord", JSON.stringify(medicalRecords))
+              .then(() => {
+                console.log(
+                  "Data Rekam Medis berhasil di tambahkan ke AsyncStorage"
+                );
+              })
+              .catch((error) => {
+                console.log(error);
+                // Alert.alert("Error", "Gagal menyimpan kredensial");
+              });
+          });
+
+          try {
+            console.log("From DB: ", hashedPassword);
             const Decodetext = Base64.decode(hashedPassword);
-            console.log("After Decode: ",Decodetext);
+            console.log("After Decode: ", Decodetext);
             const passwordMatch = compare(password, Decodetext, 3);
 
             if (passwordMatch) {
               // Login berhasil
               const credentials = {
                 id: userData.id,
+                RekamMedisID: userData.RekamMedisID,
                 email: userData.email,
                 username: userData.username,
                 namaLengkap: userData.namaLengkap,
