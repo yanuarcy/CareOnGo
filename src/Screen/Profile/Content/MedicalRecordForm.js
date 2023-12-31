@@ -39,7 +39,7 @@ const MedicalRecordForm = () => {
     Keluhan: "",
     Diagnosis: "",
     SaranPerawatan: "",
-    ResepObat: "",
+    ResepObat: [{ name: "", usage: "" }],
     NamaClinic: "",
   });
   const [userData, setUserData] = useState(null);
@@ -76,6 +76,23 @@ const MedicalRecordForm = () => {
     setMedicalRecord({
       ...medicalRecord,
       [key]: value,
+    });
+  };
+
+  const addNewMedicine = () => {
+    setMedicalRecord({
+      ...medicalRecord,
+      ResepObat: [...medicalRecord.ResepObat, { name: "", usage: "" }],
+    });
+  };
+
+  const handleMedicineChange = (index, key, value) => {
+    const updatedMedicineList = [...medicalRecord.ResepObat];
+    updatedMedicineList[index][key] = value;
+
+    setMedicalRecord({
+      ...medicalRecord,
+      ResepObat: updatedMedicineList,
     });
   };
 
@@ -125,8 +142,12 @@ const MedicalRecordForm = () => {
         query(usersCollection, where("id", "==", medicalRecord.PasienID))
       );
 
-      // Jika PasienID tidak ditemukan di dokumen pengguna yang sudah ada
-      if (!querySnapshot.empty) {
+      if (querySnapshot.empty) {
+        Alert.alert("Error", "Tidak ada data dengan ID Pasien tersebut !");
+      }
+
+      // Jika PasienID ditemukan di dokumen pengguna yang sudah ada
+      else if (!querySnapshot.empty) {
         const userCollectionn = collection(firestore, "RekamMedis");
 
         const newMedicalRecord = {
@@ -166,22 +187,24 @@ const MedicalRecordForm = () => {
         const medicalRecords = await AsyncStorage.getItem("MedicalRecord");
         let existingRecords = [];
 
-				console.log("Medical Records :", medicalRecords);
-				console.log("Existing Records :", existingRecords);
+        console.log("Medical Records :", medicalRecords);
+        console.log("Existing Records :", existingRecords);
 
         if (medicalRecords !== null) {
           existingRecords = JSON.parse(medicalRecords);
         }
 
         existingRecords.push(newMedicalRecord);
-				console.log("Existing Records :", existingRecords);
+        console.log("Existing Records :", existingRecords);
         await AsyncStorage.setItem(
           "MedicalRecord",
           JSON.stringify(existingRecords)
         );
 
-        const getNewMedicalRecords = await AsyncStorage.getItem("MedicalRecord");
-				console.log("New AsyncStorage Medical Records :", getNewMedicalRecords);
+        const getNewMedicalRecords = await AsyncStorage.getItem(
+          "MedicalRecord"
+        );
+        console.log("New AsyncStorage Medical Records :", getNewMedicalRecords);
         console.log("Berhasil menambahkan data: ", existingRecords);
         Alert.alert(
           "Success",
@@ -267,11 +290,27 @@ const MedicalRecordForm = () => {
           value={medicalRecord.SaranPerawatan}
           onChangeText={(value) => handleInputChange("SaranPerawatan", value)}
         />
-        {/* Input untuk Resep Obat */}
-        <Text fontWeight="bold" color={activeColors.tint}>
-          Resep Obat
-        </Text>
-        <Input
+        <Box
+          flexDirection={"row"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+        >
+          {/* Input untuk Resep Obat */}
+          <Text fontWeight="bold" color={activeColors.tint}>
+            Resep Obat
+          </Text>
+          <TouchableOpacity
+            onPress={addNewMedicine}
+            style={{ padding: 2, borderRadius: 30, backgroundColor: "#0082f7" }}
+          >
+            <Ionicons name="add" size={24} color="white" />
+          </TouchableOpacity>
+        </Box>
+        {/* Icon tambah obat */}
+        {/* <TouchableOpacity onPress={addNewMedicine}>
+          <Ionicons name="add" size={24} color="black" />
+        </TouchableOpacity> */}
+        {/* <Input
           my={4}
           placeholder="Resep Obat"
           backgroundColor={"#E4F1FF"}
@@ -281,7 +320,33 @@ const MedicalRecordForm = () => {
           numberOfLines={5}
           value={medicalRecord.ResepObat}
           onChangeText={(value) => handleInputChange("ResepObat", value)}
-        />
+        /> */}
+        {medicalRecord.ResepObat.map((medicine, index) => (
+          <Box key={index}>
+            <Input
+              my={4}
+              placeholder="Nama Obat"
+              backgroundColor={"#E4F1FF"}
+              placeholderTextColor={"muted"}
+              rounded={6}
+              value={medicine.name}
+              onChangeText={(value) =>
+                handleMedicineChange(index, "name", value)
+              }
+            />
+            <Input
+              my={4}
+              placeholder="Pemakaian: Setelah makan, 3x Sehari"
+              backgroundColor={"#E4F1FF"}
+              placeholderTextColor={"muted"}
+              rounded={6}
+              value={medicine.usage}
+              onChangeText={(value) =>
+                handleMedicineChange(index, "usage", value)
+              }
+            />
+          </Box>
+        ))}
         {/* Input untuk Nama Clinic */}
         <Text fontWeight="bold" color={activeColors.tint}>
           Nama Klinik

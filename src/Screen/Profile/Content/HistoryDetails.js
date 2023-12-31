@@ -72,7 +72,10 @@ const HistoryDetailsScreen = () => {
               {/* {initialSelectedRecord.NamaDokter} */}
               {initialUserData.role === "Doctor"
                 ? initialSelectedRecord.PasienData.namaLengkap
-                : initialSelectedRecord.NamaDokter} {initialUserData.role === "Doctor" ? `(${initialSelectedRecord.PasienData.id})` : ""}
+                : initialSelectedRecord.NamaDokter}{" "}
+              {initialUserData.role === "Doctor"
+                ? `(${initialSelectedRecord.PasienData.id})`
+                : ""}
             </Text>
             <Text fontSize={14} marginTop={2} color={activeColors.tertiary}>
               {formatDate(initialSelectedRecord.tanggal)}
@@ -134,7 +137,7 @@ const HistoryDetailsScreen = () => {
             </Text>
             <Box flexDirection={"column"}>
               <Box pt={2}>
-                <Text
+                {/* <Text
                   fontSize="16"
                   fontWeight={600}
                   color={activeColors.tertiary}
@@ -146,12 +149,33 @@ const HistoryDetailsScreen = () => {
                     color={"#65B741"}
                   />
                   {initialSelectedRecord.ResepObat}
+                  Entrostopp 20 mg
                 </Text>
                 <Text fontSize="16" ml={5} color={activeColors.tertiary}>
                   Sebelum makan, 3x sehari
-                </Text>
+                </Text> */}
+                {initialSelectedRecord.ResepObat.map((medicine, index) => (
+                  <Box key={index} mb={2}>
+                    <Text
+                      fontSize="16"
+                      fontWeight={600}
+                      color={activeColors.tertiary}
+                    >
+                      <Icon
+                        as={Ionicons}
+                        name="ellipse"
+                        size={5}
+                        color={"#65B741"}
+                      />
+                      {medicine.name}
+                    </Text>
+                    <Text fontSize="16" ml={5} color={activeColors.tertiary}>
+                      {medicine.usage}
+                    </Text>
+                  </Box>
+                ))}
               </Box>
-              <Box pt={2}>
+              {/* <Box pt={2}>
                 <Text
                   fontSize="16"
                   fontWeight={600}
@@ -186,7 +210,7 @@ const HistoryDetailsScreen = () => {
                 <Text fontSize="16" ml={5} color={activeColors.tertiary}>
                   Sesudah makan, 3x sehari
                 </Text>
-              </Box>
+              </Box> */}
             </Box>
           </Box>
         </Box>
