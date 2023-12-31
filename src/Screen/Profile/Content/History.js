@@ -44,15 +44,6 @@ const HistoryScreen = () => {
   const [userRole, setUserRole] = useState("");
   const [groupedMedicalRecords, setGroupedMedicalRecords] = useState([]);
 
-  // const sortRecordsByDate = (records) => {
-  //   records.sort((a, b) => {
-  //     const dateA = new Date(a.date);
-  //     const dateB = new Date(b.date);
-  //     return dateB - dateA; // Urutkan dari tanggal terbaru ke tanggal terlama
-  //   });
-  //   return records;
-  // };
-
   const fetchDataMedical = async () => {
     try {
       const credentials = await AsyncStorage.getItem("credentials");
@@ -117,20 +108,11 @@ const HistoryScreen = () => {
     }
   };
 
-  const displayAnimation = () => {
-    setTimeout(() => {
-      setLoading(true)
-    }, 2000); // Waktu tunda dalam milidetik (dalam contoh ini, 2000ms atau 2 detik)
-  };
-
   useEffect(() => {
     if (isFocused) {
       fetchDataMedical();
     }
   }, [isFocused]);
-
-  // console.log(userData);
-  // console.log("Ini Data Rekam Medis: ", medicalRecord);
 
   const groupMedicalRecordsByDate = (records) => {
     const grouped = records.reduce((result, record) => {
@@ -328,94 +310,12 @@ const HistoryScreen = () => {
                       </Box>
                     </Box>
                   </Box>
-                  {/* Tambahkan informasi lainnya */}
                 </Box>
               ))}
             </Box>
           )}
         />
       )}
-      {/* <Box>
-        <Box
-          position="absolute"
-          left={4}
-          top={7}
-          width={1} // Atur lebar garis
-          height="90%" // Panjang garis sesuai tinggi kontainer
-          borderStyle="dashed"
-          borderWidth={2} // Atur lebar border sesuai kebutuhan
-          borderColor="black" // Warna border (dapat disesuaikan)
-        />
-
-        <Box flexDirection="row" alignItems="center">
-          <Icon as={Ionicons} name="ellipse" size={5} ml="2" color="#65B741" />
-          <Box
-            flex={1}
-            flexDirection="row"
-            alignItems="center"
-            justifyContent="space-between"
-            padding={2}
-          >
-            <Text>14 Desember 2023</Text>
-          </Box>
-        </Box>
-
-        <Box
-          padding={4}
-          margin={1}
-          marginLeft={10}
-          backgroundColor="rgba(211, 211, 211, 0.5)"
-          borderRadius={10}
-        >
-          <Box flexDirection="row" marginBottom={2}>
-            <Text>Klinik Dr. Henny</Text>
-          </Box>
-
-          <Box flexDirection="row" alignItems="center">
-            <Box>
-              <Image
-                source={require("../../../../assets/images/DocMedic.png")}
-                alt="DocRekamMedis"
-                resizeMode="contain"
-                width={12}
-                height={12}
-              />
-            </Box>
-
-            <Box marginLeft={5}>
-              <TouchableOpacity>
-                <Box flexDirection="row" marginBottom={2} alignItems="center">
-                  <Box marginRight={12}>
-                    <Text>Poli THT{"\n"}Dr. Henny</Text>
-                  </Box>
-                  <Box marginLeft={10}>
-                    <Icon
-                      as={Ionicons}
-                      name="chevron-forward-outline"
-                      size={7}
-                      ml="2"
-                      color="black"
-                    />
-                  </Box>
-                </Box>
-              </TouchableOpacity>
-              <Box flexDirection="row">
-                <Box
-                  flex={1}
-                  backgroundColor="rgba(211, 211, 211, 0.2)" // Warna dengan opasitas
-                  padding={2}
-                  marginRight={2}
-                  borderStyle="dashed" // Mengatur jenis border menjadi putus-putus
-                  borderWidth={1} // Atur lebar border sesuai kebutuhan
-                  borderRadius={4}
-                >
-                  <Text>Sinusitis</Text>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Box> */}
     </Box>
   );
 };
