@@ -35,6 +35,7 @@ import {
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Base64 } from "js-base64";
+import moment from "moment";
 
 const DB = initializeApp(firebaseConfig);
 const auth = getAuth(DB);
@@ -103,6 +104,7 @@ const LoginScreen = () => {
           const hashedPassword = userData.password;
 
           const DataRekamMedis = collection(firestore, "RekamMedis");
+          const DataAppointments = collection(firestore, "Appointments");
           // const querySnapshot = await getDocs(
           //   query(DataRekamMedis, where("PasienID", "==", userData.id))
           // );
@@ -157,7 +159,10 @@ const LoginScreen = () => {
             medicalRecords.push(RekamMedis);
 
             console.log("medicalRecords: ", medicalRecords);
-            AsyncStorage.setItem("MedicalRecord", JSON.stringify(medicalRecords))
+            AsyncStorage.setItem(
+              "MedicalRecord",
+              JSON.stringify(medicalRecords)
+            )
               .then(() => {
                 console.log(
                   "Data Rekam Medis berhasil di tambahkan ke AsyncStorage"
@@ -168,6 +173,74 @@ const LoginScreen = () => {
                 // Alert.alert("Error", "Gagal menyimpan kredensial");
               });
           });
+
+          console.log(userData.AppointmentID);
+
+          const queryAppointmentID = query(
+            DataAppointments,
+            where("PasienID", "==", userData.id)
+          );
+
+          const snapshotByAppointmentID = await getDocs(queryAppointmentID);
+
+          const userQuerySnapshot = await getDocs(
+            query(usersCollection, where("id", "==", userData.id))
+          );
+
+          let appointmentsRecords = [];
+           
+          // if(userQuerySnapshot.empty) {
+          //   AsyncStorage.setItem(
+          //       "AppointmentData",
+          //       JSON.stringify(appointmentsRecords)
+          //     )
+          //       .then(() => {
+          //         console.log(
+          //           "Data Appointment berhasil di tambahkan ke AsyncStorage"
+          //         );
+          //         console.log(appointmentsRecords);
+          //       })
+          //       .catch((error) => {
+          //         console.log(error);
+          //         // Alert.alert("Error", "Gagal menyimpan kredensial");
+          //       });
+          // }
+          if (!userQuerySnapshot.empty) {
+            userQuerySnapshot.forEach(async (doc) => { 
+              const userData = doc.data();
+              console.log("userData: ", userData);
+              const appointmentIDs = userData.AppointmentID;
+              
+              const appointmentQueries = appointmentIDs.map((id) =>
+                getDocs(query(DataAppointments, where("AppointmentID", "==", id)))
+              );
+
+              const appointmentsSnapshots = await Promise.all(appointmentQueries);
+            
+              appointmentsSnapshots.forEach((snap) => {
+                snap.forEach((doc) => {
+                  const appointmentData = doc.data();
+                  console.log("Ini appointment after query:", appointmentData);
+                  appointmentsRecords.push(appointmentData);
+                });
+              });
+              AsyncStorage.setItem(
+                "AppointmentData",
+                JSON.stringify(appointmentsRecords)
+              )
+                .then(() => {
+                  console.log(
+                    "Data Appointment berhasil di tambahkan ke AsyncStorage"
+                  );
+                  console.log(appointmentsRecords);
+                })
+                .catch((error) => {
+                  console.log(error);
+                  // Alert.alert("Error", "Gagal menyimpan kredensial");
+                });
+            })
+          
+          }
 
           try {
             console.log("From DB: ", hashedPassword);
@@ -197,7 +270,7 @@ const LoginScreen = () => {
 
               AsyncStorage.setItem("credentials", JSON.stringify(credentials))
                 .then(() => {
-                  Alert.alert("Success", "Akun anda berhasil login");
+                  // Alert.alert("Success", "Akun anda berhasil login");
                   navigation.replace("Tabs");
                 })
                 .catch((error) => {

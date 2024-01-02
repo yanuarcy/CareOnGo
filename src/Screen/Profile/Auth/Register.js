@@ -143,8 +143,10 @@ const RegisterScreen = () => {
         reviews: "",
         rating: "",
         lokasiClinic: "",
+        alamatClinic: "",
         picture: "",
         friends: "",
+        AppointmentID: [],
         role: "Pasien",
 
       };

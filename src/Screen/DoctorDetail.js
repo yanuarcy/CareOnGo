@@ -46,6 +46,7 @@ const DoctorDetailsScreen = () => {
   const experience = initialData.experience;
   const reviews = initialData.reviews;
   const lokasiClinic = initialData.lokasiClinic;
+  const alamatClinic = initialData.alamatClinic;
 
   const doctorData = [
     {
@@ -57,6 +58,7 @@ const DoctorDetailsScreen = () => {
       experience: experience,
       reviews: reviews,
       lokasiClinic: lokasiClinic,
+      alamatClinic: alamatClinic,
       about:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam at est quis est porttitor aliquet auctor non quam. Aliquam erat volutpat. Proin fringilla tincidunt ligula. Sed sagittis luctus egestas.\n\n Donec ex magna, pharetra sed viverra quis, faucibus faucibus nulla. Nunc libero sem, posuere quis sem eu, placerat consequat lacus. Fusce eu neque eu ligula consequat bibendum a vitae felis. Donec facilisis accumsan nisi, ac pellentesque felis fermentum pellentesque.Vestibulum consectetur metus vitae dictum facilisis. Proin eleifend maximus diam at sollicitudin. Maecenas iaculis mollis efficitur. Proin tristique tortor nec purus vehicula ultrices.",
     },
@@ -181,16 +183,18 @@ const DoctorDetailsScreen = () => {
               size={5}
               color={activeColors.tertiary}
             />
-            Jl. Ketintang, Surabaya, Jawa Timur, 60332.
+            {doctorData[0].alamatClinic}
           </Text>
           <Center>
             <TouchableOpacity
               onPress={() =>
                 navigation.navigate("BookAppointment", {
+                  userId: UserID,
                   namaLengkap: namaLengkap,
                   picture: picture,
                   specialist: specialist,
                   rating: rating,
+                  lokasiClinic: lokasiClinic,
                 })
               }
               style={{

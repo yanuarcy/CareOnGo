@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Box,
   ScrollView,
@@ -10,10 +10,11 @@ import {
   Image,
   HStack,
   Icon,
+  Modal,
 } from "native-base";
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import {
@@ -23,6 +24,19 @@ import {
   MenuProvider,
   MenuTrigger,
 } from "react-native-popup-menu";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  collection,
+  deleteDoc,
+  getDocs,
+  getFirestore,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { firebaseConfig } from "../../firebase-config";
+import { initializeApp } from "firebase/app";
+import LottieView from "lottie-react-native";
 
 const Data = [
   {
@@ -62,7 +76,108 @@ const AppointmentScreen = () => {
   const { theme, updateTheme } = useContext(ThemeContext);
   let activeColors = colors[theme.mode];
 
+  const DB = initializeApp(firebaseConfig);
+  const firestore = getFirestore(DB);
+
+  const usersCollection = collection(firestore, "users");
+  const DataAppointments = collection(firestore, "Appointments");
+
+  const isFocused = useIsFocused();
+  const [isLoading, setIsLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const [appointmentData, setAppointmentData] = useState(null);
+  const [DataKu, setData] = useState([]);
+
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchingData = async () => {
+      try {
+        const appointmentData = await AsyncStorage.getItem("AppointmentData");
+        let appointmentDataState = [];
+        if (appointmentData !== null) {
+          const parsedAppointmentData = JSON.parse(appointmentData);
+          appointmentDataState = parsedAppointmentData;
+          console.log("Data from AsyncStorage:", appointmentDataState);
+          // Gunakan parsedAppointmentData untuk menampilkan atau memproses data yang diambil dari AsyncStorage
+        } else {
+          console.log("No data found in AsyncStorage for appointments");
+        }
+
+        setData(appointmentDataState);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching data from AsyncStorage:", error);
+      }
+    };
+
+    if (isFocused) {
+      fetchingData();
+    }
+  }, [isFocused]);
+
+  console.log("Data Appointment cuy: ", DataKu);
+
+  const handleCancelAppointment = async (id) => {
+    // Lakukan proses penghapusan data appointment dengan ID yang dipilih
+    try {
+      // Contoh penghapusan dari AsyncStorage
+      const appointmentData = await AsyncStorage.getItem("AppointmentData");
+      if (appointmentData !== null) {
+        const parsedAppointmentData = JSON.parse(appointmentData);
+        const updatedData = parsedAppointmentData.filter(
+          (appointment) => appointment.AppointmentID !== id
+        );
+
+        // Hapus data dari Firestore
+        const appointmentSnapshot = await getDocs(
+          query(DataAppointments, where("AppointmentID", "==", id))
+        );
+        appointmentSnapshot.docs.forEach(async (doc) => {
+          await deleteDoc(doc.ref);
+          console.log("Data berhasil dihapus dari Appointments");
+        });
+
+        // Cari dokumen yang memiliki AppointmentID yang ingin dihapus
+        const usersSnapshot = await getDocs(
+          query(usersCollection, where("AppointmentID", "array-contains", id))
+        );
+
+        usersSnapshot.docs.forEach(async (doc) => {
+          // Dapatkan data AppointmentID dari dokumen
+          const appointments = doc.data().AppointmentID;
+          console.log("Ini AppointmentID sebelum dihapus:", appointments);
+
+          // Cek jika AppointmentID yang ingin dihapus ada di dalam array
+          if (appointments.includes(id)) {
+            // Hapus AppointmentID yang cocok dengan yang ingin dihapus
+            const updatedAppointments = appointments.filter(
+              (appointmentId) => appointmentId !== id
+            );
+
+            // Update dokumen dengan AppointmentID yang telah dihapus
+            await updateDoc(doc.ref, { AppointmentID: updatedAppointments });
+            console.log(
+              "Data AppointmentsID pada users telah dihapus",
+              updatedAppointments
+            );
+          }
+        });
+
+        // Simpan kembali data setelah penghapusan
+        await AsyncStorage.setItem(
+          "AppointmentData",
+          JSON.stringify(updatedData)
+        );
+        // Perbarui state jika diperlukan 225654710
+        setData(updatedData);
+      }
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+    }
+  };
 
   return (
     <MenuProvider
@@ -77,94 +192,188 @@ const AppointmentScreen = () => {
         <Box flex={1} backgroundColor={activeColors.primary}>
           <Center>
             <Box mt={4}>
-              <FlatList
-                data={Data}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={{ width: "100%" }}
-                    onPress={() => navigation.navigate("AppointmentDetails")}
-                  >
-                    <Box
-                      justifyContent="space-between"
-                      backgroundColor= {activeColors.secondary}
-                      p={3}
-                      mb={3}
-                      flexDirection="row" // Mengatur tata letak elemen secara horizontal
-                      alignItems="center" // Menyamakan ketinggian elemen
+              {isLoading ? (
+                <Center
+                  flex={1}
+                  justifyContent={"center"}
+                  backgroundColor={activeColors.secondary}
+                >
+                  <LottieView
+                    style={{
+                      width: 70,
+                      height: 170,
+                    }}
+                    source={require("../../assets/LoadingAnimation.json")}
+                    autoPlay
+                    loop={true}
+                    speed={1.5}
+                  />
+                  {/* <Text>Loading ...</Text> */}
+                </Center>
+              ) : (
+                <FlatList
+                  data={DataKu}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={{ width: "100%" }}
+                      onPress={() =>
+                        navigation.navigate("AppointmentDetails", {
+                          DoctorID: item.DoctorID,
+                          DoctorImg: item.DoctorImg,
+                          DoctorName: item.DoctorName,
+                          DoctorSpecialist: item.DoctorSpecialist,
+                          AppointmentID: item.AppointmentID,
+                          Date: item.Date,
+                          Time: item.Time,
+                          lokasiClinic: item.lokasiClinic,
+                          NamaPasien: item.NamaPasien,
+                        })
+                      }
                     >
-                      <Box pt={4} pb={4}>
-                        <Image
-                          w={"70"}
-                          h={"70"}
-                          rounded={"35"}
-                          source={item.userImg}
-                          alt="ProfileUserChat"
-                        />
-                      </Box>
-
                       <Box
-                        justifyContent={"center"}
-                        p={"15"}
-                        pl={0}
-                        ml={"3"}
-                        w={"300"}
+                        justifyContent="space-between"
+                        backgroundColor={activeColors.secondary}
+                        p={3}
+                        mb={3}
+                        flexDirection="row" // Mengatur tata letak elemen secara horizontal
+                        alignItems="center" // Menyamakan ketinggian elemen
                       >
-                        <Flex direction="column">
-                          <Box mb={"1"}>
-                            <Flex
-                              direction="row"
-                              justifyContent="space-between"
+                        <Box pt={4} pb={4}>
+                          {showModal && (
+                            <Modal
+                              isOpen={showModal}
+                              onClose={() => {
+                                setShowModal(false);
+                                setSelectedImage(null);
+                              }}
                             >
-                              <Box>
-                                <Text
-                                  fontSize={"14"}
-                                  fontWeight={"bold"}
-                                  color={activeColors.tint}
-                                >
-                                  {item.userName}
-                                </Text>
-                              </Box>
-                              <Box mr={8}>
-                                <Menu>
-                                  <MenuTrigger>
-                                    <Icon
-                                      as={Ionicons}
-                                      name="ellipsis-vertical-outline"
-                                      size={6}
-                                      color={activeColors.tertiary}
-                                    />
-                                  </MenuTrigger>
-                                  <MenuOptions>
-                                    <MenuOption text="Cancel" />
-                                    <MenuOption text="Reschedule" />
-                                  </MenuOptions>
-                                </Menu>
-                              </Box>
-                            </Flex>
-                          </Box>
-                          <Text
-                            fontSize={"14"}
-                            mr={10}
-                            color={activeColors.tertiary}
+                              <Modal.Content>
+                                <Modal.CloseButton />
+                                <Modal.Body>
+                                  <Image
+                                    alt="Selected Image"
+                                    source={
+                                      selectedImage
+                                        ? { uri: selectedImage }
+                                        : require("../../assets/Chat/ProfileDefault.jpeg")
+                                    }
+                                    w={"100%"}
+                                    h={400}
+                                    resizeMode="contain"
+                                  />
+                                </Modal.Body>
+                              </Modal.Content>
+                            </Modal>
+                          )}
+                          <TouchableOpacity
+                            onPress={() => {
+                              setShowModal(true);
+                              setSelectedImage(item.DoctorImg);
+                            }}
                           >
-                            {item.specialty}
-                          </Text>
-                          <HStack space={16}>
+                            <Image
+                              w={"70"}
+                              h={"70"}
+                              rounded={"35"}
+                              source={{ uri: item.DoctorImg }}
+                              // source={{ uri: item.doctorData[0]?.picture }}
+                              // source={item.userImg}
+                              alt="ProfileUserChat"
+                            />
+                          </TouchableOpacity>
+                        </Box>
+
+                        <Box
+                          justifyContent={"center"}
+                          p={"15"}
+                          pl={0}
+                          ml={"3"}
+                          w={"300"}
+                        >
+                          <Flex direction="column">
+                            <Box mb={"1"}>
+                              <Flex
+                                direction="row"
+                                justifyContent="space-between"
+                              >
+                                <Box>
+                                  <Text
+                                    fontSize={"14"}
+                                    fontWeight={"bold"}
+                                    color={activeColors.tint}
+                                  >
+                                    {/* {item.userData?.picture} */}
+                                    {/* {item.doctorData[0]?.namaLengkap} */}
+                                    {item.DoctorName}
+                                    {/* {item.userName} */}
+                                    {/* {item.appointmentData?.PasienID} */}
+                                    {/* haii */}
+                                  </Text>
+                                </Box>
+                                <Box mr={8}>
+                                  <Menu>
+                                    <MenuTrigger>
+                                      <Icon
+                                        as={Ionicons}
+                                        name="ellipsis-vertical-outline"
+                                        size={6}
+                                        color={activeColors.tertiary}
+                                      />
+                                    </MenuTrigger>
+                                    <MenuOptions>
+                                      <MenuOption
+                                        text="Cancel"
+                                        onSelect={() =>
+                                          handleCancelAppointment(
+                                            item.AppointmentID
+                                          )
+                                        }
+                                      />
+                                      {/* <MenuOption text="Reschedule" /> */}
+                                    </MenuOptions>
+                                  </Menu>
+                                </Box>
+                              </Flex>
+                            </Box>
                             <Text
                               fontSize={"14"}
                               mr={10}
                               color={activeColors.tertiary}
                             >
-                              <Text fontWeight="bold">{item.date}</Text>
+                              {item.DoctorSpecialist}
+                              {/* {item.doctorData[0]?.specialist} */}
+                              {/* {item.specialty} */}
+                              {/* ahah */}
                             </Text>
-                          </HStack>
-                        </Flex>
+                            <HStack space={16}>
+                              <Text
+                                fontSize={"14"}
+                                mr={10}
+                                color={activeColors.tertiary}
+                              >
+                                {/* <Text fontWeight="bold">{item.date}</Text> */}
+                                {/* <Text fontWeight="bold">{item.appointmentData[0]?.Time}</Text> */}
+                                <Text fontWeight="bold">
+                                  {item?.Date &&
+                                    (() => {
+                                      const dateObj = new Date(item.Date);
+                                      return `${dateObj.getDate()} ${dateObj.toLocaleString(
+                                        "default",
+                                        { month: "short" }
+                                      )} ${dateObj.getFullYear()}`;
+                                    })()}{" "}
+                                  - {item?.Time}
+                                </Text>
+                              </Text>
+                            </HStack>
+                          </Flex>
+                        </Box>
                       </Box>
-                    </Box>
-                  </TouchableOpacity>
-                )}
-              />
+                    </TouchableOpacity>
+                  )}
+                />
+              )}
             </Box>
           </Center>
         </Box>

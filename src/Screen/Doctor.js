@@ -326,6 +326,7 @@ const DoctorScreen = () => {
                                         experience: item.experience,
                                         reviews: item.reviews,
                                         lokasiClinic: item.lokasiClinic,
+                                        alamatClinic: item.alamatClinic,
                                       },
                                     })
                                   }
