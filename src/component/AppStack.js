@@ -60,6 +60,7 @@ const AppStack = () => {
             experience: "",
             reviews: "",
             lokasiClinic: "",
+            alamatClinic: "",
           }}
         />
 
@@ -77,10 +78,12 @@ const AppStack = () => {
             },
           })}
           initialParams={{
+            userId: "",
             namaLengkap: "",
             picture: null,
             specialist: "",
             rating: "",
+            lokasiClinic: "",
           }}
         />
 
@@ -101,7 +104,7 @@ const AppStack = () => {
         <Stack.Screen
           name="AppointmentDetails"
           component={AppointmentDetailsScreen}
-          options={{
+          options={({ route }) => ({
             headerShown: true,
             headerTitle: "Appointment Details",
             headerTitleAlign: "center",
@@ -109,6 +112,17 @@ const AppStack = () => {
             headerStyle: {
               backgroundColor: activeColors.primary,
             },
+          })}
+          initialParams={{
+            DoctorID: "",
+            DoctorImg: null,
+            DoctorName: "",
+            DoctorSpecialist: "",
+            AppointmentID: "",
+            Date: "",
+            Time: "",
+            lokasiClinic: "",
+            NamaPasien: "",
           }}
         />
 
