@@ -210,10 +210,57 @@ const AppointmentScreen = () => {
                   />
                   {/* <Text>Loading ...</Text> */}
                 </Center>
+              ) : DataKu.length === 0 ? (
+                <Box flex={1} mt={-5} backgroundColor={activeColors.secondary}>
+                  <Center justifyContent={"center"}>
+                    {/* <Spinner size="lg" color={"black"} /> */}
+                    <LottieView
+                      style={{
+                        width: 70,
+                        height: 170,
+                        marginTop: 90,
+                        // marginBottom: 250,
+                      }}
+                      source={require("../../assets/EmptyAnimation.json")}
+                      autoPlay
+                      loop={true}
+                      speed={1.3}
+                    />
+                  </Center>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 18,
+                      fontWeight: 500,
+                      marginTop: 90,
+                      // marginBottom: 280,
+                    }}
+                  >
+                    Appointment Masih Kosong
+                  </Text>
+                  <Text textAlign={"center"} fontSize={14} px={8}>
+                    Ayo mulai buat janji dengan dokter pilihan anda secara
+                    gratis.
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Doctor")}
+                    style={{
+                      marginTop: 20,
+                      backgroundColor: "#0082f7",
+                      borderRadius: 8,
+                      alignItems: "center",
+                      marginHorizontal: 50
+                    }}
+                  >
+                    <Text color={"white"} p={3}>
+                      Buat Janji Sekarang
+                    </Text>
+                  </TouchableOpacity>
+                </Box>
               ) : (
                 <FlatList
                   data={DataKu}
-                  keyExtractor={(item) => item.id}
+                  keyExtractor={(item) => item.AppointmentID.toString()}
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       style={{ width: "100%" }}

@@ -100,6 +100,8 @@ const HistoryScreen = () => {
           setGroupedMedicalRecords(groupedRecords);
         }
         setLoading(false);
+      } else {
+        setLoading(false);
       }
 
       // await AsyncStorage.removeItem("MedicalRecord");
@@ -172,6 +174,26 @@ const HistoryScreen = () => {
             speed={1.5}
           />
         </Center>
+      ) : groupedMedicalRecords.length === 0 ? (
+        <>
+          <Center flex={1} justifyContent={"center"}>
+            {/* <Spinner size="lg" color={"black"} /> */}
+            <LottieView
+              style={{
+                width: 70,
+                height: 170,
+                marginTop: 200,
+              }}
+              source={require("../../../../assets/EmptyAnimation.json")}
+              autoPlay
+              loop={true}
+              speed={1.3}
+            />
+          </Center>
+          <Text style={{ textAlign: "center", fontSize: 18, marginTop: 400 }}>
+            Maaf, tidak ada data riwayat
+          </Text>
+        </>
       ) : (
         <FlatList
           data={groupedMedicalRecords}

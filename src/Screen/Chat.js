@@ -468,6 +468,57 @@ const PesanScreen = () => {
                   speed={1.5}
                 />
               </Center>
+            ) : userDataChat.length === 0 ? (
+              <>
+                <Center flex={1} justifyContent={"center"}>
+                  {/* <Spinner size="lg" color={"black"} /> */}
+                  <LottieView
+                    style={{
+                      width: 70,
+                      height: 170,
+                      marginTop: 120,
+                    }}
+                    source={require("../../assets/EmptyAnimation.json")}
+                    autoPlay
+                    loop={true}
+                    speed={1}
+                  />
+                </Center>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontWeight: 500,
+                    fontSize: 18,
+                    marginTop: 280,
+                  }}
+                >
+                  Chat Masih Kosong
+                </Text>
+                {retrievedUid.role === "Doctor" ? (
+                  <Text style={{ textAlign: "center", fontSize: 14 }}>
+                    Semua chat akan tersimpan di sini.
+                  </Text>
+                ) : (
+                  <>
+                    <Text style={{ textAlign: "center", fontSize: 14 }}>
+                      Semua chat akan tersimpan di sini. Ayo mulai chat gratis
+                      dengan Dokterku, dokter spesialis, dan psikolog
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate("Doctor")}
+                      style={{
+                        marginTop: 20,
+                        backgroundColor: "#0082f7",
+                        borderRadius: 8,
+                      }}
+                    >
+                      <Text color={"white"} p={3} px={6}>
+                        Chat Sekarang
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </>
             ) : (
               <FlatList
                 data={filterChatByName(pencarian)}
