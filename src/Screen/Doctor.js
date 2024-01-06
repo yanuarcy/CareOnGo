@@ -35,7 +35,6 @@ import {
 } from "firebase/firestore";
 import LottieView from "lottie-react-native";
 
-
 const Data = [
   {
     id: "1",
@@ -172,7 +171,7 @@ const DoctorScreen = () => {
           <Center>
             <Box mt={40}>
               <HStack alignItems="center" space={2} p={2} rounded="md">
-                <Input
+                {/* <Input
                   value={pencarian}
                   onChangeText={(pencarian) => setPencarian(pencarian)}
                   placeholder="Search Name or Specialist"
@@ -181,10 +180,15 @@ const DoctorScreen = () => {
                   size="lg"
                   w={"87%"}
                   rounded={12}
+                /> */}
+                <Header
+                  placeholder="Search Name or Specialist"
+                  pencarian={pencarian}
+                  setPencarian={setPencarian}
                 />
-                <Box backgroundColor={"#0082f7"} p={2} rounded={6}>
+                {/* <Box backgroundColor={"#0082f7"} p={2} rounded={6}>
                   <Icon as={Ionicons} name="search" size={6} color={"white"} />
-                </Box>
+                </Box> */}
               </HStack>
             </Box>
             <Box mt={4}>
@@ -207,6 +211,38 @@ const DoctorScreen = () => {
                 <FlatList
                   data={filterDoctorsBySpecialty(pencarian)}
                   keyExtractor={(item) => item.id}
+                  ListEmptyComponent={() =>
+                    // Menampilkan LottieView jika pencarian kosong
+                    pencarian.trim() === "" && doctorData.length === 0 ? (
+                      ""
+                    ) : (
+                      <>
+                        <Center flex={1} justifyContent={"center"}>
+                          <LottieView
+                            style={{
+                              width: 70,
+                              height: 170,
+                              marginTop: 50,
+                            }}
+                            source={require("../../assets/EmptyAnimation.json")}
+                            autoPlay
+                            loop={true}
+                            speed={1.5}
+                          />
+                        </Center>
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            fontWeight: 500,
+                            fontSize: 18,
+                            marginTop: 50,
+                          }}
+                        >
+                          Data tidak ditemukan
+                        </Text>
+                      </>
+                    )
+                  }
                   renderItem={({ item }) => (
                     <TouchableOpacity style={{ width: "100%" }}>
                       <Box justifyContent={"space-between"}>

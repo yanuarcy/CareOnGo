@@ -523,6 +523,38 @@ const PesanScreen = () => {
               <FlatList
                 data={filterChatByName(pencarian)}
                 keyExtractor={(item) => item.id}
+                ListEmptyComponent={() =>
+                  // Menampilkan LottieView jika pencarian kosong
+                  pencarian.trim() === "" && doctorData.length === 0 ? (
+                    ""
+                  ) : (
+                    <>
+                      <Center flex={1} justifyContent={"center"}>
+                        <LottieView
+                          style={{
+                            width: 70,
+                            height: 170,
+                            marginTop: 50,
+                          }}
+                          source={require("../../assets/EmptyAnimation.json")}
+                          autoPlay
+                          loop={true}
+                          speed={1.5}
+                        />
+                      </Center>
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          fontWeight: 500,
+                          fontSize: 18,
+                          marginTop: 50,
+                        }}
+                      >
+                        Data tidak ditemukan
+                      </Text>
+                    </>
+                  )
+                }
                 refreshControl={
                   <RefreshControl
                     refreshing={refreshing}

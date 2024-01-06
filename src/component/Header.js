@@ -43,7 +43,7 @@ const Header = (props) => {
           }
           value={props.pencarian}
           onChangeText={(text) => props.setPencarian(text)}
-          placeholder="Search Artikel..."
+          placeholder={props.placeholder}
           placeholderTextColor={"black"}
           backgroundColor={"#E4F1FF"}
           borderWidth={0}

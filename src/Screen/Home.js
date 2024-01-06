@@ -132,7 +132,7 @@ const Home = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <Header pencarian={pencarian} setPencarian={filterArtikel} />
+        <Header placeholder="Search Artikel..." pencarian={pencarian} setPencarian={filterArtikel} />
         <JadwaL />
         <Box>
           <Flex direction="row" mt={30}>
@@ -193,7 +193,7 @@ const Home = () => {
                 speed={1.5}
               />
             </Center>
-          ) : filteredData.length === 0 ? (
+          ) : pencarian.trim() !== '' && filteredData.length === 0 ? (
             <>
               <Center flex={1} justifyContent={"center"}>
                 {/* <Text>Data tidak ditemukan</Text> */}
@@ -231,7 +231,7 @@ const Home = () => {
               //     : DataObat
               // }
               data={
-                pencarian // Jika ada nilai pencarian
+                pencarian.trim() !== '' // Jika ada nilai pencarian
                   ? filteredData.length > 0 // Jika ada hasil filter
                     ? filteredData
                     : []
