@@ -17,6 +17,8 @@ import {
 } from "native-base";
 import { ThemeContext } from "../../../component/themeContext";
 import colors from "../../../component/theme";
+import emailjs from "@emailjs/browser";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ContactScreen = () => {
   const { theme, updateTheme } = useContext(ThemeContext);
@@ -29,13 +31,51 @@ const ContactScreen = () => {
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [agree, setAgree] = useState(false);
+  const [UserData, setUserData] = useState(null);
+
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const credentialsData = await AsyncStorage.getItem("credentials");
+      const parsedCredentials = JSON.parse(credentialsData);
+      setUserData(parsedCredentials);
+    }
+    fetchUserData();
+  }, []);
 
   const submit = () => {
     if (!name && !email && !phone && !message) {
-      Alert.alert("Plzz fill all the fields");
+      Alert.alert("Please fill in all the fields");
     } else {
-      Alert.alert(`Thank You ${name}`);
-      navigation.goBack();
+      console.log("Ini User Data: ", UserData)
+      const serviceId = "service_ngo3tdh";
+      const templateId = "template_172ubbl";
+      const publicKey = "j00igohsXtNjDq6rv";
+
+      const templateParams = {
+        header: "pesan nih",
+        from_name: name,
+        from_email: email + "@gmail.com",
+        to_name: "CareOnGo Team",
+        to_email: "yanuarcahyo567@gmail.com",
+        // service: Service,
+        phone: "Please contact me: " + `+62${phone}`,
+        message: message,
+      };
+
+      emailjs
+        .send(serviceId, templateId, templateParams, publicKey)
+        .then((response) => {
+          console.log("Email sent successfully !", response);
+          // console.log(userData);
+          Alert.alert("Success", `Email berhasil dikirim, Terimakasih ${name}`);
+          navigation.goBack();
+        })
+        .catch((error) => {
+          console.log("Error sending email: ", error);
+        });
+      // Alert.alert(`Thank You ${name}`);
+      // navigation.goBack();
     }
   };
 
@@ -56,6 +96,11 @@ const ContactScreen = () => {
       // Dimensions.removeEventListener('change', updateDimensions);
     };
   }, []);
+
+  console.log("Nama :", name)
+  console.log("Email :", email + "@gmail.com")
+  console.log("Phone :", "+62" + phone)
+  console.log("Message :", message)
 
   return (
     <ScrollView>
@@ -147,8 +192,10 @@ const ContactScreen = () => {
                 base: "87%",
                 md: "100%",
               }}
-              placeholder="nativebase"
+              placeholder="8123456789"
               placeholderTextColor={"muted"}
+              value={phone}
+              onChangeText={(phone) => setPhone(phone)}
             />
             {/* <InputRightAddon children={".io"} /> */}
           </InputGroup>
