@@ -61,7 +61,7 @@ const AppointmentDetailsScreen = () => {
             >
               <Modal.Content>
                 <Modal.CloseButton />
-                <Modal.Body>
+                <Modal.Body backgroundColor={activeColors.secondary}>
                   <Image
                     alt="Selected Image"
                     source={

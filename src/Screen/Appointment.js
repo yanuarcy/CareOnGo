@@ -216,20 +216,20 @@ const AppointmentScreen = () => {
     <MenuProvider
       style={{
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: activeColors.primary,
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <Box flex={1}>
-        <Box flex={1} backgroundColor={activeColors.primary}>
+      <Box  backgroundColor={activeColors.primary}>
+        <Box flex={1}>
           <Center>
             <Box mt={4}>
               {isLoading ? (
                 <Center
                   flex={1}
                   justifyContent={"center"}
-                  backgroundColor={activeColors.secondary}
+                  backgroundColor={activeColors.primary}
                 >
                   <LottieView
                     style={{
@@ -261,24 +261,22 @@ const AppointmentScreen = () => {
                     />
                   </Center>
                   <Text
-                    style={{
-                      textAlign: "center",
-                      fontSize: 18,
-                      fontWeight: 500,
-                      marginTop: 90,
-                      // marginBottom: 280,
-                    }}
+                    textAlign= "center"
+                    fontSize= {18}
+                    fontWeight= {500}
+                    marginTop= {90}
+                    color={activeColors.tint}
                   >
                     Appointment Masih Kosong
                   </Text>
                   {UserData.role === "Doctor" ? (
-                    <Text textAlign={"center"} fontSize={14} px={8}>
+                    <Text textAlign={"center"} fontSize={14} px={8} color={activeColors.tertiary}>
                       Ayo mulai buat janji dengan dokter pilihan anda secara
                       gratis.
                     </Text>
                   ) : (
                     <>
-                      <Text textAlign={"center"} fontSize={14} px={8}>
+                      <Text textAlign={"center"} fontSize={14} px={8} color={activeColors.tertiary}>
                         Ayo mulai buat janji dengan dokter pilihan anda secara
                         gratis.
                       </Text>
@@ -340,7 +338,7 @@ const AppointmentScreen = () => {
                             >
                               <Modal.Content>
                                 <Modal.CloseButton />
-                                <Modal.Body>
+                                <Modal.Body backgroundColor={activeColors.secondary}>
                                   <Image
                                     alt="Selected Image"
                                     source={

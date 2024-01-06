@@ -158,12 +158,11 @@ const JadwaL = () => {
                   />
                 </Center>
                 <Text
-                  style={{
-                    textAlign: "center",
-                    fontWeight: 500,
-                    fontSize: 18,
-                    marginBottom: 20,
-                  }}
+                  textAlign= "center"
+                  fontWeight= {500}
+                  fontSize= {18}
+                  mb= {5}
+                  color={"white"}
                 >
                   Appointment Masih Kosong
                 </Text>

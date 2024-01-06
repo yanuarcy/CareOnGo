@@ -147,12 +147,6 @@ const BookAppointmentScreen = () => {
         Date: value.toISOString(),
         Time: selectedTime,
       };
-      // Simpan ke AsyncStorage
-      // await AsyncStorage.setItem(
-      //   "AppointmentData",
-      //   JSON.stringify(appointmentData)
-      // );
-      // console.log("Data saved to AsyncStorage");
 
       // Simpan ke Firebase Firestore
       const usersCollection = collection(firestore, "users");
@@ -207,23 +201,6 @@ const BookAppointmentScreen = () => {
     }
   };
 
-  // Di dalam komponen BookAppointmentScreen setelah pengguna menekan tombol "Confirm Appointment"
-  // const handleConfirmAppointment = async () => {
-  //   // Logika lainnya...
-
-  //   // Data appointment yang akan disimpan
-  //   const appointmentData = {
-  //     value: value.toISOString(),
-  //     selectedTime,
-  //     message,
-  //   };
-
-  //   // Panggil fungsi untuk menyimpan data appointment
-  //   await saveAppointmentData(appointmentData);
-
-  //   navigation.replace("BookedAppointment");
-  // };
-
   return (
     <ScrollView backgroundColor={activeColors.primary} pagingEnabled>
       <Box bg={activeColors.secondary} p={4} mb={2} mt={3}>
@@ -236,7 +213,7 @@ const BookAppointmentScreen = () => {
           >
             <Modal.Content>
               <Modal.CloseButton />
-              <Modal.Body>
+              <Modal.Body backgroundColor={activeColors.secondary}>
                 <Image
                   alt="Selected Image"
                   source={

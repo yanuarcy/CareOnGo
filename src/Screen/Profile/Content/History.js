@@ -142,41 +142,26 @@ const HistoryScreen = () => {
   };
 
   return (
-    <Box margin={4} position={"relative"}>
-      {/* Header bagian tanggal */}
-      {/* <Icon as={Ionicons} name="ellipse" size={5} ml="2" color="#65B741" /> */}
-      {userRole === "Doctor" && (
-        <TouchableOpacity
-          onPress={() => navigation.navigate("RecordForm")}
-          style={{
-            position: "absolute",
-            top: -5,
-            right: 5,
-            zIndex: 1,
-          }}
-        >
-          <Box backgroundColor={"#0082f7"} p={2} rounded={20}>
-            <Icon as={Ionicons} name="add" size={6} color={"white"} />
-          </Box>
-        </TouchableOpacity>
-      )}
-      {isLoading ? (
-        <Center flex={1} justifyContent={"center"}>
-          {/* <Spinner size="lg" color={"black"} /> */}
-          <LottieView
+    <Box flex={1} backgroundColor={activeColors.secondary}>
+      <Box margin={4} position={"relative"}>
+        {/* Header bagian tanggal */}
+        {/* <Icon as={Ionicons} name="ellipse" size={5} ml="2" color="#65B741" /> */}
+        {userRole === "Doctor" && (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("RecordForm")}
             style={{
-              width: 70,
-              height: 170,
-              marginTop: 200,
+              position: "absolute",
+              top: -5,
+              right: 5,
+              zIndex: 1,
             }}
-            source={require("../../../../assets/LoadingAnimation.json")}
-            autoPlay
-            loop={true}
-            speed={1.5}
-          />
-        </Center>
-      ) : groupedMedicalRecords.length === 0 ? (
-        <>
+          >
+            <Box backgroundColor={"#0082f7"} p={2} rounded={20}>
+              <Icon as={Ionicons} name="add" size={6} color={"white"} />
+            </Box>
+          </TouchableOpacity>
+        )}
+        {isLoading ? (
           <Center flex={1} justifyContent={"center"}>
             {/* <Spinner size="lg" color={"black"} /> */}
             <LottieView
@@ -185,160 +170,178 @@ const HistoryScreen = () => {
                 height: 170,
                 marginTop: 200,
               }}
-              source={require("../../../../assets/EmptyAnimation.json")}
+              source={require("../../../../assets/LoadingAnimation.json")}
               autoPlay
               loop={true}
-              speed={1.3}
+              speed={1.5}
             />
           </Center>
-          <Text style={{ textAlign: "center", fontSize: 18, marginTop: 400 }}>
-            Maaf, tidak ada data riwayat
-          </Text>
-        </>
-      ) : (
-        <FlatList
-          data={groupedMedicalRecords}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <Box mb={4}>
-              {/* Tampilan untuk tanggal */}
-              <Box
-                position="absolute"
-                left={4}
-                top={7}
-                width={1} // Atur lebar garis
-                height="90%" // Panjang garis sesuai tinggi kontainer
-                // mb={16}
-                borderStyle="dashed"
-                borderWidth={2} // Atur lebar border sesuai kebutuhan
-                borderColor="black" // Warna border (dapat disesuaikan)
+        ) : groupedMedicalRecords.length === 0 ? (
+          <>
+            <Center flex={1} justifyContent={"center"}>
+              {/* <Spinner size="lg" color={"black"} /> */}
+              <LottieView
+                style={{
+                  width: 70,
+                  height: 170,
+                  marginTop: 200,
+                }}
+                source={require("../../../../assets/EmptyAnimation.json")}
+                autoPlay
+                loop={true}
+                speed={1.3}
               />
-
-              <Box flexDirection="row" alignItems="center">
-                <Icon
-                  as={Ionicons}
-                  name="ellipse"
-                  size={5}
-                  ml="2"
-                  color="#65B741"
+            </Center>
+            <Text textAlign= "center" fontSize= {18} marginTop= {400} color={activeColors.tint}>
+              Maaf, tidak ada data riwayat
+            </Text>
+          </>
+        ) : (
+          <FlatList
+            data={groupedMedicalRecords}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <Box mb={4}>
+                {/* Tampilan untuk tanggal */}
+                <Box
+                  position="absolute"
+                  left={4}
+                  top={7}
+                  width={1} // Atur lebar garis
+                  height="90%" // Panjang garis sesuai tinggi kontainer
+                  // mb={16}
+                  borderStyle="dashed"
+                  borderWidth={2} // Atur lebar border sesuai kebutuhan
+                  borderColor={activeColors.tint} // Warna border (dapat disesuaikan)
                 />
-                <Box
-                  flex={1}
-                  flexDirection="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  padding={2}
-                >
-                  <Text>{item.date}</Text>
-                </Box>
-              </Box>
-              {/* Tampilan untuk setiap rekam medis */}
-              {item.records.map((record, index) => (
-                <Box
-                  key={index.toString()}
-                  // p={4}
-                  // borderWidth={1}
-                  // borderColor="gray.300"
-                  // borderRadius={8}
-                  mb={2}
-                >
-                  {/* Ganti dengan komponen untuk menampilkan detail rekam medis */}
-                  <Box
-                    padding={4}
-                    margin={1}
-                    marginLeft={10}
-                    backgroundColor="rgba(211, 211, 211, 0.5)"
-                    borderRadius={10}
-                  >
-                    {/* Row 1 - Nama klinik/RS */}
-                    <Box flexDirection="row" marginBottom={2}>
-                      <Text>{record.NamaClinic}</Text>
-                    </Box>
 
-                    {/* Row 2 - Detail informasi */}
-                    <Box flexDirection="row" alignItems="center">
-                      {/* Kolom 1 - Gambar */}
-                      <Box>
-                        <Image
-                          source={require("../../../../assets/images/DocMedic.png")}
-                          alt="DocRekamMedis"
-                          resizeMode="contain"
-                          width={12}
-                          height={12}
-                        />
+                <Box flexDirection="row" alignItems="center">
+                  <Icon
+                    as={Ionicons}
+                    name="ellipse"
+                    size={5}
+                    ml="2"
+                    color="#65B741"
+                  />
+                  <Box
+                    flex={1}
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    padding={2}
+                  >
+                    <Text color={activeColors.tint}>{item.date}</Text>
+                  </Box>
+                </Box>
+                {/* Tampilan untuk setiap rekam medis */}
+                {item.records.map((record, index) => (
+                  <Box
+                    key={index.toString()}
+                    // p={4}
+                    // borderWidth={1}
+                    // borderColor="gray.300"
+                    // borderRadius={8}
+                    mb={2}
+                  >
+                    {/* Ganti dengan komponen untuk menampilkan detail rekam medis */}
+                    <Box
+                      padding={4}
+                      margin={1}
+                      marginLeft={10}
+                      backgroundColor="rgba(211, 211, 211, 0.5)"
+                      borderRadius={10}
+                    >
+                      {/* Row 1 - Nama klinik/RS */}
+                      <Box flexDirection="row" marginBottom={2}>
+                        <Text color={activeColors.tint}>{record.NamaClinic}</Text>
                       </Box>
 
-                      {/* Kolom 2 - Informasi dokter dan diagnosis */}
-                      <Box marginLeft={4}>
-                        {/* Row 1 di dalam kolom 2 */}
-                        <TouchableOpacity
-                          onPress={() =>
-                            navigation.navigate("HistoryDetails", {
-                              selectedRecord: record,
-                              userData: userData,
-                            })
-                          }
-                        >
-                          <Box
-                            flexDirection="row"
-                            marginBottom={2}
-                            alignItems="center"
-                            justifyContent="space-between"
-                          >
-                            <Box marginRight={12}>
-                              <Text>
-                                {record.JenisPoli}
-                                {"\n"}
-                                {/* {record.PasienData.namaLengkap} */}
-                                {userRole === "Doctor"
-                                  ? record.PasienData.namaLengkap
-                                  : record.NamaDokter}
-                              </Text>
-                            </Box>
-                            <Box
-                              ml={
-                                (record.PasienData?.namaLengkap?.length ||
-                                  record.NamaDokter?.length) > 10
-                                  ? 12
-                                  : 24
-                              }
-                              position="relative"
-                            >
-                              <Icon
-                                as={Ionicons}
-                                name="chevron-forward-outline"
-                                size={7}
-                                ml="2"
-                                color="black"
-                                style={{ position: "absolute", right: 0 }}
-                              />
-                            </Box>
-                          </Box>
-                        </TouchableOpacity>
+                      {/* Row 2 - Detail informasi */}
+                      <Box flexDirection="row" alignItems="center">
+                        {/* Kolom 1 - Gambar */}
+                        <Box>
+                          <Image
+                            source={require("../../../../assets/images/DocMedic.png")}
+                            alt="DocRekamMedis"
+                            resizeMode="contain"
+                            width={12}
+                            height={12}
+                          />
+                        </Box>
 
-                        {/* Row 2 di dalam kolom 2 */}
-                        <Box flexDirection="row">
-                          <Box
-                            flex={1}
-                            backgroundColor="rgba(211, 211, 211, 0.2)" // Warna dengan opasitas
-                            padding={2}
-                            marginRight={2}
-                            borderStyle="dashed" // Mengatur jenis border menjadi putus-putus
-                            borderWidth={1} // Atur lebar border sesuai kebutuhan
-                            borderRadius={4}
+                        {/* Kolom 2 - Informasi dokter dan diagnosis */}
+                        <Box marginLeft={4}>
+                          {/* Row 1 di dalam kolom 2 */}
+                          <TouchableOpacity
+                            onPress={() =>
+                              navigation.navigate("HistoryDetails", {
+                                selectedRecord: record,
+                                userData: userData,
+                              })
+                            }
                           >
-                            <Text>{record.Diagnosis}</Text>
+                            <Box
+                              flexDirection="row"
+                              marginBottom={2}
+                              alignItems="center"
+                              justifyContent="space-between"
+                            >
+                              <Box marginRight={12}>
+                                <Text color={activeColors.tint}>
+                                  {record.JenisPoli}
+                                  {"\n"}
+                                  {/* {record.PasienData.namaLengkap} */}
+                                  {userRole === "Doctor"
+                                    ? record.PasienData.namaLengkap
+                                    : record.NamaDokter}
+                                </Text>
+                              </Box>
+                              <Box
+                                ml={
+                                  (record.PasienData?.namaLengkap?.length ||
+                                    record.NamaDokter?.length) > 10
+                                    ? 12
+                                    : 24
+                                }
+                                position="relative"
+                              >
+                                <Icon
+                                  as={Ionicons}
+                                  name="chevron-forward-outline"
+                                  size={7}
+                                  ml="2"
+                                  color={activeColors.tint}
+                                  style={{ position: "absolute", right: 0 }}
+                                />
+                              </Box>
+                            </Box>
+                          </TouchableOpacity>
+
+                          {/* Row 2 di dalam kolom 2 */}
+                          <Box flexDirection="row">
+                            <Box
+                              flex={1}
+                              backgroundColor="rgba(211, 211, 211, 0.2)" // Warna dengan opasitas
+                              padding={2}
+                              marginRight={2}
+                              borderStyle="dashed" // Mengatur jenis border menjadi putus-putus
+                              borderWidth={1} // Atur lebar border sesuai kebutuhan
+                              borderRadius={4}
+                              borderColor={activeColors.tint}
+                            >
+                              <Text color={activeColors.tint}>{record.Diagnosis}</Text>
+                            </Box>
                           </Box>
                         </Box>
                       </Box>
                     </Box>
                   </Box>
-                </Box>
-              ))}
-            </Box>
-          )}
-        />
-      )}
+                ))}
+              </Box>
+            )}
+          />
+        )}
+      </Box>
     </Box>
   );
 };

@@ -519,22 +519,21 @@ const PesanScreen = () => {
                   />
                 </Center>
                 <Text
-                  style={{
-                    textAlign: "center",
-                    fontWeight: 500,
-                    fontSize: 18,
-                    marginTop: 280,
-                  }}
+                  textAlign= "center"
+                  fontWeight= {500}
+                  fontSize= {18}
+                  marginTop= {280}
+                  color={activeColors.tint}
                 >
                   Chat Masih Kosong
                 </Text>
                 {retrievedUid.role === "Doctor" ? (
-                  <Text style={{ textAlign: "center", fontSize: 14 }}>
+                  <Text textAlign= "center" fontSize= {14} color={activeColors.tertiary}>
                     Semua chat akan tersimpan di sini.
                   </Text>
                 ) : (
                   <>
-                    <Text style={{ textAlign: "center", fontSize: 14 }}>
+                    <Text textAlign= "center" fontSize= {14} color={activeColors.tertiary}>
                       Semua chat akan tersimpan di sini. Ayo mulai chat gratis
                       dengan Dokterku, dokter spesialis, dan psikolog
                     </Text>
@@ -623,7 +622,7 @@ const PesanScreen = () => {
                             >
                               <Modal.Content>
                                 <Modal.CloseButton />
-                                <Modal.Body>
+                                <Modal.Body backgroundColor={activeColors.secondary}>
                                   <Image
                                     alt="Selected Image"
                                     source={
@@ -649,7 +648,7 @@ const PesanScreen = () => {
                                     fontSize={15}
                                     fontWeight={600}
                                     mb={4}
-                                    color={activeColors.tertiary}
+                                    color={activeColors.tint}
                                     textAlign={"center"}
                                   >
                                     {selectedData.email}
@@ -699,17 +698,6 @@ const PesanScreen = () => {
                                     {item.namaLengkap}
                                   </Text>
                                   <Box
-                                  // if (item.namaLengkap.length > 11) {
-                                  //       return -12;
-                                  //     } else if (item.namaLengkap.length > 6) {
-                                  //       return 1;
-                                  //     } else if (item.namaLengkap.length > 5) {
-                                  //       return -2;
-                                  //     } else if (item.namaLengkap.length > 12) {
-                                  //       return -8;
-                                  //     } else {
-                                  //       return -7;
-                                  //     }
                                     ml={(() => {
                                       if (item.namaLengkap.length > 11) {
                                         return -12;

@@ -396,7 +396,7 @@ const RoomChatScreen = () => {
           >
             <Modal.Content>
               <Modal.CloseButton />
-              <Modal.Body>
+              <Modal.Body backgroundColor={activeColors.secondary}>
                 <Image
                   alt="Selected Image"
                   source={
@@ -422,7 +422,7 @@ const RoomChatScreen = () => {
                   fontSize={15}
                   fontWeight={600}
                   mb={4}
-                  color={activeColors.tertiary}
+                  color={activeColors.tint}
                   textAlign={"center"}
                 >
                   {initialUserEmail}

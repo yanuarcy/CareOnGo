@@ -222,7 +222,7 @@ const MedicalRecordForm = () => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView backgroundColor={activeColors.secondary}>
       <Box padding={4}>
         {/* Input untuk Jenis Poli */}
         <Text fontWeight="bold" color={activeColors.tint}>

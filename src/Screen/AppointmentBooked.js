@@ -32,7 +32,7 @@ const AppointmentBookedScreen = () => {
 
   return (
     <SafeAreaView>
-      <Box backgroundColor={activeColors.primary}>
+      <Box backgroundColor={activeColors.secondary}>
         <Image
           source={require("../../assets/images/BookedAnimation.png")}
           alt="Welcome Image"
