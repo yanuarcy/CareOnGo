@@ -13,7 +13,11 @@ import {
   Center,
   View,
 } from "native-base";
-import { TouchableOpacity, ImageBackground, RefreshControl } from "react-native";
+import {
+  TouchableOpacity,
+  ImageBackground,
+  RefreshControl,
+} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 // import LinearGradient from "expo-linear-gradient";
 
@@ -50,6 +54,27 @@ const Home = () => {
     { namaKategori: "Obat" },
     { namaKategori: "Cari Dokter" },
   ]);
+  const [filteredData, setFilteredData] = useState([]);
+
+  console.log("pencarian: ", pencarian);
+  // const filterArtikel = (text) => {
+  //   const selectedData = isDataLifeStyle ? dataLifestyle : DataObat;
+
+  //   return selectedData.filter((item) =>
+  //     item.title.toLowerCase().includes(text.toLowerCase())
+  //   );
+  // };
+
+  const filterArtikel = (text) => {
+    const selectedData = isDataLifeStyle ? dataLifestyle : DataObat;
+
+    const filtered = selectedData.filter((item) =>
+      item.title.toLowerCase().includes(text.toLowerCase())
+    );
+
+    setFilteredData(filtered); // Perbarui state filteredData dengan hasil filter
+    setPencarian(text);
+  };
 
   const kategoriHandler = (props) => {
     if (props === "Cari Dokter") {
@@ -58,9 +83,13 @@ const Home = () => {
       navigation.navigate("Message");
     } else if (props === "Gaya Hidup") {
       setIsDataLifeStyle(true);
+      setPencarian("");
     } else if (props === "Obat") {
+      console.log("suda pencet obat");
       setIsDataLifeStyle(false);
+      setPencarian("");
     }
+    setPencarian("");
   };
 
   const onRefresh = () => {
@@ -103,7 +132,7 @@ const Home = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <Header pencarian={pencarian} setPencarian={setPencarian} />
+        <Header pencarian={pencarian} setPencarian={filterArtikel} />
         <JadwaL />
         <Box>
           <Flex direction="row" mt={30}>
@@ -164,9 +193,52 @@ const Home = () => {
                 speed={1.5}
               />
             </Center>
+          ) : filteredData.length === 0 ? (
+            <>
+              <Center flex={1} justifyContent={"center"}>
+                {/* <Text>Data tidak ditemukan</Text> */}
+                <LottieView
+                  style={{
+                    width: 70,
+                    height: 170,
+                    marginTop: 10,
+                  }}
+                  source={require("../../assets/EmptyAnimation.json")}
+                  autoPlay
+                  loop={true}
+                  speed={1.5}
+                />
+              </Center>
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontWeight: 500,
+                  fontSize: 18,
+                  // marginTop: 280,
+                }}
+              >
+                Data tidak ditemukan
+              </Text>
+            </>
           ) : (
             <FlatList
-              data={isDataLifeStyle ? dataLifestyle : DataObat}
+              // data={isDataLifeStyle ? dataLifestyle : DataObat}
+              // data={
+              //   filteredData.length > 0
+              //     ? filteredData
+              //     : isDataLifeStyle
+              //     ? dataLifestyle
+              //     : DataObat
+              // }
+              data={
+                pencarian // Jika ada nilai pencarian
+                  ? filteredData.length > 0 // Jika ada hasil filter
+                    ? filteredData
+                    : []
+                  : isDataLifeStyle // Jika tidak ada nilai pencarian
+                  ? dataLifestyle
+                  : DataObat
+              }
               mb={5}
               horizontal
               keyExtractor={(item) => item.link}

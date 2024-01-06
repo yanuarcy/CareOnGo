@@ -1,13 +1,15 @@
 import React from "react";
 import { View, TouchableOpacity, StatusBar, TextInput } from "react-native";
-import { Box, Text, Input, Flex } from "native-base";
-import Icon from "react-native-vector-icons/Ionicons";
+import { Box, Text, Input, Flex, Icon } from "native-base";
+// import Icon from "react-native-vector-icons/Ionicons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+
 
 const Header = (props) => {
   return (
     <Box>
       <Flex direction="row">
-        <Input
+        {/* <Input
           value={props.pencarian}
           onChangeText={(text) => props.setPencarian(text)}
           placeholder="Cari informasi tentang kesehatan / dokter"
@@ -30,7 +32,25 @@ const Header = (props) => {
           }}
         >
           <Icon name="search" size={25} color="#FFFFFF" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <Input
+          w={{
+            base: "100%",
+            md: "25%",
+          }}
+          InputLeftElement={
+            <Icon as={Ionicons} name="search" size={7} ml="2" color="black" />
+          }
+          value={props.pencarian}
+          onChangeText={(text) => props.setPencarian(text)}
+          placeholder="Search Artikel..."
+          placeholderTextColor={"black"}
+          backgroundColor={"#E4F1FF"}
+          borderWidth={0}
+          rounded={24}
+          fontSize={16}
+          mt={6}
+        />
       </Flex>
     </Box>
   );
