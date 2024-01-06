@@ -69,14 +69,15 @@ const HistoryScreen = () => {
                 query(usersCollection, where("id", "==", PasienId))
               );
 
-              querySnapshot.forEach((doc) => {
-                const DataPasien = doc.data();
-                console.log("Ini Data Pasien : ", DataPasien);
-                if (record.PasienID === DataPasien.id) {
-                  record.PasienData = DataPasien;
-                }
-              });
-
+              if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                  const DataPasien = doc.data();
+                  console.log("Ini Data Pasien : ", DataPasien);
+                  if (record.PasienID === DataPasien.id) {
+                    record.PasienData = DataPasien;
+                  }
+                });
+              }
               return record;
             })
           );

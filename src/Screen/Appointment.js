@@ -87,7 +87,7 @@ const AppointmentScreen = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const [appointmentData, setAppointmentData] = useState(null);
+  const [UserData, setUserData] = useState(null);
   const [DataKu, setData] = useState([]);
 
   const navigation = useNavigation();
@@ -95,6 +95,10 @@ const AppointmentScreen = () => {
   useEffect(() => {
     const fetchingData = async () => {
       try {
+        const credentialsData = await AsyncStorage.getItem("credentials");
+        const parsedCredentials = JSON.parse(credentialsData);
+        setUserData(parsedCredentials);
+
         const appointmentData = await AsyncStorage.getItem("AppointmentData");
         let appointmentDataState = [];
         if (appointmentData !== null) {
@@ -102,6 +106,46 @@ const AppointmentScreen = () => {
           appointmentDataState = parsedAppointmentData;
           console.log("Data from AsyncStorage:", appointmentDataState);
           // Gunakan parsedAppointmentData untuk menampilkan atau memproses data yang diambil dari AsyncStorage
+
+          // Mendapatkan data pengguna dengan PasienID yang sesuai dengan data appointmentDataState
+          const pasienIDs = appointmentDataState.map(
+            (appointment) => appointment.PasienID
+          );
+          console.log("pasienID:", pasienIDs);
+
+          // pasienIDs.forEach(async(doc) => {
+          //   const userSnapshot = await getDocs(
+          //     query(usersCollection, where("id", "==", doc))
+          //   );
+
+          //   userSnapshot.forEach((userDoc) => {
+          //     const DataPasien = userDoc.data();
+          //     console.log("Ini Data Pasien : ", DataPasien);
+          //   });
+          // });
+
+          // Array untuk menyimpan DataPasien yang sesuai dengan appointmentDataState
+          const userDataPromises = pasienIDs.map(async (pasienID) => {
+            const userSnapshot = await getDocs(
+              query(usersCollection, where("id", "==", pasienID))
+            );
+            if (!userSnapshot.empty) {
+              const userData = userSnapshot.docs.map((doc) => doc.data());
+              return userData.length ? userData[0] : null;
+            }
+            return null;
+          });
+
+          const userData = await Promise.all(userDataPromises);
+          console.log("Data Pengguna yang Cocok:", userData);
+
+          // Menggabungkan DataPasien ke dalam setiap objek dalam appointmentDataState
+          appointmentDataState = appointmentDataState.map(
+            (appointment, index) => ({
+              ...appointment,
+              PasienData: userData[index], // Menambahkan DataPasien ke setiap objek appointmentDataState
+            })
+          );
         } else {
           console.log("No data found in AsyncStorage for appointments");
         }
@@ -238,24 +282,33 @@ const AppointmentScreen = () => {
                   >
                     Appointment Masih Kosong
                   </Text>
-                  <Text textAlign={"center"} fontSize={14} px={8}>
-                    Ayo mulai buat janji dengan dokter pilihan anda secara
-                    gratis.
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("Doctor")}
-                    style={{
-                      marginTop: 20,
-                      backgroundColor: "#0082f7",
-                      borderRadius: 8,
-                      alignItems: "center",
-                      marginHorizontal: 50
-                    }}
-                  >
-                    <Text color={"white"} p={3}>
-                      Buat Janji Sekarang
+                  {UserData.role === "Doctor" ? (
+                    <Text textAlign={"center"} fontSize={14} px={8}>
+                      Ayo mulai buat janji dengan dokter pilihan anda secara
+                      gratis.
                     </Text>
-                  </TouchableOpacity>
+                  ) : (
+                    <>
+                      <Text textAlign={"center"} fontSize={14} px={8}>
+                        Ayo mulai buat janji dengan dokter pilihan anda secara
+                        gratis.
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate("Doctor")}
+                        style={{
+                          marginTop: 20,
+                          backgroundColor: "#0082f7",
+                          borderRadius: 8,
+                          alignItems: "center",
+                          marginHorizontal: 50,
+                        }}
+                      >
+                        <Text color={"white"} p={3}>
+                          Buat Janji Sekarang
+                        </Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
                 </Box>
               ) : (
                 <FlatList
@@ -267,10 +320,11 @@ const AppointmentScreen = () => {
                       onPress={() =>
                         navigation.navigate("AppointmentDetails", {
                           DoctorID: item.DoctorID,
-                          DoctorImg: item.DoctorImg,
-                          DoctorName: item.DoctorName,
-                          DoctorSpecialist: item.DoctorSpecialist,
+                          DoctorImg: UserData.role === "Pasien" ? item.DoctorImg : item.PasienData.picture,
+                          DoctorName: UserData.role === "Pasien" ? item.DoctorName : item.PasienData.namaLengkap,
+                          DoctorSpecialist: UserData.role === "Pasien" ? item.DoctorSpecialist : item.PasienData.id,
                           AppointmentID: item.AppointmentID,
+                          AppointmentFor: item.AppointmentFor,
                           Date: item.Date,
                           Time: item.Time,
                           lokasiClinic: item.lokasiClinic,
@@ -301,8 +355,15 @@ const AppointmentScreen = () => {
                                   <Image
                                     alt="Selected Image"
                                     source={
-                                      selectedImage
-                                        ? { uri: selectedImage }
+                                      UserData.role === "Pasien"
+                                        ? selectedImage.DoctorImg
+                                          ? { uri: selectedImage.DoctorImg }
+                                          : require("../../assets/Chat/ProfileDefault.jpeg")
+                                        : selectedImage.PasienData.picture
+                                        ? {
+                                            uri: selectedImage.PasienData
+                                              .picture,
+                                          }
                                         : require("../../assets/Chat/ProfileDefault.jpeg")
                                     }
                                     w={"100%"}
@@ -316,16 +377,22 @@ const AppointmentScreen = () => {
                           <TouchableOpacity
                             onPress={() => {
                               setShowModal(true);
-                              setSelectedImage(item.DoctorImg);
+                              setSelectedImage(item);
                             }}
                           >
                             <Image
                               w={"70"}
                               h={"70"}
                               rounded={"35"}
-                              source={{ uri: item.DoctorImg }}
-                              // source={{ uri: item.doctorData[0]?.picture }}
-                              // source={item.userImg}
+                              source={
+                                UserData.role === "Pasien"
+                                  ? item.DoctorImg
+                                    ? { uri: item.DoctorImg }
+                                    : require("../../assets/Chat/ProfileDefault.jpeg")
+                                  : item.PasienData.picture
+                                  ? { uri: item.PasienData.picture }
+                                  : require("../../assets/Chat/ProfileDefault.jpeg")
+                              }
                               alt="ProfileUserChat"
                             />
                           </TouchableOpacity>
@@ -350,12 +417,9 @@ const AppointmentScreen = () => {
                                     fontWeight={"bold"}
                                     color={activeColors.tint}
                                   >
-                                    {/* {item.userData?.picture} */}
-                                    {/* {item.doctorData[0]?.namaLengkap} */}
-                                    {item.DoctorName}
-                                    {/* {item.userName} */}
-                                    {/* {item.appointmentData?.PasienID} */}
-                                    {/* haii */}
+                                    {UserData.role === "Pasien"
+                                      ? item.DoctorName
+                                      : item.PasienData.namaLengkap}
                                   </Text>
                                 </Box>
                                 <Box mr={8}>
@@ -370,7 +434,7 @@ const AppointmentScreen = () => {
                                     </MenuTrigger>
                                     <MenuOptions>
                                       <MenuOption
-                                        text="Cancel"
+                                        text={UserData.role === "Pasien" ? "Cancel" : "Done"}
                                         onSelect={() =>
                                           handleCancelAppointment(
                                             item.AppointmentID
@@ -388,10 +452,14 @@ const AppointmentScreen = () => {
                               mr={10}
                               color={activeColors.tertiary}
                             >
-                              {item.DoctorSpecialist}
-                              {/* {item.doctorData[0]?.specialist} */}
-                              {/* {item.specialty} */}
-                              {/* ahah */}
+                              {/* {item.DoctorSpecialist} */}
+                              {UserData.role === "Pasien"
+                                ? (item.DoctorSpecialist)
+                                : (item.AppointmentFor
+                                ? item.AppointmentFor.length > 35
+                                  ? item.AppointmentFor.slice(0, 35) + "..."
+                                  : item.AppointmentFor
+                                : "No text available")}
                             </Text>
                             <HStack space={16}>
                               <Text

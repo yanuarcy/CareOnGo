@@ -119,6 +119,7 @@ const AppStack = () => {
             DoctorName: "",
             DoctorSpecialist: "",
             AppointmentID: "",
+            AppointmentFor: "",
             Date: "",
             Time: "",
             lokasiClinic: "",

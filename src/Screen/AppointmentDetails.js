@@ -42,6 +42,7 @@ const AppointmentDetailsScreen = () => {
     ? route.params.DoctorSpecialist
     : "";
   const initialAppointmentID = route.params ? route.params.AppointmentID : "";
+  const initialAppointmentFor = route.params ? route.params.AppointmentFor : "";
   const initialDate = route.params ? route.params.Date : "";
   const initialTime = route.params ? route.params.Time : "";
   const initiallokasiClinic = route.params ? route.params.lokasiClinic : "";
@@ -82,7 +83,7 @@ const AppointmentDetailsScreen = () => {
               source={
                 initialDoctorImg
                   ? { uri: initialDoctorImg }
-                  : require("../../assets/Chat/Doctor-2.png")
+                  : require("../../assets/Chat/ProfileDefault.jpeg")
               } // Ganti dengan URL gambar profil dokter
               alt="Doctor Profile"
               size="100"
@@ -119,6 +120,21 @@ const AppointmentDetailsScreen = () => {
           <Text fontSize="16" py={2} color={activeColors.tertiary}>
             <Icon as={Ionicons} name="medkit" size={5} color={"#0082f7"} />{" "}
             {initialAppointmentID}
+          </Text>
+        </Box>
+
+        <Box
+          py={4}
+          borderBottomWidth={0.5}
+          borderBottomColor={activeColors.tint}
+          mb={2}
+        >
+          <Text fontSize="16" color={activeColors.tint} fontWeight={600}>
+            Appointment For
+          </Text>
+          <Text fontSize="16" py={2} color={activeColors.tertiary}>
+            <Icon as={Ionicons} name="pencil-outline" size={5} color={"#0082f7"} />{" "}
+            {initialAppointmentFor ? initialAppointmentFor : "No text available"}
           </Text>
         </Box>
 
