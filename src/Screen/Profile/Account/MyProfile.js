@@ -45,6 +45,8 @@ const MyProfileScreen = () => {
   const [userRole, setUserRole] = useState("");
 
   const [nama, setNama] = useState("");
+  const [telp, setTelp] = useState("");
+  const [email, setEmail] = useState("");
   const [gender, setGender] = useState("");
   const [tglLahir, setTglLahir] = useState("");
   const [alamat, setAlamat] = useState("");
@@ -57,6 +59,8 @@ const MyProfileScreen = () => {
         if (data) {
           const credentials = JSON.parse(data);
           setUserData(credentials);
+          setTelp(credentials.phone);
+          setEmail(credentials.email);
           setNama(credentials.namaLengkap);
           setGender(credentials.jenisKelamin);
           setTglLahir(credentials.tglLahir);
@@ -80,10 +84,10 @@ const MyProfileScreen = () => {
 
     switch (field) {
       case "Telp":
-        updatedUserData = { ...updatedUserData, phone: newValue };
+        updatedUserData = { ...updatedUserData, phone: newValue.telp };
         break;
       case "Email":
-        updatedUserData = { ...updatedUserData, email: newValue };
+        updatedUserData = { ...updatedUserData, email: newValue.email };
         break;
       case "Biodata":
         if (newValue.nama) {
@@ -186,8 +190,10 @@ const MyProfileScreen = () => {
   console.log(userData);
   const handleEditAndSave = async (field) => {
     if (field === "Telp") {
+      handleFieldChange("Telp", { telp: telp})
       setEditingTelp(!editingTelp);
     } else if (field === "Email") {
+      handleFieldChange("Email", { email: email })
       setEditingEmail(!editingEmail);
     } else if (field === "Biodata") {
       if (editingNama) {
@@ -254,8 +260,10 @@ const MyProfileScreen = () => {
                       mt={1}
                       mb={1}
                       fontSize={18}
-                      value={userData?.phone}
-                      onChangeText={(value) => handleFieldChange("Telp", value)}
+                      // value={userData?.phone}
+                      // onChangeText={(value) => handleFieldChange("Telp", value)}
+                      value={telp}
+                      onChangeText={(value) => setTelp(value)}
                       color={activeColors.tint}
                     />
                   ) : (
@@ -269,7 +277,7 @@ const MyProfileScreen = () => {
                       {loadingData ? (
                         <Spinner size="small" color="blue" />
                       ) : (
-                        userData?.phone || ""
+                        telp || ""
                       )}
                     </Text>
                   )}
@@ -313,10 +321,12 @@ const MyProfileScreen = () => {
                       mt={1}
                       mb={1}
                       fontSize={18}
-                      value={userData?.email}
-                      onChangeText={(value) =>
-                        handleFieldChange("Email", value)
-                      }
+                      // value={userData?.email}
+                      // onChangeText={(value) =>
+                      //   handleFieldChange("Email", value)
+                      // }
+                      value={email}
+                      onChangeText={(value) => setEmail(value)}
                       color={activeColors.tint}
                     />
                   ) : (
@@ -330,7 +340,7 @@ const MyProfileScreen = () => {
                       {loadingData ? (
                         <Spinner size="small" color="blue" />
                       ) : (
-                        userData?.email || ""
+                        email || ""
                       )}
                     </Text>
                   )}
