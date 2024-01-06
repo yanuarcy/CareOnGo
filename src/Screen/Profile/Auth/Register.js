@@ -78,27 +78,6 @@ const RegisterScreen = () => {
     const decryptedText = decrypt(encryptedText, shift);
     return text === decryptedText;
   };
-  
-  // Contoh penggunaan:
-  // const plainText = "RubahGesit";
-  // const shiftAmount = 3;
-  // console.log("Text awal: ", plainText);
-  
-  // const encryptedText = encrypt(plainText, shiftAmount);
-  // console.log("Teks Terenkripsi:", encryptedText);
-  
-  
-  // const Plaintext = encryptedText;
-  // const Chipertext = Base64.encode(Plaintext);
-  // console.log(Chipertext);
-  // const Decodetext = Base64.decode(Chipertext);
-  // console.log(Decodetext);
-  
-  // const decryptedText = decrypt(Decodetext, shiftAmount);
-  // console.log("Teks Terdekripsi:", decryptedText);
-
-  // const isMatched = compare(plainText, Decodetext, 3);
-  // console.log("Pembandingan:", isMatched ? "Cocok" : "Tidak Cocok");
 
   const generateRandomID = () => {
     const min = 10000; // Minimal angka acak (4 digit)
@@ -116,6 +95,11 @@ const RegisterScreen = () => {
 
   const handleCreateAccount = async () => {
     try {
+
+      if (Password.length <= 6) {
+        Alert.alert("Error", "Password harus memiliki lebih dari 6 karakter");
+        return;
+      }
 
       const shiftAmount = 3;
       const encryptedStg1 = encrypt(Password, shiftAmount);
@@ -182,7 +166,7 @@ const RegisterScreen = () => {
 
       AsyncStorage.setItem("credentials", JSON.stringify(userData))
         .then(() => {
-          Alert.alert("Success", "Akun anda berhasil login");
+          // Alert.alert("Success", "Akun anda berhasil login");
           navigation.replace("Tabs");
         })
         .catch((error) => {
@@ -194,7 +178,7 @@ const RegisterScreen = () => {
       // return user;
     } catch (error) {
       console.log(error);
-      Alert.alert("Error", "Gagal membuat akun");
+      Alert.alert("Error", "Email sudah terdaftar. Silahkan gunakan email lain.");
     }
   };
 
