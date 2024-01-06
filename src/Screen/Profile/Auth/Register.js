@@ -36,7 +36,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import bcrypt from 'bcryptjs';
 // import { compare, hash } from "react-native-simple-bcrypt";
-import { Base64 } from "js-base64"; 
+import { Base64 } from "js-base64";
 // import { sha1 } from 'react-native-sha1';
 
 const DB = initializeApp(firebaseConfig);
@@ -53,7 +53,7 @@ const RegisterScreen = () => {
   const [ConfirmPassword, setConfirmPassword] = useState("");
 
   const encrypt = (text, shift) => {
-    let result = '';
+    let result = "";
     for (let i = 0; i < text.length; i++) {
       let char = text[i];
       if (char.match(/[a-z]/i)) {
@@ -68,7 +68,7 @@ const RegisterScreen = () => {
     }
     return result;
   };
-  
+
   // Fungsi Dekripsi untuk metode penggeseran karakter (caesar cipher)
   const decrypt = (text, shift) => {
     return encrypt(text, (26 - shift) % 26);
@@ -95,7 +95,6 @@ const RegisterScreen = () => {
 
   const handleCreateAccount = async () => {
     try {
-
       if (Password.length <= 6) {
         Alert.alert("Error", "Password harus memiliki lebih dari 6 karakter");
         return;
@@ -108,13 +107,20 @@ const RegisterScreen = () => {
       // Simpan data pengguna ke Firebase Authentication
       await createUserWithEmailAndPassword(auth, Email, encrpytedStg2);
 
+      let phoneNumber = Phone;
+      if (phoneNumber.startsWith("0")) {
+        phoneNumber = phoneNumber.substring(1);
+        phoneNumber = "+62" + phoneNumber
+      }
+
+      // console.log(phoneNumber);
       // Simpan informasi tambahan ke Firestore
       const userCollection = collection(firestore, "users");
       const newUser = {
         id: customID.toString(),
         username: Name,
         email: Email,
-        phone: Phone,
+        phone: phoneNumber,
         password: encrpytedStg2,
         namaLengkap: Name,
         jenisKelamin: "",
@@ -132,7 +138,6 @@ const RegisterScreen = () => {
         friends: "",
         AppointmentID: [],
         role: "Pasien",
-
       };
 
       const newDoc = await addDoc(userCollection, newUser);
@@ -146,7 +151,7 @@ const RegisterScreen = () => {
         id: customID.toString(),
         username: Name,
         email: Email,
-        phone: Phone,
+        phone: phoneNumber,
         password: encrpytedStg2,
         namaLengkap: Name,
         jenisKelamin: "",
@@ -178,7 +183,10 @@ const RegisterScreen = () => {
       // return user;
     } catch (error) {
       console.log(error);
-      Alert.alert("Error", "Email sudah terdaftar. Silahkan gunakan email lain.");
+      Alert.alert(
+        "Error",
+        "Email sudah terdaftar. Silahkan gunakan email lain."
+      );
     }
   };
 
@@ -224,7 +232,7 @@ const RegisterScreen = () => {
                 }
                 value={Name}
                 onChangeText={(Name) => setName(Name)}
-                placeholder="Name"
+                placeholder="Username"
                 placeholderTextColor={"black"}
                 backgroundColor={"#E4F1FF"}
                 borderWidth={0}

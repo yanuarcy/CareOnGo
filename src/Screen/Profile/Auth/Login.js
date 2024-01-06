@@ -188,23 +188,6 @@ const LoginScreen = () => {
           );
 
           let appointmentsRecords = [];
-           
-          // if(userQuerySnapshot.empty) {
-          //   AsyncStorage.setItem(
-          //       "AppointmentData",
-          //       JSON.stringify(appointmentsRecords)
-          //     )
-          //       .then(() => {
-          //         console.log(
-          //           "Data Appointment berhasil di tambahkan ke AsyncStorage"
-          //         );
-          //         console.log(appointmentsRecords);
-          //       })
-          //       .catch((error) => {
-          //         console.log(error);
-          //         // Alert.alert("Error", "Gagal menyimpan kredensial");
-          //       });
-          // }
           if (!userQuerySnapshot.empty) {
             userQuerySnapshot.forEach(async (doc) => { 
               const userData = doc.data();
@@ -281,7 +264,7 @@ const LoginScreen = () => {
 
               return;
             } else {
-              Alert.alert("Error", "Email/username atau password salah");
+              Alert.alert("Error", "Password yang Anda masukkan salah. Silakan coba lagi.");
             }
           } catch (error) {
             console.error(error);
@@ -293,7 +276,7 @@ const LoginScreen = () => {
         });
       } else {
         // Jika tidak ditemukan email atau nama yang cocok
-        Alert.alert("Error", "Email/username/nama tidak ditemukan");
+        Alert.alert("Error", "Email/username tidak ditemukan");
       }
     } catch (error) {
       console.log(error);
