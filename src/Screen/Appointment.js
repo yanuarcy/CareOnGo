@@ -113,17 +113,6 @@ const AppointmentScreen = () => {
           );
           console.log("pasienID:", pasienIDs);
 
-          // pasienIDs.forEach(async(doc) => {
-          //   const userSnapshot = await getDocs(
-          //     query(usersCollection, where("id", "==", doc))
-          //   );
-
-          //   userSnapshot.forEach((userDoc) => {
-          //     const DataPasien = userDoc.data();
-          //     console.log("Ini Data Pasien : ", DataPasien);
-          //   });
-          // });
-
           // Array untuk menyimpan DataPasien yang sesuai dengan appointmentDataState
           const userDataPromises = pasienIDs.map(async (pasienID) => {
             const userSnapshot = await getDocs(

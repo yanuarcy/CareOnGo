@@ -13,7 +13,7 @@ import {
   Center,
   View,
 } from "native-base";
-import { TouchableOpacity, ImageBackground } from "react-native";
+import { TouchableOpacity, ImageBackground, RefreshControl } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 // import LinearGradient from "expo-linear-gradient";
 
@@ -39,6 +39,7 @@ const Home = () => {
   const DataArticle = DataArticles;
   const DataObat = DataObats;
 
+  const [refreshing, setRefreshing] = useState(false);
   const [isLoadingNews, setIsLoadingNews] = useState(true);
   const [isDataLifeStyle, setIsDataLifeStyle] = useState(true);
   const [dataLifestyle, setLifestyle] = useState([]);
@@ -60,6 +61,15 @@ const Home = () => {
     } else if (props === "Obat") {
       setIsDataLifeStyle(false);
     }
+  };
+
+  const onRefresh = () => {
+    // Lakukan proses pembaruan data di sini
+    // Contoh: panggil fungsi untuk mengambil data baru
+    // dan atur refreshing ke false setelah selesai
+    setRefreshing(true);
+    getNews(); // Ganti dengan fungsi yang sesuai untuk memuat ulang data
+    setRefreshing(false);
   };
 
   const getNews = () => {
@@ -89,6 +99,9 @@ const Home = () => {
         paddingX={5}
         mt={0}
         backgroundColor={activeColors.primary}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         <Header pencarian={pencarian} setPencarian={setPencarian} />
         <JadwaL />

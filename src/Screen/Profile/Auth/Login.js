@@ -253,6 +253,7 @@ const LoginScreen = () => {
               const credentials = {
                 id: userData.id,
                 RekamMedisID: userData.RekamMedisID,
+                AppointmentID: userData.AppointmentID,
                 email: userData.email,
                 username: userData.username,
                 namaLengkap: userData.namaLengkap,
