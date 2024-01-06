@@ -13,6 +13,9 @@ import {
 import { ThemeContext } from "../../../component/themeContext";
 import colors from "../../../component/theme";
 import { useNavigation } from "@react-navigation/core";
+import emailjs from "@emailjs/browser";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const ReportScreen = () => {
   const { theme, updateTheme } = useContext(ThemeContext);
@@ -20,25 +23,57 @@ const ReportScreen = () => {
 
   const navigation = useNavigation();
 
-  const [value, setValue] = useState("one");
+  const [UserData, setUserData] = useState(null);
   const [email, setEmail] = useState("");
-  const [feedbackType, setFeedbackType] = useState("bug");
+  const [Service, setService] = useState("Very Comfortable");
   const [message, setMessage] = useState("");
+  const [feedbackType, setFeedbackType] = useState("");
+  const [windowDimensions, setWindowDimensions] = useState(
+    Dimensions.get("window")
+  );
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const credentialsData = await AsyncStorage.getItem("credentials");
+      const parsedCredentials = JSON.parse(credentialsData);
+      setUserData(parsedCredentials);
+    }
+    fetchUserData();
+  }, []);
 
   const submitFeedback = () => {
     if (!email || !message) {
       Alert.alert("Please fill in all the fields");
     } else {
-      const feedbackTypeText =
-        feedbackType === "bug" ? "Bug Report" : "Feedback";
-      Alert.alert(`Thank you for your ${feedbackTypeText}!`);
-      navigation.goBack();
+      console.log("Ini User Data: ", UserData)
+      const serviceId = "service_ngo3tdh";
+      const templateId = "template_172ubbl";
+      const publicKey = "j00igohsXtNjDq6rv";
+
+      const templateParams = {
+        header: "Feedback Aplikasi CareOnGo",
+        from_name: UserData.namaLengkap,
+        from_email: email + "@gmail.com",
+        to_name: "CareOnGo Team",
+        to_email: "yanuarcahyo567@gmail.com",
+        headerText: "Saya sudah mereview aplikasi ini, berikut penilaian saya :",
+        service: "Kriteria : " + Service,
+        message: message,
+      };
+
+      emailjs
+        .send(serviceId, templateId, templateParams, publicKey)
+        .then((response) => {
+          console.log("Email sent successfully !", response);
+          // console.log(userData);
+          Alert.alert("Success", "Email berhasil dikirim");
+          navigation.goBack();
+        })
+        .catch((error) => {
+          console.log("Error sending email: ", error);
+        });
     }
   };
-
-  const [windowDimensions, setWindowDimensions] = useState(
-    Dimensions.get("window")
-  );
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -53,6 +88,11 @@ const ReportScreen = () => {
       // Dimensions.removeEventListener('change', updateDimensions);
     };
   }, []);
+
+  // console.log("Ini user Data: ", UserData)
+  console.log(email + "@gmail.com");
+  console.log("Aku menilai :", Service);
+  console.log(message);
 
   return (
     <ScrollView>
@@ -121,33 +161,25 @@ const ReportScreen = () => {
           <Radio.Group
             name="myRadioGroup"
             accessibilityLabel="Feedback"
-            value={value}
+            value={Service}
             onChange={(nextValue) => {
-              setValue(nextValue);
+              setService(nextValue);
             }}
           >
-            <Radio value="one" my={1}>
+            <Radio value="Very Comfortable" my={1}>
               <Text color={activeColors.tint}>Very Comfortable</Text>
             </Radio>
-            <Radio value="two" my={1}>
-              <Text color={activeColors.tint}>
-                Comfortable
-              </Text>
+            <Radio value="Comfortable" my={1}>
+              <Text color={activeColors.tint}>Comfortable</Text>
             </Radio>
-            <Radio value="three" my={1}>
-              <Text color={activeColors.tint}>
-                Neutral
-              </Text>
+            <Radio value="Neutral" my={1}>
+              <Text color={activeColors.tint}>Neutral</Text>
             </Radio>
-            <Radio value="four" my={1}>
-              <Text color={activeColors.tint}>
-                Uncomfortable
-              </Text>
+            <Radio value="Uncomfortable" my={1}>
+              <Text color={activeColors.tint}>Uncomfortable</Text>
             </Radio>
-            <Radio value="five" my={1}>
-              <Text color={activeColors.tint}>
-                Very Uncomfortable
-              </Text>
+            <Radio value="Very Uncomfortable" my={1}>
+              <Text color={activeColors.tint}>Very Uncomfortable</Text>
             </Radio>
           </Radio.Group>
         </Box>
