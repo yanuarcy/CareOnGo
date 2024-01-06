@@ -26,6 +26,7 @@ import {
   addDoc,
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -298,6 +299,85 @@ const RoomChatScreen = () => {
     // ReloadData();
   }, []); // Eksekusi hanya saat komponen pertama kali dimuat
 
+  const DeleteMessageAlert = (context, message) => {
+    Alert.alert(
+      "Hapus Pesan",
+      "Apakah Anda yakin ingin menghapus pesan ini?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", onPress: () => DeleteMessage(context, message) }, // Panggil fungsi untuk menghapus teman saat ditekan
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const DeleteMessage = async (context, message) => {
+    try {
+      const user = JSON.parse(await AsyncStorage.getItem("credentials"));
+      const chatRef = collection(firestore, "chats");
+
+      const user1Id = user.id;
+      const user2Id = initialUserId;
+
+      const sortedIds = [user1Id, user2Id].sort();
+      const membersArray = [user1Id, user2Id];
+
+      const chatQuery = query(chatRef, where("members", "==", sortedIds));
+      const chatQuerySnapshot = await getDocs(chatQuery);
+
+      let chatID;
+
+      if (!chatQuerySnapshot.empty) {
+        chatQuerySnapshot.forEach((doc) => {
+          chatID = doc.id;
+        });
+      } else {
+        // Create a new chat room if it doesn't exist
+        const newChatDocRef = await addDoc(chatRef, {
+          members: sortedIds,
+          createdAt: serverTimestamp(),
+        });
+
+        chatID = newChatDocRef.id;
+      }
+
+      const messageRef = collection(firestore, "chats", chatID, "messages");
+      const querySnapshot = await getDocs(messageRef);
+
+      let messageIdToDelete = null;
+
+      if (!querySnapshot.empty) {
+        querySnapshot.forEach((doc) => {
+          const messageData = doc.data();
+          if (messageData.content) {
+            messageData.content.forEach((contentItem) => {
+              if (
+                contentItem._id === message._id &&
+                messageData.senderId === user.id
+              ) {
+                messageIdToDelete = doc.id; // Get the ID of the message document to delete
+              }
+            });
+          }
+        });
+
+        if (messageIdToDelete) {
+          // Delete the message document
+          await deleteDoc(doc(messageRef, messageIdToDelete));
+
+          // Fetch updated messages after deletion
+          fetchMessages();
+          console.log("Message deleted successfully!");
+        } else {
+          Alert.alert("Error", "You can't delete this message.");
+          console.log("You can't delete this message.");
+        }
+      }
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
+
   const scrollToBottomComponent = () => {
     return <FontAwesome name="angle-double-down" size={22} color={"#333"} />;
   };
@@ -372,6 +452,7 @@ const RoomChatScreen = () => {
         </TouchableOpacity>
         <Bubble
           {...props}
+          onLongPress={DeleteMessageAlert}
           wrapperStyle={{
             right: {
               backgroundColor:
@@ -513,7 +594,7 @@ const RoomChatScreen = () => {
       renderInputToolbar={renderInputToolbar}
       renderTime={renderTime}
       keyboardShouldPersistTaps="never"
-      // onLongPress={onLongPress}
+      // onLongPress={DeleteMessageAlert}
     />
   );
 };

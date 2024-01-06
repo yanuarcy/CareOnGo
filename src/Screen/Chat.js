@@ -32,6 +32,7 @@ import {
   arrayRemove,
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -223,7 +224,11 @@ const PesanScreen = () => {
       }
 
       await Promise.all(promises);
-      setUserDataChat(DataUsers);
+      const sortedData = DataUsers.sort(
+        (a, b) => b.lastCreatedAt - a.lastCreatedAt
+      );
+      setUserDataChat(sortedData);
+      // setUserDataChat(DataUsers);
       setLoading(false);
     } catch (error) {
       console.error("Error retrieving uid:", error);
@@ -235,8 +240,22 @@ const PesanScreen = () => {
       // Lakukan sesuatu saat halaman fokus, misalnya refresh chat
       // setRefreshChat(prevState => !prevState); // Trigger refresh dengan mengubah state
       retrieveUidFromStorage();
+      // const sortedData = [...userDataChat].sort((a, b) => {
+      //   return b.lastCreatedAt - a.lastCreatedAt;
+      // });
+      // setUserDataChat(sortedData);
     }
   }, [isFocused]);
+
+  // useEffect(() => {
+  //   if (!isLoading) {
+  //     // Urutkan userDataChat berdasarkan lastCreatedAt dari yang terbaru ke yang terlama
+  //     const sortedData = [...userDataChat].sort((a, b) => {
+  //       return b.lastCreatedAt - a.lastCreatedAt;
+  //     });
+  //     setUserDataChat(sortedData);
+  //   }
+  // }, [isLoading]);
 
   // useEffect(() => {
   //   // setUserDataChat(DataUsers);
@@ -359,6 +378,7 @@ const PesanScreen = () => {
       const friendSnapshot = await getDoc(friendRef);
       if (friendSnapshot.exists()) {
         const friendData = friendSnapshot.data();
+        const FriendId = friendData.id;
         const updatedFriends = friendData.friends.filter(
           (friend) => friend !== retrievedUid.namaLengkap
         );
@@ -369,6 +389,20 @@ const PesanScreen = () => {
         });
 
         console.log("Diri anda telah berhasil dihapus dari daftar teman dia");
+
+        const sortedIds = [retrievedUid.id, FriendId].sort();
+        const chatQuery = query(
+          collection(firestore, "chats"),
+          where("members", "==", sortedIds)
+        );
+
+        const chatSnapshot = await getDocs(chatQuery);
+
+        chatSnapshot.forEach(async (doc) => {
+          // Hapus dokumen chat yang memiliki kedua ID dalam array 'members'
+          await deleteDoc(doc.ref);
+          console.log("Dokumen chat telah berhasil dihapus");
+        });
       }
 
       // Hapus teman dari state userDataChat
@@ -664,7 +698,30 @@ const PesanScreen = () => {
                                   >
                                     {item.namaLengkap}
                                   </Text>
-                                  <Box ml={-5}>
+                                  <Box
+                                  // if (item.namaLengkap.length > 11) {
+                                  //       return -12;
+                                  //     } else if (item.namaLengkap.length > 6) {
+                                  //       return 1;
+                                  //     } else if (item.namaLengkap.length > 5) {
+                                  //       return -2;
+                                  //     } else if (item.namaLengkap.length > 12) {
+                                  //       return -8;
+                                  //     } else {
+                                  //       return -7;
+                                  //     }
+                                    ml={(() => {
+                                      if (item.namaLengkap.length > 11) {
+                                        return -12;
+                                      } else if (item.namaLengkap.length > 10) {
+                                        return -8;
+                                      } else if (item.namaLengkap.length > 6) {
+                                        return 1;
+                                      } else if (item.namaLengkap.length > 5) {
+                                        return -2;
+                                      }
+                                    })()}
+                                  >
                                     <Text
                                       fontSize={12}
                                       color={activeColors.tint}
@@ -680,8 +737,8 @@ const PesanScreen = () => {
                         </Text> */}
                             <Text fontSize={"14"} color={activeColors.tertiary}>
                               {item.lastMessage
-                                ? item.lastMessage.length > 35
-                                  ? item.lastMessage.slice(0, 35) + "..."
+                                ? item.lastMessage.length > 33
+                                  ? item.lastMessage.slice(0, 33) + "..."
                                   : item.lastMessage
                                 : "No message available"}
                             </Text>
