@@ -6,6 +6,7 @@ import { ThemeContext } from "./src/component/themeContext";
 import { createStackNavigator } from "@react-navigation/stack";
 import colors from "./src/component/theme";
 import AppStack from "./src/component/AppStack";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const Stack = createStackNavigator();
 
@@ -25,13 +26,16 @@ const App = () => {
   let activeColors = colors[theme.mode];
 
   return (
-    <NativeBaseProvider>
-      <ThemeContext.Provider value={{ theme, updateTheme }}>
-        <NavigationContainer>
-          <AppStack />
-        </NavigationContainer>
-      </ThemeContext.Provider>
-    </NativeBaseProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      {/* content */}
+      <NativeBaseProvider>
+        <ThemeContext.Provider value={{ theme, updateTheme }}>
+          <NavigationContainer>
+            <AppStack />
+          </NavigationContainer>
+        </ThemeContext.Provider>
+      </NativeBaseProvider>
+    </GestureHandlerRootView>
   );
 };
 

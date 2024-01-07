@@ -19,6 +19,8 @@ import {
   TextInput,
   KeyboardAvoidingView,
   TouchableOpacity,
+  Dimensions,
+  Keyboard,
 } from "react-native";
 import { firebaseConfig } from "../../firebase-config";
 import { initializeApp } from "firebase/app";
@@ -45,6 +47,7 @@ const RoomChatScreen = () => {
   let activeColors = colors[theme.mode];
 
   const navigation = useNavigation();
+  const { width, height } = Dimensions.get("window");
 
   const route = useRoute();
   const DB = initializeApp(firebaseConfig);
@@ -504,10 +507,13 @@ const RoomChatScreen = () => {
       <InputToolbar
         {...props}
         containerStyle={{
-          margin: 3,
-          marginBottom: 10,
-          marginHorizontal: 15,
-          backgroundColor: "transparent",
+          padding: 2,
+          // padding: 6,
+          paddingTop: height * 0.014,
+          paddingBottom: height * 0.014,
+          paddingHorizontal: 15,
+          // backgroundColor: "transparent",
+          backgroundColor: activeColors.secondary,
           borderTopWidth: 0,
         }}
         renderComposer={(composerProps) => (
@@ -574,6 +580,41 @@ const RoomChatScreen = () => {
     );
   };
 
+  const [containerStyle, setContainerStyle] = useState({
+    // paddingBottom: 0,
+    paddingBottom: height * 0.012,
+    height: height * 0.85,
+    backgroundColor: activeColors.secondary,
+  });
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setContainerStyle({
+          ...containerStyle,
+          // paddingBottom: Platform.OS === "ios" ? 60 : 0,
+          paddingBottom: height * 0.3,
+        });
+      }
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setContainerStyle({
+          ...containerStyle,
+          paddingBottom: height * 0,
+        });
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, [containerStyle, height]);
+
   return (
     <GiftedChat
       messages={sortedMessages}
@@ -586,14 +627,20 @@ const RoomChatScreen = () => {
       renderSend={renderSend}
       scrollToBottom
       scrollToBottomComponent={scrollToBottomComponent}
-      messagesContainerStyle={{
-        paddingBottom: 80,
-        height: 720,
-        backgroundColor: activeColors.secondary,
-      }}
+      // messagesContainerStyle={{
+      //   // paddingBottom: 80,
+      //   // paddingBottom: Platform.OS === 'ios' ? 60 : 0,
+      //   paddingBottom: height * 0.012,
+      //   // marginBottom: height * 1,
+      //   // height: 710,
+      //   height: height * 0.85,
+      //   backgroundColor: activeColors.secondary,
+      // }}
+      messagesContainerStyle={containerStyle}
       renderInputToolbar={renderInputToolbar}
       renderTime={renderTime}
       keyboardShouldPersistTaps="never"
+      // bottomOffset={Platform.select({ ios: 40, android: 60 })}
       // onLongPress={DeleteMessageAlert}
     />
   );

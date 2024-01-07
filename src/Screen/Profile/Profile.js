@@ -342,6 +342,10 @@ const ProfileScreen = () => {
       await AsyncStorage.removeItem("MedicalRecord");
       await AsyncStorage.removeItem("AppointmentData");
 
+      const userId = userData.uid;
+      const userCollection = collection(firestore, "users");
+      const userDocRef = doc(userCollection, userId);
+      await updateDoc(userDocRef, { isLoggin: false });
       // Navigasikan pengguna kembali ke halaman login
       navigation.replace("Login");
     } catch (error) {

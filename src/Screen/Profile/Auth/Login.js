@@ -22,23 +22,20 @@ import { useState } from "react";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../../../firebase-config";
 import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import {
   getDocs,
   collection,
   query,
   where,
   getFirestore,
+  updateDoc,
+  doc,
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Base64 } from "js-base64";
 import moment from "moment";
 
 const DB = initializeApp(firebaseConfig);
-const auth = getAuth(DB);
+// const auth = getAuth(DB);
 const firestore = getFirestore(DB);
 
 const LoginScreen = () => {
@@ -99,8 +96,8 @@ const LoginScreen = () => {
       // Periksa apakah ada hasil dari kombinasi query
       if (combinedSnapshot.length > 0) {
         // Lakukan verifikasi data, misalnya verifikasi password
-        combinedSnapshot.forEach(async (doc) => {
-          const userData = doc.data();
+        combinedSnapshot.forEach(async (docSnapshot) => {
+          const userData = docSnapshot.data();
           const hashedPassword = userData.password;
 
           const DataRekamMedis = collection(firestore, "RekamMedis");
@@ -189,17 +186,21 @@ const LoginScreen = () => {
 
           let appointmentsRecords = [];
           if (!userQuerySnapshot.empty) {
-            userQuerySnapshot.forEach(async (doc) => { 
+            userQuerySnapshot.forEach(async (doc) => {
               const userData = doc.data();
               console.log("userData: ", userData);
               const appointmentIDs = userData.AppointmentID;
-              
+
               const appointmentQueries = appointmentIDs.map((id) =>
-                getDocs(query(DataAppointments, where("AppointmentID", "==", id)))
+                getDocs(
+                  query(DataAppointments, where("AppointmentID", "==", id))
+                )
               );
 
-              const appointmentsSnapshots = await Promise.all(appointmentQueries);
-            
+              const appointmentsSnapshots = await Promise.all(
+                appointmentQueries
+              );
+
               appointmentsSnapshots.forEach((snap) => {
                 snap.forEach((doc) => {
                   const appointmentData = doc.data();
@@ -221,8 +222,7 @@ const LoginScreen = () => {
                   console.log(error);
                   // Alert.alert("Error", "Gagal menyimpan kredensial");
                 });
-            })
-          
+            });
           }
 
           try {
@@ -232,39 +232,63 @@ const LoginScreen = () => {
             const passwordMatch = compare(password, Decodetext, 3);
 
             if (passwordMatch) {
-              // Login berhasil
-              const credentials = {
-                id: userData.id,
-                RekamMedisID: userData.RekamMedisID,
-                AppointmentID: userData.AppointmentID,
-                email: userData.email,
-                username: userData.username,
-                namaLengkap: userData.namaLengkap,
-                password: userData.password,
-                phone: userData.phone,
-                jenisKelamin: userData.jenisKelamin,
-                tglLahir: userData.tglLahir,
-                alamat: userData.alamat,
-                cities: userData.cities,
-                role: userData.role,
-                picture: userData.picture,
-                uid: doc.id,
-                loginTime: new Date().getTime(),
-              };
+              if (userData.isLoggin === true) {
+                Alert.alert(
+                  "Error",
+                  "Maaf akun anda sedang login di perangkat lain"
+                );
+              } else {
+                try {
+                  const userId = userData.uid;
+                  const userCollection = collection(firestore, "users");
+                  const userDocRef = doc(userCollection, userId);
+                  await updateDoc(userDocRef, { isLoggin: true });
+                  const credentials = {
+                    id: userData.id,
+                    RekamMedisID: userData.RekamMedisID,
+                    AppointmentID: userData.AppointmentID,
+                    email: userData.email,
+                    username: userData.username,
+                    namaLengkap: userData.namaLengkap,
+                    password: userData.password,
+                    phone: userData.phone,
+                    jenisKelamin: userData.jenisKelamin,
+                    tglLahir: userData.tglLahir,
+                    alamat: userData.alamat,
+                    cities: userData.cities,
+                    role: userData.role,
+                    picture: userData.picture,
+                    uid: docSnapshot.id,
+                    loginTime: new Date().getTime(),
+                  };
 
-              AsyncStorage.setItem("credentials", JSON.stringify(credentials))
-                .then(() => {
-                  // Alert.alert("Success", "Akun anda berhasil login");
-                  navigation.replace("Tabs");
-                })
-                .catch((error) => {
+                  AsyncStorage.setItem(
+                    "credentials",
+                    JSON.stringify(credentials)
+                  )
+                    .then(() => {
+                      // Alert.alert("Success", "Akun anda berhasil login");
+                      navigation.replace("Tabs");
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                      Alert.alert("Error", "Gagal menyimpan kredensial");
+                    });
+                  return;
+                } catch (error) {
                   console.log(error);
-                  Alert.alert("Error", "Gagal menyimpan kredensial");
-                });
-
-              return;
+                  Alert.alert(
+                    "Error",
+                    "Gagal menyimpan kredensial atau mengubah status login"
+                  );
+                }
+              }
+              // Login berhasil
             } else {
-              Alert.alert("Error", "Password yang Anda masukkan salah. Silakan coba lagi.");
+              Alert.alert(
+                "Error",
+                "Password yang Anda masukkan salah. Silakan coba lagi."
+              );
             }
           } catch (error) {
             console.error(error);

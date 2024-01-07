@@ -50,8 +50,8 @@ const WelcomeScreen = () => {
           color="black"
           //   fontFamily="poppins-regular"
           textAlign="center"
-          mt={1}
-          p={6}
+          // mt={0}
+          p={3}
         >
           An ounce of prevention is worth a pound of cure
         </Text>
@@ -60,7 +60,7 @@ const WelcomeScreen = () => {
         space={6}
         alignItems="center"
         justifyContent="center"
-        mt={12}
+        mt={5}
         m={10}
       >
         <TouchableOpacity

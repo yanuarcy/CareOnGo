@@ -4,7 +4,7 @@
     "slug": "CareOnGo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/iconApp.png",
     "userInterfaceStyle": "light",
     "splash": {
       "resizeMode": "cover",
@@ -18,13 +18,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/iconApp.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.CareOnGo"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3042323d-fbfd-4291-9ad0-8c27520081d7"
+      }
     }
   }
 }
