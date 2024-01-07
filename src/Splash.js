@@ -3,9 +3,14 @@ import React, { useEffect } from "react";
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { firebaseConfig } from "../firebase-config";
+import { initializeApp } from "firebase/app";
+import { collection, doc, getFirestore, updateDoc } from "firebase/firestore";
 
 const SplashScreen = () => {
   const navigation = useNavigation();
+  const DB = initializeApp(firebaseConfig);
+  const firestore = getFirestore(DB);
   //   setTimeout(() => {
   //     navigate("Tabs");
   //   }, 3000);
@@ -23,14 +28,22 @@ const SplashScreen = () => {
 
         const timeRemaining = 10 - elapsedTime;
         if (elapsedTime <= 10) {
-
-            console.log("Sisa Waktu anda : ", timeRemaining, "Sekarang sudah' : ", elapsedTime)
+          console.log(
+            "Sisa Waktu anda : ",
+            timeRemaining,
+            "Sekarang sudah' : ",
+            elapsedTime
+          );
           // Masih dalam waktu login yang valid, arahkan ke halaman Home/Tabs
           navigation.replace("Tabs");
         } else {
           // Waktu login telah berakhir, hapus data credentials
+          const userId = parsedCredentials.uid;
+          const userCollection = collection(firestore, "users");
+          const userDocRef = doc(userCollection, userId);
+          await updateDoc(userDocRef, { isLoggin: false });
           await AsyncStorage.removeItem("credentials");
-          console.log("Session Time Expired")
+          console.log("Session Time Expired");
           // Redirect ke halaman Welcome
           navigation.replace("Welcome");
         }
