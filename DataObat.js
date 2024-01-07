@@ -23,6 +23,22 @@ const DataObats = [
 	  description:
 		"Ibuprofen adalah obat yang sering digunakan untuk menghilangkan rasa sakit",
 	},
+	{
+	  link: "https://www.orami.co.id/magazine/dexteem-plus",
+	  pubDate: "31 December 2023",
+	  thumbnail: require("./assets/images/Dexteem.jpg"),
+	  title: "Dexteem Plus: Ketahui Manfaat, Dosis, dan Efek Sampingnya di Sini",
+	  description:
+		"Obat ini biasa digunakan untuk meredakan gejala alergi, rhinitis dan biduran",
+	},
+	{
+	  link: "https://www.orami.co.id/magazine/curcuma-force",
+	  pubDate: "21 October 2023",
+	  thumbnail: require("./assets/images/Curcuma.jpg"),
+	  title: "Curcuma Force: Dosis, Cara Penggunaan, dan Efek Samping",
+	  description:
+		"Efektif meningkatkan dan memperbaiki nafsu makan",
+	},
   ];
   
   export default DataObats;
