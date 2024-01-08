@@ -14,7 +14,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.CareOnGo"
     },
     "android": {
       "adaptiveIcon": {

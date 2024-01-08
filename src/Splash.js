@@ -38,10 +38,12 @@ const SplashScreen = () => {
           navigation.replace("Tabs");
         } else {
           // Waktu login telah berakhir, hapus data credentials
-          const userId = parsedCredentials.uid;
-          const userCollection = collection(firestore, "users");
-          const userDocRef = doc(userCollection, userId);
-          await updateDoc(userDocRef, { isLoggin: false });
+          if(credentials) {
+            const userId = parsedCredentials.uid;
+            const userCollection = collection(firestore, "users");
+            const userDocRef = doc(userCollection, userId);
+            await updateDoc(userDocRef, { isLoggin: false });
+          }
           await AsyncStorage.removeItem("credentials");
           console.log("Session Time Expired");
           // Redirect ke halaman Welcome

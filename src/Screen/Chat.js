@@ -276,18 +276,28 @@ const PesanScreen = () => {
           const friendToAdd = Friend;
 
           const doctorRef = collection(firestore, "users");
-          const friendQuery = query(
+          const friendQueryByName = query(
             doctorRef,
             where("namaLengkap", "==", friendToAdd)
           );
-          const querySnapshot = await getDocs(friendQuery);
+          const querySnapshotByName = await getDocs(friendQueryByName);
 
-          if (querySnapshot.empty) {
+          const friendQueryById = query(
+            doctorRef,
+            where("id", "==", friendToAdd)
+          );
+          const querySnapshotById = await getDocs(friendQueryById);
+
+          const combinedSnapshot = querySnapshotByName.docs.concat(
+            querySnapshotById.docs
+          );
+
+          if (combinedSnapshot.length == 0) {
             Alert.alert(
               "Error",
-              "Tidak ada teman dengan nama lengkap tersebut"
+              "Tidak ada teman dengan ID atau nama lengkap tersebut."
             );
-          } else if (friendToAdd == retrievedUid.namaLengkap) {
+          } else if (friendToAdd == retrievedUid.namaLengkap || friendToAdd == retrievedUid.id) {
             Alert.alert(
               "Error",
               "Anda tidak bisa menambahkan diri anda sendiri!"
@@ -305,16 +315,8 @@ const PesanScreen = () => {
             setFriend("");
             setShowModal(false);
 
-            // Tambahkan diri Anda ke field friends teman yang baru saja Anda tambahkan
-            const doctorRef = collection(firestore, "users");
-            const friendQuery = query(
-              doctorRef,
-              where("namaLengkap", "==", friendToAdd)
-            );
-            const querySnapshot = await getDocs(friendQuery);
-
-            if (!querySnapshot.empty) {
-              querySnapshot.forEach(async (doc) => {
+            if (combinedSnapshot.length > 0) {
+              combinedSnapshot.forEach(async (doc) => {
                 DataUsers.push({ id: doc.id, ...doc.data() });
                 const friendDocRef = doc.ref;
 

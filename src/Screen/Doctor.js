@@ -244,7 +244,26 @@ const DoctorScreen = () => {
                     )
                   }
                   renderItem={({ item }) => (
-                    <TouchableOpacity style={{ width: "100%" }}>
+                    <TouchableOpacity
+                      style={{ width: "100%" }}
+                      onPress={() =>
+                        navigation.navigate("DoctorDetails", {
+                          doctorData: {
+                            id: item.id,
+                            namaLengkap: item.namaLengkap,
+                            picture: item.picture,
+                            // star: item.star,
+                            rating: item.rating,
+                            specialist: item.specialist,
+                            patients: item.patients,
+                            experience: item.experience,
+                            reviews: item.reviews,
+                            lokasiClinic: item.lokasiClinic,
+                            alamatClinic: item.alamatClinic,
+                          },
+                        })
+                      }
+                    >
                       <Box justifyContent={"space-between"}>
                         <Flex direction="row">
                           {showModal && (
@@ -257,7 +276,9 @@ const DoctorScreen = () => {
                             >
                               <Modal.Content>
                                 <Modal.CloseButton />
-                                <Modal.Body backgroundColor={activeColors.secondary}>
+                                <Modal.Body
+                                  backgroundColor={activeColors.secondary}
+                                >
                                   <Image
                                     alt="Selected Image"
                                     source={
