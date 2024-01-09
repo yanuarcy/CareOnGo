@@ -99,48 +99,118 @@ const AppointmentScreen = () => {
         const parsedCredentials = JSON.parse(credentialsData);
         setUserData(parsedCredentials);
 
-        const appointmentData = await AsyncStorage.getItem("AppointmentData");
-        let appointmentDataState = [];
-        if (appointmentData !== null) {
-          const parsedAppointmentData = JSON.parse(appointmentData);
-          appointmentDataState = parsedAppointmentData;
-          console.log("Data from AsyncStorage:", appointmentDataState);
-          // Gunakan parsedAppointmentData untuk menampilkan atau memproses data yang diambil dari AsyncStorage
-
-          // Mendapatkan data pengguna dengan PasienID yang sesuai dengan data appointmentDataState
-          const pasienIDs = appointmentDataState.map(
-            (appointment) => appointment.PasienID
+        if (parsedCredentials.role === "Doctor") {
+          const appointmentsSnapshot = await getDocs(
+            query(
+              DataAppointments,
+              where("DoctorID", "==", parsedCredentials.id)
+            )
           );
-          console.log("pasienID:", pasienIDs);
 
-          // Array untuk menyimpan DataPasien yang sesuai dengan appointmentDataState
-          const userDataPromises = pasienIDs.map(async (pasienID) => {
-            const userSnapshot = await getDocs(
+          const appointmentDataState = [];
+
+          for (const appointmentDoc of appointmentsSnapshot.docs) {
+            const appointmentData = appointmentDoc.data();
+            const pasienID = appointmentData.PasienID;
+
+            const pasienQuerySnapshot = await getDocs(
               query(usersCollection, where("id", "==", pasienID))
             );
-            if (!userSnapshot.empty) {
-              const userData = userSnapshot.docs.map((doc) => doc.data());
-              return userData.length ? userData[0] : null;
-            }
-            return null;
-          });
 
-          const userData = await Promise.all(userDataPromises);
-          console.log("Data Pengguna yang Cocok:", userData);
+            pasienQuerySnapshot.forEach((pasienDoc) => {
+              const pasienData = pasienDoc.data();
+              const appointmentWithPasienData = {
+                ...appointmentData,
+                PasienData: pasienData,
+              };
+              appointmentDataState.push(appointmentWithPasienData);
+            });
+          }
 
-          // Menggabungkan DataPasien ke dalam setiap objek dalam appointmentDataState
-          appointmentDataState = appointmentDataState.map(
-            (appointment, index) => ({
-              ...appointment,
-              PasienData: userData[index], // Menambahkan DataPasien ke setiap objek appointmentDataState
-            })
+          console.log(
+            "Appointment Data State (Doctor): ",
+            appointmentDataState
           );
-        } else {
-          console.log("No data found in AsyncStorage for appointments");
+          setData(appointmentDataState);
+        } else if (parsedCredentials.role === "Pasien") {
+          const appointmentsSnapshot = await getDocs(
+            query(
+              DataAppointments,
+              where("PasienID", "==", parsedCredentials.id)
+            )
+          );
+
+          const appointmentDataState = [];
+
+          for (const appointmentDoc of appointmentsSnapshot.docs) {
+            const appointmentData = appointmentDoc.data();
+            const dokterID = appointmentData.DoctorID;
+
+            const dokterQuerySnapshot = await getDocs(
+              query(usersCollection, where("id", "==", dokterID))
+            );
+
+            dokterQuerySnapshot.forEach((dokterDoc) => {
+              const dokterData = dokterDoc.data();
+              const appointmentWithDokterData = {
+                ...appointmentData,
+                DokterData: dokterData,
+              };
+              appointmentDataState.push(appointmentWithDokterData);
+            });
+          }
+
+          console.log(
+            "Appointment Data State (Pasien): ",
+            appointmentDataState
+          );
+          setData(appointmentDataState);
         }
 
-        setData(appointmentDataState);
         setIsLoading(false);
+
+        // const appointmentData = await AsyncStorage.getItem("AppointmentData");
+        // let appointmentDataState = [];
+        // if (appointmentData !== null) {
+        //   const parsedAppointmentData = JSON.parse(appointmentData);
+        //   appointmentDataState = parsedAppointmentData;
+        //   console.log("Data from AsyncStorage:", appointmentDataState);
+        //   // Gunakan parsedAppointmentData untuk menampilkan atau memproses data yang diambil dari AsyncStorage
+
+        //   // Mendapatkan data pengguna dengan PasienID yang sesuai dengan data appointmentDataState
+        //   const pasienIDs = appointmentDataState.map(
+        //     (appointment) => appointment.PasienID
+        //   );
+        //   console.log("pasienID:", pasienIDs);
+
+        //   // Array untuk menyimpan DataPasien yang sesuai dengan appointmentDataState
+        //   const userDataPromises = pasienIDs.map(async (pasienID) => {
+        //     const userSnapshot = await getDocs(
+        //       query(usersCollection, where("id", "==", pasienID))
+        //     );
+        //     if (!userSnapshot.empty) {
+        //       const userData = userSnapshot.docs.map((doc) => doc.data());
+        //       return userData.length ? userData[0] : null;
+        //     }
+        //     return null;
+        //   });
+
+        //   const userData = await Promise.all(userDataPromises);
+        //   console.log("Data Pengguna yang Cocok:", userData);
+
+        //   // Menggabungkan DataPasien ke dalam setiap objek dalam appointmentDataState
+        //   appointmentDataState = appointmentDataState.map(
+        //     (appointment, index) => ({
+        //       ...appointment,
+        //       PasienData: userData[index], // Menambahkan DataPasien ke setiap objek appointmentDataState
+        //     })
+        //   );
+        // } else {
+        //   console.log("No data found in AsyncStorage for appointments");
+        // }
+
+        // setData(appointmentDataState);
+        // setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data from AsyncStorage:", error);
       }
@@ -199,19 +269,21 @@ const AppointmentScreen = () => {
           }
         });
 
-        const updatedDataWithPasien = await Promise.all(updatedData.map(async (appointment) => {
-          const userSnapshot = await getDocs(
-            query(usersCollection, where("id", "==", appointment.PasienID))
-          );
-          if (!userSnapshot.empty) {
-            const userData = userSnapshot.docs.map((doc) => doc.data());
-            return {
-              ...appointment,
-              PasienData: userData.length ? userData[0] : null,
-            };
-          }
-          return appointment;
-        }));
+        const updatedDataWithPasien = await Promise.all(
+          updatedData.map(async (appointment) => {
+            const userSnapshot = await getDocs(
+              query(usersCollection, where("id", "==", appointment.PasienID))
+            );
+            if (!userSnapshot.empty) {
+              const userData = userSnapshot.docs.map((doc) => doc.data());
+              return {
+                ...appointment,
+                PasienData: userData.length ? userData[0] : null,
+              };
+            }
+            return appointment;
+          })
+        );
 
         // Simpan kembali data setelah penghapusan
         await AsyncStorage.setItem(
@@ -235,7 +307,7 @@ const AppointmentScreen = () => {
         justifyContent: "center",
       }}
     >
-      <Box  backgroundColor={activeColors.primary}>
+      <Box backgroundColor={activeColors.primary}>
         <Box flex={1}>
           <Center>
             <Box mt={4}>
@@ -275,22 +347,32 @@ const AppointmentScreen = () => {
                     />
                   </Center>
                   <Text
-                    textAlign= "center"
-                    fontSize= {18}
-                    fontWeight= {500}
-                    marginTop= {90}
+                    textAlign="center"
+                    fontSize={18}
+                    fontWeight={500}
+                    marginTop={90}
                     color={activeColors.tint}
                   >
                     Appointment Masih Kosong
                   </Text>
                   {UserData.role === "Doctor" ? (
-                    <Text textAlign={"center"} fontSize={14} px={8} color={activeColors.tertiary}>
+                    <Text
+                      textAlign={"center"}
+                      fontSize={14}
+                      px={8}
+                      color={activeColors.tertiary}
+                    >
                       Ayo mulai buat janji dengan dokter pilihan anda secara
                       gratis.
                     </Text>
                   ) : (
                     <>
-                      <Text textAlign={"center"} fontSize={14} px={8} color={activeColors.tertiary}>
+                      <Text
+                        textAlign={"center"}
+                        fontSize={14}
+                        px={8}
+                        color={activeColors.tertiary}
+                      >
                         Ayo mulai buat janji dengan dokter pilihan anda secara
                         gratis.
                       </Text>
@@ -320,10 +402,22 @@ const AppointmentScreen = () => {
                       style={{ width: "100%" }}
                       onPress={() =>
                         navigation.navigate("AppointmentDetails", {
-                          DoctorID: UserData.role === "Pasien" ? item.DoctorID : item.PasienData?.id,
-                          DoctorImg: UserData.role === "Pasien" ? item.DoctorImg : item.PasienData?.picture,
-                          DoctorName: UserData.role === "Pasien" ? item.DoctorName : item.PasienData?.namaLengkap,
-                          DoctorSpecialist: UserData.role === "Pasien" ? item.DoctorSpecialist : item.PasienData?.id,
+                          DoctorID:
+                            UserData.role === "Pasien"
+                              ? item.DoctorID
+                              : item.PasienData?.id,
+                          DoctorImg:
+                            UserData.role === "Pasien"
+                              ? item.DoctorImg
+                              : item.PasienData?.picture,
+                          DoctorName:
+                            UserData.role === "Pasien"
+                              ? item.DoctorName
+                              : item.PasienData?.namaLengkap,
+                          DoctorSpecialist:
+                            UserData.role === "Pasien"
+                              ? item.DoctorSpecialist
+                              : item.PasienData?.id,
                           AppointmentID: item.AppointmentID,
                           AppointmentFor: item.AppointmentFor,
                           Date: item.Date,
@@ -352,7 +446,9 @@ const AppointmentScreen = () => {
                             >
                               <Modal.Content>
                                 <Modal.CloseButton />
-                                <Modal.Body backgroundColor={activeColors.secondary}>
+                                <Modal.Body
+                                  backgroundColor={activeColors.secondary}
+                                >
                                   <Image
                                     alt="Selected Image"
                                     source={
@@ -435,7 +531,11 @@ const AppointmentScreen = () => {
                                     </MenuTrigger>
                                     <MenuOptions>
                                       <MenuOption
-                                        text={UserData.role === "Pasien" ? "Cancel" : "Done"}
+                                        text={
+                                          UserData.role === "Pasien"
+                                            ? "Cancel"
+                                            : "Done"
+                                        }
                                         onSelect={() =>
                                           handleCancelAppointment(
                                             item.AppointmentID
@@ -455,12 +555,12 @@ const AppointmentScreen = () => {
                             >
                               {/* {item.DoctorSpecialist} */}
                               {UserData.role === "Pasien"
-                                ? (item.DoctorSpecialist)
-                                : (item.AppointmentFor
+                                ? item.DoctorSpecialist
+                                : item.AppointmentFor
                                 ? item.AppointmentFor.length > 35
                                   ? item.AppointmentFor.slice(0, 35) + "..."
                                   : item.AppointmentFor
-                                : "No text available")}
+                                : "No text available"}
                             </Text>
                             <HStack space={16}>
                               <Text
