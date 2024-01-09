@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { RefreshControl, TouchableOpacity } from "react-native";
 import {
   Box,
   ScrollView,
@@ -38,11 +38,21 @@ const HistoryScreen = () => {
   const DB = initializeApp(firebaseConfig);
   const firestore = getFirestore(DB);
 
+  const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [medicalRecord, setMedicalRecord] = useState(null);
   const [userRole, setUserRole] = useState("");
   const [groupedMedicalRecords, setGroupedMedicalRecords] = useState([]);
+
+  const onRefresh = async () => {
+    // Lakukan proses pembaruan data di sini
+    // Contoh: panggil fungsi untuk mengambil data baru
+    // dan atur refreshing ke false setelah selesai
+    setRefreshing(true);
+    await fetchDataMedical(); // Ganti dengan fungsi yang sesuai untuk memuat ulang data
+    setRefreshing(false);
+  };
 
   const fetchDataMedical = async () => {
     try {
@@ -82,13 +92,12 @@ const HistoryScreen = () => {
         };
 
         const convertedDate = convertTimestampToISOString(record.tanggal);
-        record.tanggal = convertedDate
+        record.tanggal = convertedDate;
 
         medicalRecords.push(record);
       });
-      
-      if (medicalRecords !== null) {
 
+      if (medicalRecords !== null) {
         // console.log("UserRole: ", user.role);
         if (user.role === "Doctor") {
           const usersCollection = collection(firestore, "users");
@@ -238,6 +247,9 @@ const HistoryScreen = () => {
         ) : (
           <FlatList
             data={groupedMedicalRecords}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <Box mb={4}>

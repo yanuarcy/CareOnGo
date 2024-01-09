@@ -208,7 +208,7 @@ const MedicalRecordForm = () => {
         console.log("Berhasil menambahkan data: ", existingRecords);
         Alert.alert(
           "Success",
-          "Berhasil menambahkan data ke dalam AsyncStorage"
+          "Berhasil menambahkan data Rekam Medis"
         );
         navigation.navigate("History");
 
