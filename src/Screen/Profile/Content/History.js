@@ -140,7 +140,12 @@ const HistoryScreen = () => {
           const recordsArray = Array.isArray(medicalRecords)
             ? medicalRecords
             : [medicalRecords];
-          const groupedRecords = groupMedicalRecordsByDate(recordsArray);
+          const sortedRecords = recordsArray.sort((a, b) => {
+            const dateA = new Date(a.tanggal.split(" ").reverse().join("-"));
+            const dateB = new Date(b.tanggal.split(" ").reverse().join("-"));
+            return dateB - dateA; // Urutkan dari tanggal terbaru ke yang lebih lama
+          });
+          const groupedRecords = groupMedicalRecordsByDate(sortedRecords);
           setGroupedMedicalRecords(groupedRecords);
         }
         setLoading(false);
