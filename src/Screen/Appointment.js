@@ -199,13 +199,27 @@ const AppointmentScreen = () => {
           }
         });
 
+        const updatedDataWithPasien = await Promise.all(updatedData.map(async (appointment) => {
+          const userSnapshot = await getDocs(
+            query(usersCollection, where("id", "==", appointment.PasienID))
+          );
+          if (!userSnapshot.empty) {
+            const userData = userSnapshot.docs.map((doc) => doc.data());
+            return {
+              ...appointment,
+              PasienData: userData.length ? userData[0] : null,
+            };
+          }
+          return appointment;
+        }));
+
         // Simpan kembali data setelah penghapusan
         await AsyncStorage.setItem(
           "AppointmentData",
-          JSON.stringify(updatedData)
+          JSON.stringify(updatedDataWithPasien)
         );
         // Perbarui state jika diperlukan 225654710
-        setData(updatedData);
+        setData(updatedDataWithPasien);
       }
     } catch (error) {
       console.error("Error deleting appointment:", error);
@@ -306,10 +320,10 @@ const AppointmentScreen = () => {
                       style={{ width: "100%" }}
                       onPress={() =>
                         navigation.navigate("AppointmentDetails", {
-                          DoctorID: item.DoctorID,
-                          DoctorImg: UserData.role === "Pasien" ? item.DoctorImg : item.PasienData.picture,
-                          DoctorName: UserData.role === "Pasien" ? item.DoctorName : item.PasienData.namaLengkap,
-                          DoctorSpecialist: UserData.role === "Pasien" ? item.DoctorSpecialist : item.PasienData.id,
+                          DoctorID: UserData.role === "Pasien" ? item.DoctorID : item.PasienData?.id,
+                          DoctorImg: UserData.role === "Pasien" ? item.DoctorImg : item.PasienData?.picture,
+                          DoctorName: UserData.role === "Pasien" ? item.DoctorName : item.PasienData?.namaLengkap,
+                          DoctorSpecialist: UserData.role === "Pasien" ? item.DoctorSpecialist : item.PasienData?.id,
                           AppointmentID: item.AppointmentID,
                           AppointmentFor: item.AppointmentFor,
                           Date: item.Date,
@@ -376,8 +390,8 @@ const AppointmentScreen = () => {
                                   ? item.DoctorImg
                                     ? { uri: item.DoctorImg }
                                     : require("../../assets/Chat/ProfileDefault.jpeg")
-                                  : item.PasienData.picture
-                                  ? { uri: item.PasienData.picture }
+                                  : item.PasienData?.picture
+                                  ? { uri: item.PasienData?.picture }
                                   : require("../../assets/Chat/ProfileDefault.jpeg")
                               }
                               alt="ProfileUserChat"
@@ -406,7 +420,7 @@ const AppointmentScreen = () => {
                                   >
                                     {UserData.role === "Pasien"
                                       ? item.DoctorName
-                                      : item.PasienData.namaLengkap}
+                                      : item.PasienData?.namaLengkap}
                                   </Text>
                                 </Box>
                                 <Box mr={8}>
