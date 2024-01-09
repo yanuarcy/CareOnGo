@@ -15,7 +15,7 @@ import {
 import colors from "../component/theme";
 import { ThemeContext } from "../component/themeContext";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native";
+import { RefreshControl, TouchableOpacity } from "react-native";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import {
   Menu,
@@ -86,135 +86,148 @@ const AppointmentScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [refreshChat, setRefreshChat] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
 
   const [UserData, setUserData] = useState(null);
   const [DataKu, setData] = useState([]);
 
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchingData = async () => {
-      try {
-        const credentialsData = await AsyncStorage.getItem("credentials");
-        const parsedCredentials = JSON.parse(credentialsData);
-        setUserData(parsedCredentials);
+  const onRefresh = async () => {
+    // Lakukan proses pembaruan data di sini
+    // Contoh: panggil fungsi untuk mengambil data baru
+    // dan atur refreshing ke false setelah selesai
+    setRefreshing(true);
+    await fetchingData(); // Ganti dengan fungsi yang sesuai untuk memuat ulang data
+    setRefreshing(false);
+  };
 
-        if (parsedCredentials.role === "Doctor") {
-          const appointmentsSnapshot = await getDocs(
-            query(
-              DataAppointments,
-              where("DoctorID", "==", parsedCredentials.id)
-            )
+  const fetchingData = async () => {
+    try {
+      const credentialsData = await AsyncStorage.getItem("credentials");
+      const parsedCredentials = JSON.parse(credentialsData);
+      setUserData(parsedCredentials);
+
+      if (parsedCredentials.role === "Doctor") {
+        const appointmentsSnapshot = await getDocs(
+          query(
+            DataAppointments,
+            where("DoctorID", "==", parsedCredentials.id)
+          )
+        );
+
+        const appointmentDataState = [];
+
+        for (const appointmentDoc of appointmentsSnapshot.docs) {
+          const appointmentData = appointmentDoc.data();
+          const pasienID = appointmentData.PasienID;
+
+          const pasienQuerySnapshot = await getDocs(
+            query(usersCollection, where("id", "==", pasienID))
           );
 
-          const appointmentDataState = [];
-
-          for (const appointmentDoc of appointmentsSnapshot.docs) {
-            const appointmentData = appointmentDoc.data();
-            const pasienID = appointmentData.PasienID;
-
-            const pasienQuerySnapshot = await getDocs(
-              query(usersCollection, where("id", "==", pasienID))
-            );
-
-            pasienQuerySnapshot.forEach((pasienDoc) => {
-              const pasienData = pasienDoc.data();
-              const appointmentWithPasienData = {
-                ...appointmentData,
-                PasienData: pasienData,
-              };
-              appointmentDataState.push(appointmentWithPasienData);
-            });
-          }
-
-          console.log(
-            "Appointment Data State (Doctor): ",
-            appointmentDataState
-          );
-          setData(appointmentDataState);
-        } else if (parsedCredentials.role === "Pasien") {
-          const appointmentsSnapshot = await getDocs(
-            query(
-              DataAppointments,
-              where("PasienID", "==", parsedCredentials.id)
-            )
-          );
-
-          const appointmentDataState = [];
-
-          for (const appointmentDoc of appointmentsSnapshot.docs) {
-            const appointmentData = appointmentDoc.data();
-            const dokterID = appointmentData.DoctorID;
-
-            const dokterQuerySnapshot = await getDocs(
-              query(usersCollection, where("id", "==", dokterID))
-            );
-
-            dokterQuerySnapshot.forEach((dokterDoc) => {
-              const dokterData = dokterDoc.data();
-              const appointmentWithDokterData = {
-                ...appointmentData,
-                DokterData: dokterData,
-              };
-              appointmentDataState.push(appointmentWithDokterData);
-            });
-          }
-
-          console.log(
-            "Appointment Data State (Pasien): ",
-            appointmentDataState
-          );
-          setData(appointmentDataState);
+          pasienQuerySnapshot.forEach((pasienDoc) => {
+            const pasienData = pasienDoc.data();
+            const appointmentWithPasienData = {
+              ...appointmentData,
+              PasienData: pasienData,
+            };
+            appointmentDataState.push(appointmentWithPasienData);
+          });
         }
 
-        setIsLoading(false);
+        console.log(
+          "Appointment Data State (Doctor): ",
+          appointmentDataState
+        );
+        setData(appointmentDataState);
+      } else if (parsedCredentials.role === "Pasien") {
+        const appointmentsSnapshot = await getDocs(
+          query(
+            DataAppointments,
+            where("PasienID", "==", parsedCredentials.id)
+          )
+        );
 
-        // const appointmentData = await AsyncStorage.getItem("AppointmentData");
-        // let appointmentDataState = [];
-        // if (appointmentData !== null) {
-        //   const parsedAppointmentData = JSON.parse(appointmentData);
-        //   appointmentDataState = parsedAppointmentData;
-        //   console.log("Data from AsyncStorage:", appointmentDataState);
-        //   // Gunakan parsedAppointmentData untuk menampilkan atau memproses data yang diambil dari AsyncStorage
+        const appointmentDataState = [];
 
-        //   // Mendapatkan data pengguna dengan PasienID yang sesuai dengan data appointmentDataState
-        //   const pasienIDs = appointmentDataState.map(
-        //     (appointment) => appointment.PasienID
-        //   );
-        //   console.log("pasienID:", pasienIDs);
+        for (const appointmentDoc of appointmentsSnapshot.docs) {
+          const appointmentData = appointmentDoc.data();
+          const dokterID = appointmentData.DoctorID;
 
-        //   // Array untuk menyimpan DataPasien yang sesuai dengan appointmentDataState
-        //   const userDataPromises = pasienIDs.map(async (pasienID) => {
-        //     const userSnapshot = await getDocs(
-        //       query(usersCollection, where("id", "==", pasienID))
-        //     );
-        //     if (!userSnapshot.empty) {
-        //       const userData = userSnapshot.docs.map((doc) => doc.data());
-        //       return userData.length ? userData[0] : null;
-        //     }
-        //     return null;
-        //   });
+          const dokterQuerySnapshot = await getDocs(
+            query(usersCollection, where("id", "==", dokterID))
+          );
 
-        //   const userData = await Promise.all(userDataPromises);
-        //   console.log("Data Pengguna yang Cocok:", userData);
+          dokterQuerySnapshot.forEach((dokterDoc) => {
+            const dokterData = dokterDoc.data();
+            const appointmentWithDokterData = {
+              ...appointmentData,
+              DokterData: dokterData,
+            };
+            appointmentDataState.push(appointmentWithDokterData);
+          });
+        }
 
-        //   // Menggabungkan DataPasien ke dalam setiap objek dalam appointmentDataState
-        //   appointmentDataState = appointmentDataState.map(
-        //     (appointment, index) => ({
-        //       ...appointment,
-        //       PasienData: userData[index], // Menambahkan DataPasien ke setiap objek appointmentDataState
-        //     })
-        //   );
-        // } else {
-        //   console.log("No data found in AsyncStorage for appointments");
-        // }
-
-        // setData(appointmentDataState);
-        // setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching data from AsyncStorage:", error);
+        console.log(
+          "Appointment Data State (Pasien): ",
+          appointmentDataState
+        );
+        setData(appointmentDataState);
       }
-    };
+
+      setIsLoading(false);
+
+      // const appointmentData = await AsyncStorage.getItem("AppointmentData");
+      // let appointmentDataState = [];
+      // if (appointmentData !== null) {
+      //   const parsedAppointmentData = JSON.parse(appointmentData);
+      //   appointmentDataState = parsedAppointmentData;
+      //   console.log("Data from AsyncStorage:", appointmentDataState);
+      //   // Gunakan parsedAppointmentData untuk menampilkan atau memproses data yang diambil dari AsyncStorage
+
+      //   // Mendapatkan data pengguna dengan PasienID yang sesuai dengan data appointmentDataState
+      //   const pasienIDs = appointmentDataState.map(
+      //     (appointment) => appointment.PasienID
+      //   );
+      //   console.log("pasienID:", pasienIDs);
+
+      //   // Array untuk menyimpan DataPasien yang sesuai dengan appointmentDataState
+      //   const userDataPromises = pasienIDs.map(async (pasienID) => {
+      //     const userSnapshot = await getDocs(
+      //       query(usersCollection, where("id", "==", pasienID))
+      //     );
+      //     if (!userSnapshot.empty) {
+      //       const userData = userSnapshot.docs.map((doc) => doc.data());
+      //       return userData.length ? userData[0] : null;
+      //     }
+      //     return null;
+      //   });
+
+      //   const userData = await Promise.all(userDataPromises);
+      //   console.log("Data Pengguna yang Cocok:", userData);
+
+      //   // Menggabungkan DataPasien ke dalam setiap objek dalam appointmentDataState
+      //   appointmentDataState = appointmentDataState.map(
+      //     (appointment, index) => ({
+      //       ...appointment,
+      //       PasienData: userData[index], // Menambahkan DataPasien ke setiap objek appointmentDataState
+      //     })
+      //   );
+      // } else {
+      //   console.log("No data found in AsyncStorage for appointments");
+      // }
+
+      // setData(appointmentDataState);
+      // setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching data from AsyncStorage:", error);
+    }
+  };
+
+  useEffect(() => {
 
     if (isFocused) {
       fetchingData();
@@ -396,6 +409,12 @@ const AppointmentScreen = () => {
               ) : (
                 <FlatList
                   data={DataKu}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                    />
+                  }
                   keyExtractor={(item) => item.AppointmentID.toString()}
                   renderItem={({ item }) => (
                     <TouchableOpacity
