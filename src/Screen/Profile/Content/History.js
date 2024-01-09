@@ -51,18 +51,52 @@ const HistoryScreen = () => {
       setUserData(user);
       setUserRole(user.role);
 
-      const medicalRecords = await AsyncStorage.getItem("MedicalRecord");
-      console.log("Medical Records : ", medicalRecords);
+      const rekamMedisCollection = collection(firestore, "RekamMedis");
+
+      const queryByPatient = query(
+        rekamMedisCollection,
+        where("PasienID", "==", user.id)
+      );
+      const queryByDoctor = query(
+        rekamMedisCollection,
+        where("NamaDokter", "==", user.namaLengkap)
+      );
+
+      const snapshotByPatient = await getDocs(queryByPatient);
+      const snapshotByDoctor = await getDocs(queryByDoctor);
+
+      const combinedPatientDoc = snapshotByPatient.docs.concat(
+        snapshotByDoctor.docs
+      );
+
+      const medicalRecords = [];
+
+      combinedPatientDoc.forEach((doc) => {
+        const record = doc.data();
+
+        const convertTimestampToISOString = (timestamp) => {
+          const milliseconds =
+            timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6;
+          const date = new Date(milliseconds);
+          return date.toISOString(); // Mengembalikan tanggal dalam format ISO (misal: "2023-12-29T22:43:04.298Z")
+        };
+
+        const convertedDate = convertTimestampToISOString(record.tanggal);
+        record.tanggal = convertedDate
+
+        medicalRecords.push(record);
+      });
+      
       if (medicalRecords !== null) {
-        const parsedRecords = JSON.parse(medicalRecords);
 
         // console.log("UserRole: ", user.role);
         if (user.role === "Doctor") {
           const usersCollection = collection(firestore, "users");
           const updatedRecords = await Promise.all(
-            parsedRecords.map(async (record) => {
+            medicalRecords.map(async (record) => {
               const PasienId = record.PasienID;
               console.log("Data Record nih : ", record);
+              console.log("Ini Tanggal : ", record.tanggal);
               console.log("Apakah ini ebetul Pasien Id ?", PasienId);
 
               const querySnapshot = await getDocs(
@@ -82,7 +116,7 @@ const HistoryScreen = () => {
             })
           );
 
-          // console.log("Ini UpdatedRecords: ", updatedRecords)
+          // console.log("Ini UpdatedRecords: ", updatedRecords);
           const sortedRecords = updatedRecords.sort((a, b) => {
             const dateA = new Date(a.tanggal.split(" ").reverse().join("-"));
             const dateB = new Date(b.tanggal.split(" ").reverse().join("-"));
@@ -94,9 +128,9 @@ const HistoryScreen = () => {
           // const sortedRecords = sortRecordsByDate(groupedRecords);
           setGroupedMedicalRecords(groupedRecords);
         } else {
-          const recordsArray = Array.isArray(parsedRecords)
-            ? parsedRecords
-            : [parsedRecords];
+          const recordsArray = Array.isArray(medicalRecords)
+            ? medicalRecords
+            : [medicalRecords];
           const groupedRecords = groupMedicalRecordsByDate(recordsArray);
           setGroupedMedicalRecords(groupedRecords);
         }
@@ -192,7 +226,12 @@ const HistoryScreen = () => {
                 speed={1.3}
               />
             </Center>
-            <Text textAlign= "center" fontSize= {18} marginTop= {400} color={activeColors.tint}>
+            <Text
+              textAlign="center"
+              fontSize={18}
+              marginTop={400}
+              color={activeColors.tint}
+            >
               Maaf, tidak ada data riwayat
             </Text>
           </>
@@ -253,7 +292,9 @@ const HistoryScreen = () => {
                     >
                       {/* Row 1 - Nama klinik/RS */}
                       <Box flexDirection="row" marginBottom={2}>
-                        <Text color={activeColors.tint}>{record.NamaClinic}</Text>
+                        <Text color={activeColors.tint}>
+                          {record.NamaClinic}
+                        </Text>
                       </Box>
 
                       {/* Row 2 - Detail informasi */}
@@ -329,7 +370,9 @@ const HistoryScreen = () => {
                               borderRadius={4}
                               borderColor={activeColors.tint}
                             >
-                              <Text color={activeColors.tint}>{record.Diagnosis}</Text>
+                              <Text color={activeColors.tint}>
+                                {record.Diagnosis}
+                              </Text>
                             </Box>
                           </Box>
                         </Box>
